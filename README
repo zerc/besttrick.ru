@@ -1,8 +1,7 @@
 == INSTALL ==
-Req:
-    pip, virtualenv
+sudo apt-get install python-pip mongodb
+sudo pip install virtualenv
 
-Do:
-    $ virtualenv venv --distribute
-    $ . venv/bin/activate
-    $ pip install -r pip.req
+virtualenv venv --distribute
+. venv/bin/activate
+pip install -r stuff/pip.req
