@@ -1,0 +1,26 @@
+<%= set_title(trick.get('title')) %>
+
+<div class="trick__users">
+<% if (users.length > 0) { %>
+    <% _.map(users, function (row, i) {%>
+        <div class="trick__user<% if (i === 0) { %> trick__user_king<% } %>">
+            <span><%= row.cones %></span>
+            <img src="<%= row.user.photo %>" class="trick__user__photo">
+            <a href="#profile-<%= row.user._id %>"><%= row.user.nick %></a>
+        </div>
+    <%}) %>
+<% } else { %>
+    <div class="trick__user no_one">
+        Еще никто не делает этот трюк!
+    </div>
+<% } %>
+</div>
+<div class="trick__info">
+    Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod
+    tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam,
+    quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo
+    consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse
+    cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non
+    proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+</div>
+<br class="clear">

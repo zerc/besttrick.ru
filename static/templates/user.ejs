@@ -1,0 +1,26 @@
+<%= set_title(user.get('nick')) %>
+<div class="user__tricks">
+    <% if (tricks.length > 0) { %>
+        <% _.map(tricks, function (trick) {%>
+            <div class="user__trick">
+                <img src="/static/images/<%= trick.trick.thumb %>" class="user__trick__thumb">
+                <a href="#trick/<%= trick.trick._id %>"><%= trick.trick.title %></a>
+                <span><%= trick.cones %></span>
+            </div>
+        <%}) %>
+    <% } else { %>
+        <div class="no_user__tricks">Вам пока нечем похвастаться ...</div>
+    <% } %>
+</div>
+<div class="user__data">
+    <img class="user__photo" src="<%= user.get('photo') %>" />
+    <% if (profile) { %>
+        <%= user.get('nick') %><br>
+        <%= user.get('team') %>
+    <% } else { %>
+        <input placeholder="ник" type="text" id="id_nick" name="nick" value="<%= user.get('nick') %>" />
+        <input placeholder="команда" type="text" id="id_team" name="team" value="<%= user.get('team') %>" />
+        <button type="button" class="save">Сохранить</button> <span class="save_status"><%= save_status_text %></span>
+    <% } %>
+</div>
+<br class='clear'>

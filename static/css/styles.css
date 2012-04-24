@@ -1,0 +1,146 @@
+/* Common */
+h1 {
+    font-size:28px; line-height:1.5; margin-left:10px; margin-bottom:0;
+    font-family: HelveticaNeue, 'Helvetica Neue', Helvetica, Arial, sans-serif;
+
+}
+h1 span {
+    font-size:20px; margin-left:10px; color:#D37474;
+}
+
+body {background-color:#F2F2F2;}
+
+.copyright{
+    border-top:1px solid #E8E9EB; margin-top:10px; padding:5px;
+    text-align: center;
+}
+
+.user_container {
+    position:relative; display:block; float:right; line-height:40px; margin-right:10px;
+}
+.user_container .logout {margin-left:15px;}
+.user_container .loginza img {margin-bottom:-3px;}
+
+.container {width:846px;}
+
+.feedback {position:relative; float:right; margin-right:145px; line-height:40px;}
+.feedback_holder {
+    position: absolute; display:none; width: 220px; z-index:100;
+    background: white; left: -75px; top: 42px; padding:0 15px;
+    border: 1px solid #AEAEAE; box-shadow: 0 0 5px #aeaeae;
+}
+.feedback_holder .error {border-color:red;}
+.feedback_holder .success {text-align:center; color:#4b8930;}
+.show_form .feedback_holder {display:block;}
+
+/* Main page */
+.tricks_list {
+    margin:-15px 0 0 -15px;
+}
+
+.trick {
+    position:relative; display:inline-block; width:250px; padding:10px;
+    margin:15px 0 0 15px; border:1px solid #E8E9EB; background-color:#fff;
+}
+.trick__title {
+    display:block; margin-bottom:10px; vertical-align:5px; font-weight:bolder;
+}
+.trick img {float:left; margin-right:10px;}
+
+.trick .stats__row {
+    float:left; width:120px;
+}
+
+.row__best_user {margin-top:15px; text-indent:15px;}
+.stats__row a.view_profile {
+    display:block; height:20px; overflow:hidden; text-indent:0px;
+    padding-left:15px; background:url('/static/i/king_icon.png') 0px 6px no-repeat;
+}
+.row__best_user .no_king {text-indent:0;}
+
+
+a.trick__dialog_control {
+    margin: 0;
+    float: right;
+    display: block;
+    padding: 0 2px;
+    text-decoration: none;
+    background-color: red;
+    height: 20px;
+    width: 20px;
+    text-align: center;
+    font-size: 18px;
+    color: white;
+    border-radius: 2px;
+}
+a.trick__dialog_control:hover {color:#333;}
+
+.dialog_overflow {
+    background-color: #CCC;
+    opacity: 0.9;
+    display:none;
+}
+
+.trick__dialog {
+    position: absolute;
+    height: 90px;   
+    width: 250px;
+    left: 0;    
+    padding:0 10px;
+    display:none;
+}
+
+a.dialog__close {
+    position: absolute;
+    right: 15px;
+    color: white;
+    text-decoration: none;
+}
+
+.showing_dialog .dialog_overflow,
+.showing_dialog .trick__dialog {display: block;}
+.trick__dialog .cones {width: 25px; text-align: center; margin: 0 5px; display: inline;}
+
+/* Trick full page */
+.trick__users {float:left;}
+.trick__user {
+    width:500px; height:40px; clear:both; float:none; 
+    margin-bottom:10px; background:white; line-height:35px;
+}
+.trick__user span {
+    display:block; float:left; background:#AEAEAE; text-align:center;
+    width:40px; height:40px; line-height:36px; color:white;
+}
+.trick__user__photo {height:40px; float:right; margin-left:10px;}
+.trick__user a {float:right;}
+
+.trick__user_king {background:#B55A5A;}
+.trick__user_king a {color:#fff;}
+.trick__user_king a:hover {color:#f4f4f4;}
+.no_one {padding-left:10px; width: 490px;}
+.trick__info {float:right; width:315px; background:white; padding:10px;}
+
+/* User page */
+.user {}
+.user input {margin-right:0; margin-bottom:10px;}
+.user__tricks {float:left;}
+.user__trick {
+    width:525px; line-height:30px; height:37px;
+    margin-left:10px; margin-bottom:12px; clear:both;
+    vertical-align:middle; background:white;
+}
+.user__trick__thumb {width:50px; float:left; margin-right:10px;}
+.user__trick a {vertical-align: middle;}
+.user__trick span {
+    display:block; float:right; background:#AEAEAE; text-align:center;
+    width:30px; height:31px; padding:3px 10px; color:white; margin-left:10px;
+}
+
+.user__data {
+    float:right; margin-left:0; margin-right:0; padding:10px; background:#fff;
+    width:280px;
+}
+.no_user__tricks {margin-left:10px; padding:20px 0;}
+.user__photo {float:right; width:50px; margin-left:10px;}
+.save_status.done {color:green;}
+.save_status.error {color:red;}

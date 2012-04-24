@@ -1,0 +1,6 @@
+Flask==dev
+mongokit
+simplejson
+pytils
+Flask-Assets
+Flask-Mail

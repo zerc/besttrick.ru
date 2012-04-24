@@ -1,0 +1,9 @@
+<label for="id_text">Текст сообщения</label>
+<textarea id="id_text" placeholder="Замечания, пожелания, хвала или порицание"></textarea>
+<% if (user) { %>
+    <input type="hidden" id="user_id" value="<%= user['id'] %>">
+<% } else { %>
+    <input type="text" id="id_contact" placeholder="Как с вами связаться">
+<% } %>
+<input type="hidden" id="more_info" value="<%= browser_info() %>">
+<button>Отправить отзыв</button>

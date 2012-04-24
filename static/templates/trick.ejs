@@ -1,0 +1,28 @@
+<a class="trick__title" href="#trick/<%= id %>"><%= title %></a>
+
+<div class="trick__dialog dialog_overflow"></div>
+<div class="trick__dialog">
+    <a href="#" bind="toggle_dialog" class="dialog__close">x</a>
+    <label for="dialog__cones">Сколько банок?</label>
+    <p>На <input type="text" id="dialog__cones" class="text cones" value="<%= cones %>" />
+    <a href="#" bind="save" class="dialog__save">делаю</a>!</p>
+</div>
+
+<img src="/static/images/<%= thumb %>" alt="<%= title %>" />
+
+<div class="stats__row">
+    делают: <%= users %>
+    <% if (user_id !== false) { %>
+        <a class="trick__dialog_control" href="#" bind="toggle_dialog">+</a>
+    <% } %>
+</div>
+<div class="stats__row row__best_user">
+    <% if (best_user) { %>
+        <a href="#profile-<%= best_user._id %>" class="view_profile"><%= best_user.nick %></a> 
+        <%= plural(best_user_cones, 'банка', 'банки', 'банок') %>
+    <% } else { %>
+        <div class="no_king">место короля свободно ...</div>
+    <% } %>
+</div>
+
+<br class="clearfix">

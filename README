@@ -1,0 +1,8 @@
+== INSTALL ==
+Req:
+    pip, virtualenv
+
+Do:
+    $ virtualenv venv --distribute
+    $ . venv/bin/activate
+    $ pip install -r pip.req
