@@ -1,5 +1,5 @@
 <% if (user) { %>
     <a href="#" class="my"><%= user.nick %></a> <a href="/logout/" class="logout">Выйти</a>
 <% } else { %>
-    Войти с помощью: <a href="https://loginza.ru/api/widget?token_url=http://localhost:8000/login/&providers_set=vkontakte,twitter,facebook" class="loginza"><img src="http://loginza.ru/img/providers/vkontakte.png" alt="Вконтакте" title="Вконтакте"><img src="http://loginza.ru/img/providers/twitter.png" alt="Twitter" title="Twitter"><img src="http://loginza.ru/img/providers/facebook.png" alt="Facebook" title="Facebook"></a>
+    Войти с помощью: <a href="https://loginza.ru/api/widget?token_url=http://<%= location.host %>/login/&providers_set=vkontakte,twitter,facebook" class="loginza"><img src="http://loginza.ru/img/providers/vkontakte.png" alt="Вконтакте" title="Вконтакте"><img src="http://loginza.ru/img/providers/twitter.png" alt="Twitter" title="Twitter"><img src="http://loginza.ru/img/providers/facebook.png" alt="Facebook" title="Facebook"></a>
 <% } %>
