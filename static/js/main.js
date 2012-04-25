@@ -48,7 +48,8 @@ window.app = function (tricks, user) {
             _id         : '',
             title       : '',
             thumb       : '',
-            video       : '',
+            videos      : [],
+            descr       : '',
             score       : 0,
             wssa_score  : 0,
 
@@ -113,6 +114,8 @@ window.app = function (tricks, user) {
             if (this.model.hasChanged() && this.model.isValid()) {
                 this.model.save();
             }
+
+            this.toggle_dialog();
         }
     });
 
@@ -148,6 +151,7 @@ window.app = function (tricks, user) {
     }); 
 
     TricksList = Backbone.Collection.extend({
+        url: '/?json=tricks',
         model: Trick
     });
 
@@ -366,6 +370,7 @@ window.app = function (tricks, user) {
     App = Backbone.Router.extend({
         routes: {
             ''                          : 'index',
+            '!'                         : 'fresh_index',
             'u:user_id/'                : 'my',
             'trick/:trick'              : 'trick',
             'profile-:user_id'          : 'profile'
@@ -388,6 +393,11 @@ window.app = function (tricks, user) {
             window.document.title = 'Besttrick';
             $('h1 span').text('');
             this.tricksView.render();
+        },
+
+        fresh_index: function () {
+            this.tricksView.collection.fetch();
+            this.index();
         },
 
         profile: function (user_id) {

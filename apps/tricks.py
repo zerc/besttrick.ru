@@ -18,7 +18,8 @@ class Trick(Document):
     structure = {
         'title'      : unicode,
         'thumb'      : unicode,
-        'video'      : unicode,
+        'videos'     : [unicode],
+        'descr'      : unicode,
         'score'      : float,
         'wssa_score' : float,
     }
@@ -39,6 +40,8 @@ class TrickUser(Document):
         'time_added' : datetime,
     }
 
+    indexes = [{'fields':['user', 'trick']}]
+
     default_values  = {'cones': 0, 'approved': False, 'time_added': datetime.now}
     required_fields = ['user', 'trick']
 connection.register([TrickUser])
@@ -50,6 +53,7 @@ def trick_full(trick_id):
     """ Лучшие пользователи по этому трюку """
     rows = grouped_stats('user', {'trick': trick_id})
     return json.dumps(sorted(rows, key=lambda x: x['cones'], reverse=True))
+
 
 @app.route('/trick/', methods=['PUT'])
 def trick():
@@ -80,4 +84,30 @@ def trick():
         trick_user['cones'] = int(trick_data['cones'])
         trick_user.save()
 
-    return request.data
+    # TODO: срефакторить это в универсальную функциюю, так как
+    # нечто подобное используется на главной
+    # Проверим не изменился ли король этого трюка
+    # лучшие результаты по трюкам + общее число делающих пользователей
+    reduce_func = u"""
+    function(obj, prev) {
+        if (prev.best_user_cones < obj.cones) {
+            prev.best_user_cones = obj.cones;
+            prev.best_user_id = obj.user;
+        }
+        prev.users += 1;
+    }"""
+    best_result = db.trick_user.group(['trick'], {'trick': trick_data['_id']}, {'best_user_cones': 0, 'best_user_id': '', 'users': 0, 'can_mark': not not user_id}, reduce_func)[0]
+    trick_data.update(best_result)
+    trick_data['best_user'] = db.user.find_one({'_id': best_result['best_user_id']})
+
+    return json.dumps(trick_data)
+
+
+@app.route('/tricks/', methods=['GET'])
+def tricks_list():
+    def _path(trick):
+        trick['id'] = trick.pop('_id')
+        return trick
+
+    tricks = map(_path, db.trick.find())
+    return json.dumps(tricks)

@@ -3,11 +3,13 @@ from mongokit import Connection
 from flask import Flask
 from flaskext.mail import Mail, email_dispatched
 from flask.ext.assets import Environment, Bundle
-
+from flaskext.markdown import Markdown
 
 app = Flask(__name__)
 app.root_path = '/'.join(app.root_path.split('/')[:-1])
 app.config.from_object('project.settings')
+
+markdown = Markdown(app)
 
 connection = Connection(app.config['MONGODB_HOST'], app.config['MONGODB_PORT'])
 db = connection.besttrick

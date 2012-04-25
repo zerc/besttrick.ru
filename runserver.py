@@ -2,11 +2,11 @@
 # -*- coding: utf-8 -*-
 import simplejson as json
 
-from flask import g, Flask, render_template, request, session
+from flask import g, Flask, render_template, request, session, make_response
 from flaskext.mail import Message, email_dispatched
 from mongokit import Connection
 
-from project import app, connection, db, mail
+from project import app, connection, db, mail, markdown
 from apps import tricks, users
 
 
@@ -14,11 +14,15 @@ from apps import tricks, users
 def index():
     context, user = {'user': False}, False
     user_id = session.get('user_id', False)
+    json_field = request.args.get('json', False)
+
+    def _dumps(d):
+        return d if json_field else json.dumps(d)
 
     if user_id is not False:
         user = db.user.find_one({'_id': user_id})
         user['id'] = user.pop('_id')
-        context = {'user': json.dumps(user)}
+        context = {'user': _dumps(user)}
 
     tricks = list(db.trick.find())
 
@@ -66,9 +70,18 @@ def index():
         except KeyError:
             trick.update({'cones': 0})
 
-    context['tricks'] = json.dumps(tricks)
+        trick['descr'] = markdown(trick['descr'])
 
-    return render_template('index.html', **context)
+    context['tricks'] = _dumps(tricks)
+
+    if json_field:
+        r = json.dumps(context[json_field])
+    else:
+        r = render_template('index.html', **context)
+
+    response = make_response(r)
+    response.headers['X-Frame-Options'] = 'SAMEORIGIN'
+    return response
 
 
 @app.route('/feedback/', methods=['POST'])

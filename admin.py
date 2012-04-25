@@ -6,7 +6,7 @@ from optparse import OptionParser
 
 from apps.users import User
 from apps.tricks import Trick
-from project import connection
+from project import connection, db
 
 parser = OptionParser(u"Admin scripts for besttrick app")
 
@@ -32,27 +32,48 @@ def toggle_admin(options):
 
 def import_tricks(options):
     """ Import trick to mongo. Run: admin.py import_tricks """
-    static_dir = 'static/images/'
-
     tricks = [
-        {"title": u"Parallel", "thumb": u"4.jpg",},
-        {"title": u"Monoline"},
-        {"title": u"Criss-cross"},
-        {"title": u"One foot forward"},
-        {"title": u"One foot backward"},
+        {
+            "title": u"Seven", 
+            "videos": [u"http://www.youtube.com/embed/-8O-z3vO2xs"],
+            "descr": 
+            u"""
+Вращение на одном колесе с продвижением по банками.
+
+Выполняется на тое или хиле.
+            """,
+        },
+        {
+            "title": u"No wiper",
+            "videos": [u"http://www.youtube.com/embed/RQeEDR7j0uc"],
+            "descr": u"""
+Также называется Toe shift.
+
+Может выполнятся как на внутреннем, так и на внешнем ребре.
+            """,
+        },
+        {
+            "title": u"Foot spin",
+            "videos": [u"http://www.youtube.com/embed/Q9fTQOopwF8"],
+            "descr": u"""Можно рассматривать как подготовоку к Day Night :)"""
+        },
     ]
 
-    for trick in tricks:
-        t = connection.Trick.find_one({'title': trick['title']})
-        if t:
-            connection.besttrick.trick.update({'_id': t['_id']}, {'$set': trick})
-            continue
+    def _update(trick):
+        _id = slugify(trick['title'])
+        
+        t = connection.Trick.find_one({'_id': _id})
+        if t: return db.trick.update({'_id': _id}, {'$set': trick})
 
         t = connection.Trick()
         t.update(trick)
-        t['_id'] = slugify(trick['title'])
-        #t['thumb'] = static_dir + t['thumb']
+        t['_id'] = _id
+        t['thumb'] = u'%s.jpg' % _id
         t.save()
+
+    map(_update, tricks)
+
+
 
 def clean_db(options):
     tricks = connection.Trick.find()

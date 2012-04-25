@@ -2,13 +2,16 @@
 # -*- coding: utf-8 -*-
 ADMINS = ['zero13cool@yandex.ru']
 
-MONGODB_HOST = 'localhost'
-MONGODB_PORT = 27017
-MONGODB_DB   = 'besttrick'
-SECRET_KEY = '1dasd2dd44fas'
-DEBUG = True
+DEBUG        = True
 ASSETS_DEBUG = True
 
+MONGODB_DB   = 'source'
+MONGODB_HOST = 'localhost'
+MONGODB_PORT = 27017
+
+FLASK_HOSTS = ['test@host.com']
+
+SECRET_KEY   = 'set_unique_value'
 
 DEFAULT_MAIL_SENDER = 'root@besttrick.ru'
 # MAIL_SERVER : default ‘localhost’

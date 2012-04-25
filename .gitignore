@@ -3,4 +3,5 @@ venv
 .webassets-cache
 *.sublime-project
 *.sublime-workspace
+project/settings.py
 

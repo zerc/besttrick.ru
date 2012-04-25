@@ -21,11 +21,13 @@
 
     <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
 
-    {% assets "js_all" %}
-        <script type="text/javascript" src="{{ ASSET_URL }}"></script>
-    {% endassets %}
+    {% if 'bt_open' in request.cookies %}
+        {% assets "js_all" %}
+            <script type="text/javascript" src="{{ ASSET_URL }}"></script>
+        {% endassets %}
 
-    <script src="http://loginza.ru/js/widget.js" type="text/javascript"></script>
+        <script src="http://loginza.ru/js/widget.js" type="text/javascript"></script>
+    {% endif %}
 
 
     <!-- Favicons
@@ -38,27 +40,42 @@
     -->
 </head>
 <body>
-
     <div class="container">
+        {% if 'bt_open' in request.cookies %}
+            <div class="user_container"></div>
+            <div class="feedback">
+                <a href="#">Оставь совет</a>
+                <div class="feedback_holder"></div>
+            </div>
+        {% endif %}
+        <h1><a href="#!">BestTrick</a><span></span></h1>
 
-        <div class="user_container"></div>
-        <div class="feedback">
-            <a href="#">Оставь совет</a>
-            <div class="feedback_holder"></div>
+        <div class="content">
+            {% if 'bt_open' not in request.cookies %}
+            <p>
+                Проект находится в закрытом тестировании, и в ближайшее время 
+                будет готов явить себя миру.
+            </p>
+
+            <p>
+                Запаситесь терпением и приходите через пару дней - вдруг
+                мы уже откроемся?
+            </p>
+            {% endif %}
         </div>
-        <h1><a href="#">BestTrick</a><span></span></h1>
-
-        <div class="content"></div>
-
+        
         <div class="copyright">
             <a href="http://www.zerc.ru/" target="_blank">zerc</a>, 2012
         </div>
     </div>
     
+
+    {% if 'bt_open' in request.cookies %}
     <script type="text/javascript">
         (function () {
             new window.app({{ tricks|safe }}, {{ user|safe if user != False else 'false' }});
         }());
     </script>
+    {% endif %}
 </body>
 </html>
