@@ -1,0 +1,102 @@
+#!/bin/bash
+
+# uwsgi - Use uwsgi to run python and wsgi web apps.
+#
+# chkconfig: - 85 15
+# description: Use uwsgi to run python and wsgi web apps.
+# processname: uwsgi
+
+PATH=/opt/uwsgi:/sbin:/bin:/usr/sbin:/usr/bin
+DAEMON=/usr/local/bin/uwsgi
+
+OWNER=bt
+WORKDIR=/home/bt/www
+
+NAME=bt_uwsgi
+DESC=bt_uwsgi
+
+test -x $DAEMON || exit 0
+
+# Include uwsgi defaults if available
+if [ -f /etc/default/uwsgi ] ; then
+	. /etc/default/uwsgi
+fi
+
+set -e
+
+get_pid() {
+    if [ -f /var/run/$NAME.pid ]; then
+        echo `cat /var/run/$NAME.pid`
+    fi
+}   
+
+DAEMON_OPTS="--pidfile /var/run/$NAME.pid -s /tmp/$NAME.sock -d /home/bt/logs/$NAME.log --workers 6 --listen 512 --buffer-size 32768 --chmod --master --reload-mercy 30 --max-requests 5000 --socket-timeout 180 --virtualenv /home/bt/www/venv -w runserver:app"
+
+case "$1" in
+  start)
+	echo -n "Starting $DESC: "
+        PID=$(get_pid)
+        if [ -z "$PID" ]; then
+            [ -f /var/run/$NAME.pid ] && rm -f /var/run/$NAME.pid
+
+            touch /var/run/$NAME.pid                                         
+            chown $OWNER:$OWNER /var/run/$NAME.pid
+	    if [ `whoami` = "bt" ]; then
+        	sh -c "cd $WORKDIR; $DAEMON $DAEMON_OPTS"
+  	    else
+        	su $OWNER -c "cd $WORKDIR; $DAEMON $DAEMON_OPTS"
+   	    fi
+
+	    echo "$NAME."
+        fi
+
+	;;
+  stop)
+	echo -n "Stopping $DESC: "
+        PID=$(get_pid)
+        [ ! -z "$PID" ] && kill -s 3 $PID &> /dev/null
+        if [ $? -gt 0 ]; then
+            echo "was not running" 
+            exit 1
+        else 
+	    echo "$NAME."
+            rm -f /var/run/$NAME.pid &> /dev/null
+        fi
+	;;
+  reload)
+        echo "Reloading $NAME" 
+        PID=$(get_pid)
+        [ ! -z "$PID" ] && kill -s 1 $PID &> /dev/null
+        if [ $? -gt 0 ]; then
+            echo "was not running" 
+            exit 1
+        else 
+	    echo "$NAME."
+        fi
+	;;
+  force-reload)
+        echo "Reloading $NAME" 
+        PID=$(get_pid)
+        [ ! -z "$PID" ] && kill -s 15 $PID &> /dev/null
+        if [ $? -gt 0 ]; then
+            echo "was not running" 
+            exit 1
+        else 
+	    echo "$NAME."
+        fi
+        ;;
+  restart)
+        $0 stop
+        sleep 2
+        $0 start
+	;;
+  status)  
+	killall -10 $DAEMON
+	;;
+      *)  
+	    N=/etc/init.d/$NAME
+	    echo "Usage: $N {start|stop|restart|reload|force-reload|status}" >&2
+	    exit 1
+	    ;;
+    esac
+    exit 0
