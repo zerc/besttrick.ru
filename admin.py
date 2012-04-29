@@ -30,13 +30,45 @@ def toggle_admin(options):
     print user
 
 
+# Список трюков вынести в отдельный файл, типа "дамп базы"
 def import_tricks(options):
     """ Import trick to mongo. Run: admin.py import_tricks """
     tricks = [
         {
-            "title": u"Seven", 
+            "title": u"Toe Machine",
+            "videos": [u"http://www.youtube.com/embed/Q5qFX8YPtaU"],
+            "descr": u"""Трюк так же известен как Швейная машинка.""",
+        },
+        {
+            "title": u"Day Night",
+            "videos": [u"http://www.youtube.com/embed/vRb0PAeBe2g"],
+            "descr": u"""Своеобразный ответ на No Wiper. Выполняется как хиле, так и на тое.""",
+        },
+        {
+            # TODO: добавить видео с неполным приседом
+            "title": u"Footgun Toe",
+            "videos": [u"http://www.youtube.com/embed/m2JPr2geQxA"],
+            "descr": u"""Пистолет на переднем колесе. Существуют варианты с полном приседом, и с коленом под прямым углом.""",
+        },
+        {
+            "title": u"OneWheel Heel",
+            "videos": [u"http://www.youtube.com/embed/okiGOwGfhY0"],
+            "descr": u"""Езда на заднем колесе (heel) лицом вперед.""",
+        },
+        {
+            "title": u"Confraglide",
+            "videos": [u"http://www.youtube.com/embed/F6897UqZBw8"],
+            "descr": u"""В русском слаломе, трюк так же известен как Бабочка.""",
+        },
+        {
+            "title": u"Cobra Back",
+            "videos": [u"http://www.youtube.com/embed/P_gyByoM4qg"],
+            "descr": u"""Кобра спиной вперед. """,
+        },
+        {
+            "title": u"Seven",
             "videos": [u"http://www.youtube.com/embed/-8O-z3vO2xs"],
-            "descr": 
+            "descr":
             u"""
 Вращение на одном колесе с продвижением по банками.
 
@@ -61,7 +93,7 @@ def import_tricks(options):
 
     def _update(trick):
         _id = slugify(trick['title'])
-        
+
         t = connection.Trick.find_one({'_id': _id})
         if t: return db.trick.update({'_id': _id}, {'$set': trick})
 
@@ -88,6 +120,6 @@ if __name__ == "__main__":
         if not hasattr(sys.modules[__name__], label):
             print '>> Function %s does not exists' % label
             continue
-        
+
         getattr(sys.modules[__name__], label)(options)
 

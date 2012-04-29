@@ -51,7 +51,7 @@
         {% endif %}
         <h1><a href="#!">BestTrick</a><span></span></h1>
 
-        <div class="content">
+        <div class="content {% if 'bt_open' not in request.cookies %}closed{% endif %}">
             {% if 'bt_open' not in request.cookies %}
             <p>
                 Проект находится в закрытом тестировании, и в ближайшее время 
