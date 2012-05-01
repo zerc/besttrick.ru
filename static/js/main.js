@@ -59,10 +59,10 @@ window.app = function (tricks, user) {
             score       : 0,
             wssa_score  : 0,
 
-            can_mark    : true,  // может ли пользователь отметится
-            users       : 0,     // сколько пользователей делает этот трюк
-            cones       : 0,
-            best_user   : '',
+            user_do_this : false, // делает ли пользователь этот трюк
+            users        : 0,     // сколько пользователей делает этот трюк
+            cones        : 0,
+            best_user    : '',
             best_user_cones : 0,
             users_full  : []
         },
@@ -91,6 +91,11 @@ window.app = function (tricks, user) {
             var context = this.model.attributes;
             context.user_id = user ? user.id : false;
             this.$el.html(this.template.render(context));
+            console.log(this.model.get('user_do_this'));
+            if (this.model.get('user_do_this')) {
+                this.$el.addClass('user_do_this');
+            }
+
             return this;
         },
 
@@ -113,7 +118,7 @@ window.app = function (tricks, user) {
             var cones = parseInt(this.$el.find('#dialog__cones').val(), 10);
             
             this.model.set('cones', cones, {silent: true});
-            if (this.model.get('can_mark')) {
+            if (!this.model.get('user_do_this')) {
                 this.model.set('users', this.model.get('users')+1, {silent: true});
             }
 

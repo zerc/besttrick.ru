@@ -108,6 +108,12 @@ a.dialog__close {
 .showing_dialog .dialog_overflow,
 .showing_dialog .trick__dialog {display: block;}
 .trick__dialog .cones {width: 25px; text-align: center; margin: 0 5px; display: inline;}
+.user_do_this {background-color:#fdecdd;}
+.user_do_this .user_do_this_icon {display:block}
+.user_do_this_icon {
+    display:none; background:url('/static/i/common.png') 0px -45px no-repeat;
+    width:10px; height:10px; position:absolute; top:15px; right:15px;
+}
 
 /* Trick full page */
 .trick__users {float:left;}

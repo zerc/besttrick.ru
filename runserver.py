@@ -37,14 +37,14 @@ def index():
 
         %s
         
-    }""" % (("if (obj.user === %s) { prev.can_mark = false; }" % user_id) if user_id is not False else '')
-    best_users_qs = db.trick_user.group(['trick'], None, {'best_user_cones': 0, 'best_user_id': '', 'users': 0, 'can_mark': not not user_id}, reduce_func)
+    }""" % (("if (obj.user === %s) { prev.user_do_this = true; }" % user_id) if user_id is not False else '')
+    best_users_qs = db.trick_user.group(['trick'], None, {'best_user_cones': 0, 'best_user_id': '', 'users': 0, 'user_do_this': False}, reduce_func)
     best_users = {}
-    default = {'can_mark': False}
+    default = {'user_do_this': False}
     for x in best_users_qs:
         k = x.pop(u'trick')
         best_users[k] = dict(default, **x)
-        best_users[k]['best_user'] = db.user.find_one({'_id': best_users[k]['best_user_id']}) #['nick']
+        best_users[k]['best_user'] = db.user.find_one({'_id': best_users[k]['best_user_id']})
 
 
     # результат пользователя
@@ -78,7 +78,7 @@ def index():
         r = json.dumps(context[json_field])
     else:
         r = render_template('index.html', **context)
-
+    print context
     response = make_response(r)
     response.headers['X-Frame-Options'] = 'SAMEORIGIN'
     return response
