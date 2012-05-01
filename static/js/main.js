@@ -1,6 +1,12 @@
 /*global jQuery, window, document */
 /*jslint nomen: true, maxerr: 50, indent: 4 */
 
+// если в имени пользователя больше двух слов - первое выводим полностью, а второе сокращаем
+EJS.Helpers.prototype.format_username = function (username) {
+    var parts = username.trim().split(' ');
+    return parts[1] ? parts[0] + ' ' + parts[1].charAt(0).toUpperCase() + '.' : parts[0];
+}
+
 EJS.Helpers.prototype.row_if_exists = function (row, label) {
     if (row) {
         return '<p><strong>' + label + ':</strong> ' + row + '</p>';
@@ -91,7 +97,6 @@ window.app = function (tricks, user) {
             var context = this.model.attributes;
             context.user_id = user ? user.id : false;
             this.$el.html(this.template.render(context));
-            console.log(this.model.get('user_do_this'));
             if (this.model.get('user_do_this')) {
                 this.$el.addClass('user_do_this');
             }

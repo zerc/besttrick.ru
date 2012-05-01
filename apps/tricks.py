@@ -99,7 +99,8 @@ def trick():
     best_result = db.trick_user.group(['trick'], {'trick': trick_data['_id']}, {'best_user_cones': 0, 'best_user_id': '', 'users': 0, 'can_mark': not not user_id}, reduce_func)[0]
     trick_data.update(best_result)
     trick_data['best_user'] = db.user.find_one({'_id': best_result['best_user_id']})
-
+    trick_data['user_do_this'] = True
+    
     return json.dumps(trick_data)
 
 
