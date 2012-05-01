@@ -22,7 +22,7 @@
 
     <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
 
-    {% if 'bt_open' in request.cookies %}
+    {% if 'bt_open' in request.cookies or config.DEBUG  %}
         {% assets "js_all" %}
             <script type="text/javascript" src="{{ ASSET_URL }}"></script>
         {% endassets %}
@@ -42,7 +42,7 @@
 </head>
 <body>
     <div class="container">
-        {% if 'bt_open' in request.cookies %}
+        {% if 'bt_open' in request.cookies or config.DEBUG %}
             <div class="user_container"></div>
             <div class="feedback">
                 <a href="#">Оставь совет</a>
@@ -51,8 +51,8 @@
         {% endif %}
         <h1><a href="#!">BestTrick</a><span></span></h1>
 
-        <div class="content {% if 'bt_open' not in request.cookies %}closed{% endif %}">
-            {% if 'bt_open' not in request.cookies %}
+        <div class="content {% if 'bt_open' not in request.cookies and not config.DEBUG %}closed{% endif %}">
+            {% if 'bt_open' not in request.cookies or config.DEBUG  %}
             <p>
                 Проект находится в закрытом тестировании, и в ближайшее время 
                 будет готов явить себя миру.
@@ -71,7 +71,7 @@
     </div>
     
 
-    {% if 'bt_open' in request.cookies %}
+    {% if 'bt_open' in request.cookies or config.DEBUG  %}
     <script type="text/javascript">
         (function () {
             new window.app({{ tricks|safe }}, {{ user|safe if user != False else 'false' }});
