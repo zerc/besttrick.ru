@@ -38,6 +38,29 @@ def import_tricks(options):
     """ Import trick to mongo. Run: admin.py import_tricks """
     tricks = [
         {
+            "title": u"Kazachok",
+            "videos": [u"http://www.youtube.com/embed/JxJvchXvQAg"],
+            "descr": u"""В лучших русских традициях.""",
+        },
+        {
+            "title": u"Korean Spin toe-toe",
+            "videos": [u"http://www.youtube.com/embed/Bby-06T_Vxo"],
+            "thumb": u"2",
+            "descr": u"""Отвертка на передних колесах.""",
+        },
+        {
+            "title": u"Russian Spin toe-toe",
+            "videos": [u"http://www.youtube.com/embed/gfkJAcz2Vgs"],
+            "thumb": u"3",
+            "descr": u"""Русский вольт на передних колесах.""",
+        },
+        {
+            "title": u"Chicken Leg Toe Backward",
+            "videos": [u"http://www.youtube.com/embed/rYLMXZfTWCM"],
+            "thumb": u"2",
+            "descr": u"""В русском слаломе трюк известен как **Бэк факир на тое с грэбом.**""",
+        },
+        {
             "title": u"Toe Machine",
             "videos": [u"http://www.youtube.com/embed/Q5qFX8YPtaU"],
             "descr": u"""Трюк так же известен как Швейная машинка.""",

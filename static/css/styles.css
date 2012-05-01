@@ -105,6 +105,8 @@ a.dialog__close {
     text-decoration: none;
 }
 
+.trick__thumb {width:120px; height:90px;}
+
 .showing_dialog .dialog_overflow,
 .showing_dialog .trick__dialog {display: block;}
 .trick__dialog .cones {width: 25px; text-align: center; margin: 0 5px; display: inline;}
