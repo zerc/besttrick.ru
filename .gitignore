@@ -5,4 +5,5 @@ venv
 *.sublime-workspace
 project/settings.py
 pip-log.txt
+static/images/
 
