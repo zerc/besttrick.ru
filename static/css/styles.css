@@ -158,6 +158,9 @@ a.dialog__close {
     float:right; margin-left:0; margin-right:0; padding:10px; background:#fff;
     width:280px;
 }
+.user__data button.save {
+    margin-bottom:0;
+}
 .no_user__tricks {margin-left:10px; padding:20px 0;}
 .user__photo {float:right; width:50px; margin-left:10px;}
 .save_status.done {color:green;}

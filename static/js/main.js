@@ -291,7 +291,13 @@ window.app = function (tricks, user) {
             photo    : '',
             admin    : '',
             identity : '',
-            provider : ''
+            provider : '',
+            email    : '',
+            city     : '',
+            icq      : '',
+            skype    : '',
+            phone    : '',
+            bio      : ''
         },
 
         validate: function (attrs) {
@@ -331,7 +337,7 @@ window.app = function (tricks, user) {
         },
 
         update_data: function () {
-            var data = $(this.el).find('input'),
+            var data = this.$el.find('input, textarea'),
                 self = this,
                 show_save_status;
 

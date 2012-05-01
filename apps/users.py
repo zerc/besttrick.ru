@@ -7,26 +7,72 @@ from flask import render_template, request, jsonify, session, redirect, url_for
 from project import app, connection, db
 from .utils import grouped_stats
 
+def get_field(d, field_name):
+    """ Использует точечную нотацию в имени поля, для работы со вложенными словарями """
+    parts = field_name.split('.')
+    value = d.get(parts[0], u'')
 
-### Models            # me    # loginza
-LOGINZA_FIELDS_MAP = {'nick': 'nickname'}
+    if not isinstance(value, dict):
+        return value
+
+    for part in parts[1:]:
+        try:
+            value = value[part]
+        except KeyError:
+            return ''
+    return value
+
+
+### Models            
+LOGINZA_FIELDS_MAP = {
+    # me            # loginza
+    'icq'           : 'im.icq',
+    'nick'          : 'nickname',
+    'city'          : 'address.home.city',
+    'phone'         : 'phone.preferred',
+    'skype'         : 'im.skype',
+    'full_name'     : 'name.full_name',
+    'bio'           : 'biography',
+}
+
+class UserMigration(DocumentMigration):
+    def migration01__add_some_fields(self):
+        self.target = {'email':{'$exists':False}}
+        self.update = {'$set':{
+            'email'     : unicode,
+            'full_name' : unicode,
+            'city'      : unicode,
+            'icq'       : unicode,
+            'skype'     : unicode,
+            'phone'     : unicode,
+            'bio'       : unicode,
+        }}
+
 class User(Document):
     __database__     = app.config['MONGODB_DB']
     __collection__   = u'user'
     use_dot_notation = True
 
     structure = {
-        'admin'    : int,
-        'identity' : unicode,
-        'provider' : unicode,
-        'nick'     : unicode,
-        
-        'uid'      : unicode,
-        'team'     : unicode,
-        'photo'    : unicode,
+        'admin'     : int,
+        'identity'  : unicode,
+        'provider'  : unicode,
+        'nick'      : unicode,
+
+        'email'     : unicode,
+        'full_name' : unicode,
+        'city'      : unicode,
+        'icq'       : unicode,
+        'skype'     : unicode,
+        'phone'     : unicode,
+        'uid'       : unicode,
+        'team'      : unicode,
+        'photo'     : unicode,
+        'bio'       : unicode,
     }
     default_values  = {'admin': 0}
     required_fields = ['identity', 'provider', 'nick']
+    migration_handler = UserMigration
 connection.register([User])
 db.seqs.insert({'_id': 'user_seq',  'val': 0})
 
@@ -39,8 +85,11 @@ def register(user_data):
 
     new_user = connection.User()
     for k, t in User.structure.items():
+        if k == 'admin':
+            continue
+
         try:
-            new_user[k] = t(user_data[LOGINZA_FIELDS_MAP.get(k, k)])
+            new_user[k] = t(get_field(user_data, LOGINZA_FIELDS_MAP.get(k, k)))
         except KeyError:
             continue
 
