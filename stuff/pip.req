@@ -5,3 +5,4 @@ pytils
 Flask-Assets
 Flask-Mail
 Flask-Markdown
+fabric

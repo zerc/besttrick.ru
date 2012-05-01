@@ -1,6 +1,12 @@
 /*global jQuery, window, document */
 /*jslint nomen: true, maxerr: 50, indent: 4 */
 
+EJS.Helpers.prototype.row_if_exists = function (row, label) {
+    if (row) {
+        return '<p><strong>' + label + ':</strong> ' + row + '</p>';
+    }
+};
+
 EJS.Helpers.prototype.set_title = function (title) {
     $('h1 span').text(title);
     window.document.title = 'Besttrick - ' + title;
@@ -297,7 +303,9 @@ window.app = function (tricks, user) {
             icq      : '',
             skype    : '',
             phone    : '',
-            bio      : ''
+            bio      : '',
+            rolls    : '',
+            epxs     : ''
         },
 
         validate: function (attrs) {

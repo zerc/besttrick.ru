@@ -48,6 +48,14 @@ class UserMigration(DocumentMigration):
             'bio'       : unicode,
         }}
 
+    def migration02__add_rolls_and_exps_feilds(self):
+        self.target = {'rolls':{'$exists':False}}
+        self.update = {'$set': {
+            'rolls': unicode,
+            'epxs': unicode,
+        }}
+
+
 class User(Document):
     __database__     = app.config['MONGODB_DB']
     __collection__   = u'user'
@@ -69,6 +77,8 @@ class User(Document):
         'team'      : unicode,
         'photo'     : unicode,
         'bio'       : unicode,
+        'rolls'     : unicode,
+        'epxs'      : unicode,
     }
     default_values  = {'admin': 0}
     required_fields = ['identity', 'provider', 'nick']
