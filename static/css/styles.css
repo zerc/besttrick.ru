@@ -10,6 +10,8 @@ h1 span {
 
 body {background-color:#F2F2F2;}
 
+body .as_block {display:block;}
+
 .copyright{
     border-top:1px solid #E8E9EB; margin-top:10px; padding:5px;
     text-align: center;
@@ -83,15 +85,15 @@ a.trick__dialog_control:hover {color:#333;}
 
 .dialog_overflow {
     background-color: #CCC;
-    opacity: 0.9;
+    opacity: 0.96;
     display:none;
 }
 
 .trick__dialog {
     position: absolute;
     height: 90px;   
-    width: 250px;
-    left: 0;    
+    width: 230px;
+    left: 10px;    
     padding:0 10px;
     display:none;
 }
@@ -124,7 +126,17 @@ a.dialog__close {
 .trick__user_king a {color:#fff;}
 .trick__user_king a:hover {color:#f4f4f4;}
 .no_one {padding-left:10px; width: 490px;}
-.trick__info {float:right; width:315px; background:white; padding:10px;}
+.trick__info {position:relative; float:right; width:315px; background:white; padding:10px;}
+
+.trick_video_preview img {
+    width:315px; height:190px;
+}
+
+.trick_video_preview_button {
+    width:25px;height:25px;position:absolute;left:155px;top:90px;
+    background:#CCC url('/static/i/common.png') 9px -14px no-repeat;
+    border:1px solid #333;border-radius:5px;
+}
 
 /* User page */
 .user {}

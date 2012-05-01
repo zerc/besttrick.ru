@@ -23,7 +23,7 @@ class Trick(Document):
         'score'      : float,
         'wssa_score' : float,
     }
-    default_values  = {'thumb': u'0.jpg', 'score': 1.0, 'wssa_score': 0.0}
+    default_values  = {'thumb': u'3', 'score': 1.0, 'wssa_score': 0.0}
     required_fields = ['title']
 connection.register([Trick])
 

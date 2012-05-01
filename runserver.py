@@ -9,7 +9,7 @@ from mongokit import Connection
 from project import app, connection, db, mail, markdown
 from apps import tricks, users
 
-
+        
 @app.route('/')
 def index():
     context, user = {'user': False}, False

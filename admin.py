@@ -1,12 +1,14 @@
 #!venv/bin/python
 # -*- coding: utf-8 -*-
 import sys
+import urllib
+from os.path import join as path_join
 from pytils.translit import slugify
 from optparse import OptionParser
 
 from apps.users import User
 from apps.tricks import Trick
-from project import connection, db
+from project import connection, db, app
 
 parser = OptionParser(u"Admin scripts for besttrick app")
 
@@ -31,6 +33,7 @@ def toggle_admin(options):
 
 
 # Список трюков вынести в отдельный файл, типа "дамп базы"
+parser.add_option("-t", "--update_thumbs", dest="update_thumbs", help="update_thumbs ?", action="store_true")
 def import_tricks(options):
     """ Import trick to mongo. Run: admin.py import_tricks """
     tricks = [
@@ -47,11 +50,13 @@ def import_tricks(options):
         {
             # TODO: добавить видео с неполным приседом
             "title": u"Footgun Toe",
+            "thumb": u"2",
             "videos": [u"http://www.youtube.com/embed/m2JPr2geQxA"],
             "descr": u"""Пистолет на переднем колесе. Существуют варианты с полном приседом, и с коленом под прямым углом.""",
         },
         {
             "title": u"OneWheel Heel",
+            "thumb": u"2",
             "videos": [u"http://www.youtube.com/embed/okiGOwGfhY0"],
             "descr": u"""Езда на заднем колесе (heel) лицом вперед.""",
         },
@@ -67,6 +72,7 @@ def import_tricks(options):
         },
         {
             "title": u"Seven",
+            "thumb": u"2",
             "videos": [u"http://www.youtube.com/embed/-8O-z3vO2xs"],
             "descr":
             u"""
@@ -86,22 +92,42 @@ def import_tricks(options):
         },
         {
             "title": u"Foot spin",
+            "thumb": u"2",
             "videos": [u"http://www.youtube.com/embed/Q9fTQOopwF8"],
             "descr": u"""Можно рассматривать как подготовоку к Day Night :)"""
         },
     ]
 
+    def _download_thumbs(trick_id, videos_urls):
+        """ По переданному идентификатору видео, скачивает тумбы с ютуба """
+        url = 'http://img.youtube.com/vi/%s/%s.jpg'
+
+        for video_url in videos_urls:
+            video_id = video_url.split('/')[-1]
+
+            for x in range(4):
+                response = urllib.urlopen(url % (video_id, x))
+                path = path_join(app.static_folder, 'images', '%s-%s.jpg' % (trick_id, x))
+                with open(path, 'wb') as f:
+                    f.write(response.read())
+
+
     def _update(trick):
         _id = slugify(trick['title'])
+        trick['thumb'] = u'%s-%s.jpg' % (_id, trick.get('thumb', '3'))
 
-        t = connection.Trick.find_one({'_id': _id})
-        if t: return db.trick.update({'_id': _id}, {'$set': trick})
+        if db.trick.find_one({'_id': _id}):
+            db.trick.update({'_id': _id}, {'$set': trick})
+            if options.update_thumbs:
+                _download_thumbs(_id, trick['videos'])
+            return
 
         t = connection.Trick()
         t.update(trick)
         t['_id'] = _id
-        t['thumb'] = u'%s.jpg' % _id
         t.save()
+
+        _download_thumbs(_id, trick['videos'])
 
     map(_update, tricks)
 

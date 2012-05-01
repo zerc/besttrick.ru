@@ -122,15 +122,19 @@ window.app = function (tricks, user) {
     TrickFullView = Backbone.View.extend({
         el: 'div.content',
 
+        events: {
+            'click .trick_video_preview': 'load_video',
+        },
+
         template: new EJS({url: '/static/templates/trick_full.ejs'}),
 
         initialize: function () {
-            var self = this;
-            _.bindAll(this, 'render');
+            _.bindAll(this, 'render', 'load_video');
         },
 
-        render: function () {
+        render: function (options) {
             var self = this;
+            _.extend(self, options);
 
             $.ajax({
                 url: '/trick/full/' + self.model.get('id') + '/',
@@ -147,6 +151,11 @@ window.app = function (tricks, user) {
             })
             
             return self;
+        },
+
+        load_video: function () {
+            var html = '<iframe width="315" height="190" src="'+this.model.get('videos')[0]+'" frameborder="0" allowfullscreen></iframe>';
+            this.$el.find('.trick_video_preview').replaceWith(html);
         }
     }); 
 
@@ -223,10 +232,18 @@ window.app = function (tricks, user) {
         },
 
         toggle_form: function () {
-            this.render();
-            this._container.toggle();
+            this._container.hasClass('as_block') ? this.hide() : this.show();
             return false;
-        }, 
+        },
+
+        show: function () {
+            this.render();
+            this._container.addClass('as_block');
+        },
+
+        hide: function () {
+            this._container.removeClass('as_block');
+        },
 
         send: function () {
             var data = {},
@@ -377,12 +394,20 @@ window.app = function (tricks, user) {
         },
 
         initialize: function () {
+            var self = this;
+
             this.user       = user ? new UserView({model: new UserModel(user)}) : false;
             this.profile    = new UserProfile();
             this.loginView  = new Login();
             this.tricksView = new TricksView();
             this.trickFull  = new TrickFullView();
             this.feedback   = new FeedBack();
+
+            // Назначаю общие действия при переходе по страницам
+            this.bind('all', function () {
+                self.feedback.hide();
+            });
+
         },
 
         my: function () {
@@ -405,7 +430,7 @@ window.app = function (tricks, user) {
         },
 
         trick: function (trick) {
-            return new TrickFullView({model: this.tricksView.collection.get(trick)}).render();
+            return this.trickFull.render({model: this.tricksView.collection.get(trick)});
         }
     });
     

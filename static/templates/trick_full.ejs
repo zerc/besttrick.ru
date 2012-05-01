@@ -16,9 +16,10 @@
 <% } %>
 </div>
 <div class="trick__info">
-    <% _.map(trick.get('videos'), function (video) { %>
-        <iframe width="315" height="190" src="<%= video %>" frameborder="0" allowfullscreen></iframe>    
-    <% }); %>
+    <div class="trick_video_preview">
+        <div class="trick_video_preview_button"></div>
+        <img src="/static/images/<%= trick.get('id') %>-0.jpg" />
+    </div>
 
     <%= trick.get('descr') %>
 </div>
