@@ -17,6 +17,7 @@ class Trick(Document):
 
     structure = {
         'title'      : unicode,
+        'direction'  : unicode,
         'thumb'      : unicode,
         'videos'     : [unicode],
         'descr'      : unicode,

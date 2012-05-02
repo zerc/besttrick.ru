@@ -38,86 +38,91 @@ def import_tricks(options):
     """ Import trick to mongo. Run: admin.py import_tricks """
     tricks = [
         {
-            "title": u"Kazachok",
-            "videos": [u"http://www.youtube.com/embed/JxJvchXvQAg"],
-            "descr": u"""В лучших русских традициях.""",
+            "title"         : u"Kazachok",
+            "descr"         : u"""В лучших русских традициях.""",
+            "videos"        : [u"http://www.youtube.com/embed/JxJvchXvQAg"],
+            "direction"     : u"forward",
         },
         {
-            "title": u"Korean Spin toe-toe",
-            "videos": [u"http://www.youtube.com/embed/Bby-06T_Vxo"],
-            "thumb": u"2",
-            "descr": u"""Отвертка на передних колесах.""",
+            "title"         : u"Korean Spin",
+            "thumb"         : u"2",
+            "descr"         : u"""Отвертка на передних колесах.""",
+            "videos"        : [u"http://www.youtube.com/embed/Bby-06T_Vxo"],
         },
         {
-            "title": u"Russian Spin toe-toe",
-            "videos": [u"http://www.youtube.com/embed/gfkJAcz2Vgs"],
-            "thumb": u"3",
-            "descr": u"""Русский вольт на передних колесах.""",
+            "title"         : u"Russian Spin",
+            "thumb"         : u"3",
+            "descr"         : u"""Русский вольт на передних колесах.""",
+            "videos"        : [u"http://www.youtube.com/embed/gfkJAcz2Vgs"],
         },
         {
-            "title": u"Chicken Leg Toe Backward",
-            "videos": [u"http://www.youtube.com/embed/rYLMXZfTWCM"],
-            "thumb": u"2",
-            "descr": u"""В русском слаломе трюк известен как **Бэк факир на тое с грэбом.**""",
+            "title"         : u"Chicken Leg",
+            "thumb"         : u"2",
+            "descr"         : u"""В русском слаломе трюк известен как **Бэк факир на тое с грэбом.**""",
+            "videos"        : [u"http://www.youtube.com/embed/rYLMXZfTWCM"],
+            "direction"     : u"backward",
         },
         {
-            "title": u"Toe Machine",
-            "videos": [u"http://www.youtube.com/embed/Q5qFX8YPtaU"],
-            "descr": u"""Трюк так же известен как Швейная машинка.""",
+            "title"         : u"Toe Machine",
+            "videos"        : [u"http://www.youtube.com/embed/Q5qFX8YPtaU"],
+            "descr"         : u"""Трюк так же известен как Швейная машинка.""",
         },
         {
-            "title": u"Day Night",
-            "videos": [u"http://www.youtube.com/embed/vRb0PAeBe2g"],
-            "descr": u"""Своеобразный ответ на No Wiper. Выполняется как хиле, так и на тое.""",
+            "title"         : u"Day Night",
+            "descr"         : u"""Своеобразный ответ на No Wiper. Выполняется как хиле, так и на тое.""",
+            "videos"        : [u"http://www.youtube.com/embed/vRb0PAeBe2g"],
         },
         {
-            # TODO: добавить видео с неполным приседом
-            "title": u"Footgun Toe",
-            "thumb": u"2",
-            "videos": [u"http://www.youtube.com/embed/m2JPr2geQxA"],
-            "descr": u"""Пистолет на переднем колесе. Существуют варианты с полном приседом, и с коленом под прямым углом.""",
+            "title"         : u"Footgun Toe",
+            "thumb"         : u"2",
+            "videos"        : [u"http://www.youtube.com/embed/m2JPr2geQxA"],
+            "descr"         : u"""Пистолет на переднем колесе. Существуют варианты с полном приседом, и с коленом под прямым углом.""",
+            "direction"     : u"forward",
         },
         {
-            "title": u"OneWheel Heel",
-            "thumb": u"2",
-            "videos": [u"http://www.youtube.com/embed/okiGOwGfhY0"],
-            "descr": u"""Езда на заднем колесе (heel) лицом вперед.""",
+            "title"         : u"OneWheel",
+            "thumb"         : u"2",
+            "videos"        : [u"http://www.youtube.com/embed/okiGOwGfhY0"],
+            "descr"         : u"""Езда на одном колесе лицом вперед. Может выполнятся как на переднем (тое), так и на заднем (хил) колесах.""",
+            "direction"     : u"forward",
         },
         {
-            "title": u"Confraglide",
-            "videos": [u"http://www.youtube.com/embed/F6897UqZBw8"],
-            "descr": u"""В русском слаломе, трюк так же известен как Бабочка.""",
+            "title"         : u"Confraglide",
+            "videos"        : [u"http://www.youtube.com/embed/F6897UqZBw8"],
+            "descr"         : u"""В русском слаломе, трюк так же известен как Бабочка.""",
         },
         {
-            "title": u"Cobra Back",
-            "videos": [u"http://www.youtube.com/embed/P_gyByoM4qg"],
-            "descr": u"""Кобра спиной вперед. """,
+            "title"         : u"Cobra",
+            "videos"        : [u"http://www.youtube.com/embed/P_gyByoM4qg"],
+            "descr"         : u"""Кобра спиной вперед. """,
+            "direction"     : u"backward",
         },
         {
-            "title": u"Seven",
-            "thumb": u"2",
-            "videos": [u"http://www.youtube.com/embed/-8O-z3vO2xs"],
+            "title"         : u"Seven",
+            "thumb"         : u"2",
+            "videos"        : [u"http://www.youtube.com/embed/-8O-z3vO2xs"],
             "descr":
             u"""
 Вращение на одном колесе с продвижением по банками.
 
 Выполняется на тое или хиле.
             """,
+            "direction"     : u"forward",
         },
         {
-            "title": u"No wiper",
-            "videos": [u"http://www.youtube.com/embed/RQeEDR7j0uc"],
-            "descr": u"""
+            "title"         : u"No wiper",
+            "videos"        : [u"http://www.youtube.com/embed/RQeEDR7j0uc"],
+            "descr"         : u"""
 Также называется Toe shift.
 
 Может выполнятся как на внутреннем, так и на внешнем ребре.
             """,
         },
         {
-            "title": u"Foot spin",
-            "thumb": u"2",
-            "videos": [u"http://www.youtube.com/embed/Q9fTQOopwF8"],
-            "descr": u"""Можно рассматривать как подготовоку к Day Night :)"""
+            "title"         : u"Foot spin",
+            "thumb"         : u"2",
+            "videos"        : [u"http://www.youtube.com/embed/Q9fTQOopwF8"],
+            "descr"         : u"""Можно рассматривать как подготовоку к Day Night :)"""
         },
     ]
 
@@ -136,7 +141,7 @@ def import_tricks(options):
 
 
     def _update(trick):
-        _id = slugify(trick['title'])
+        _id = "-".join(filter(None, (slugify(trick['title']), trick.get('direction', '')[:1])))
         trick['thumb'] = u'%s-%s.jpg' % (_id, trick.get('thumb', '3'))
 
         if db.trick.find_one({'_id': _id}):

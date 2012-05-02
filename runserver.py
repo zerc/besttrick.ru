@@ -78,7 +78,7 @@ def index():
         r = json.dumps(context[json_field])
     else:
         r = render_template('index.html', **context)
-    print context
+
     response = make_response(r)
     response.headers['X-Frame-Options'] = 'SAMEORIGIN'
     return response

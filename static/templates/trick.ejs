@@ -1,28 +1,28 @@
-<a class="trick__title" href="#trick/<%= id %>"><%= title %></a>
+<a class="trick__title" href="#trick/<%= model.get('id') %>"><%= model.get_title() %></a>
 <div class="user_do_this_icon" title="Вы делаете этот трюк"></div>
 
 <div class="trick__dialog dialog_overflow"></div>
 <div class="trick__dialog">
     <a href="#" bind="toggle_dialog" class="dialog__close">x</a>
     <label for="dialog__cones">Сколько банок?</label>
-    <p>На <input type="text" id="dialog__cones" class="text cones" value="<%= cones %>" />
+    <p>На <input type="text" id="dialog__cones" class="text cones" value="<%= model.get('cones') %>" />
     <a href="#" bind="save" class="dialog__save">делаю</a>!</p>
 </div>
 
-<a href="#trick/<%= id %>">
-    <img src="/static/images/<%= thumb %>" alt="<%= title %>" class="trick__thumb" />
+<a href="#trick/<%= model.get('id') %>">
+    <img src="/static/images/<%= model.get('thumb') %>" alt="<%= model.get('title') %>" class="trick__thumb" />
 </a>
 
 <div class="stats__row">
-    делают: <%= users %>
+    делают: <%= model.get('users') %>
     <% if (user_id !== false) { %>
         <a class="trick__dialog_control" href="#" bind="toggle_dialog">+</a>
     <% } %>
 </div>
 <div class="stats__row row__best_user">
-    <% if (best_user) { %>
-        <a href="#profile-<%= best_user._id %>" class="view_profile" title="<%= best_user.nick %> лучше всех делает этот трюк!"><%= format_username(best_user.nick) %></a> 
-        <%= plural(best_user_cones, 'банка', 'банки', 'банок') %>
+    <% if (model.get('best_user')) { %>
+        <a href="#profile-<%= model.get('best_user')._id %>" class="view_profile" title="<%= model.get('best_user').nick %> лучше всех делает этот трюк!"><%= format_username(model.get('best_user').nick) %></a> 
+        <%= plural(model.get('best_user_cones'), 'банка', 'банки', 'банок') %>
     <% } else { %>
         <div class="no_king">место короля свободно ...</div>
     <% } %>

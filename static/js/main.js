@@ -62,6 +62,7 @@ window.app = function (tricks, user) {
             thumb       : '',
             videos      : [],
             descr       : '',
+            direction   : '',
             score       : 0,
             wssa_score  : 0,
 
@@ -77,7 +78,10 @@ window.app = function (tricks, user) {
             if (_.isNaN(attrs.cones) || attrs.cones < 0) {
                 return 'укажите число конусов';
             }
+        },
 
+        get_title: function () {
+            return (this.get('title') + ' ' + (this.get('direction') || '')).trim();
         }
     });
 
@@ -94,8 +98,10 @@ window.app = function (tricks, user) {
         },
 
         render: function () {
-            var context = this.model.attributes;
-            context.user_id = user ? user.id : false;
+            var context = {
+                'model'     : this.model,
+                'user_id'   : user ? user.id : false
+            }
             this.$el.html(this.template.render(context));
             if (this.model.get('user_do_this')) {
                 this.$el.addClass('user_do_this');
