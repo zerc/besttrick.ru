@@ -1,5 +1,5 @@
 == INSTALL ==
-sudo apt-get install python-pip mongodb
+sudo apt-get install python-pip mongodb postfix
 sudo pip install virtualenv
 
 virtualenv venv --distribute

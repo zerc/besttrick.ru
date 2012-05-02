@@ -14,4 +14,16 @@ def roll():
         /etc/init.d/bt-uwsgi reload
     """)
     sudo("/etc/init.d/nginx reload")
+
+def update_tricks():
+    run("""
+        cd www/ &&
+        . venv/bin/activate &&
+        ./admin.py import_tricks && 
+        /etc/init.d/bt-uwsgi reload
+    """)
+
+def pull():
+    local('git pull origin master')
+
     

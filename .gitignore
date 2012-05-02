@@ -6,4 +6,5 @@ venv
 project/settings.py
 pip-log.txt
 static/images/
+static/js/main_min.js
 
