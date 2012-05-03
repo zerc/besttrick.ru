@@ -45,11 +45,11 @@ EJS.Helpers.prototype.browser_info = function () {
     return _.escape(JSON.stringify(data));
 }
 
-window.app = function (tricks, user) {
+window.app = function (tricks, tags, user) {
     'use strict';
 
     var App,
-        Trick, TrickView, TrickFullView, TricksList, TricksView,
+        Trick, TrickView, TrickFullView, TricksList, TricksView, TagsView,
         UserModel, UserView, UserProfile,
         Login, FeedBack;
 
@@ -192,7 +192,6 @@ window.app = function (tricks, user) {
         initialize: function () {
             _.bindAll(this, 'render');
             this.collection = new TricksList(tricks);
-
         },
 
         render: function () {
@@ -204,6 +203,24 @@ window.app = function (tricks, user) {
                 );
             }, this);
         },
+    });
+
+    TagsView = Backbone.View.extend({
+        el: 'div.tricks_filter',
+
+        initialize: function () {
+            _.bindAll(this, 'render');
+        },
+
+        render: function () {
+            var html = _.template('<a class="tricks_filter__tag" href="#<%= tag_id %>"><%= tag_id %></a>');
+
+            _(tags).each(function (tricks_ids, tag_id) {
+                this.$el.append(html({tag_id: tag_id}));
+            }, this);
+            this.$el.append('<div class="clear"></div>');
+        }
+
     });
 
     Login = Backbone.View.extend({
@@ -432,6 +449,7 @@ window.app = function (tricks, user) {
             this.tricksView = new TricksView();
             this.trickFull  = new TrickFullView();
             this.feedback   = new FeedBack();
+            this.tags       = new TagsView();
 
             // Назначаю общие действия при переходе по страницам
             this.bind('all', function () {
@@ -448,6 +466,7 @@ window.app = function (tricks, user) {
             window.document.title = 'Besttrick';
             $('h1 span').text('');
             this.tricksView.render();
+            //this.tags.render();
         },
 
         fresh_index: function () {

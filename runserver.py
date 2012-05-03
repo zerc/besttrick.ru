@@ -7,7 +7,7 @@ from flaskext.mail import Message, email_dispatched
 from mongokit import Connection
 
 from project import app, connection, db, mail, markdown
-from apps import tricks, users
+from apps import tricks as tricks_view
 
         
 @app.route('/')
@@ -57,6 +57,8 @@ def index():
             k = x.pop(u'trick')
             user_stats[k] = x
 
+    tags = dict((x, []) for x in tricks_view.TAGS)
+
     # навешиваем
     for trick in tricks:
         trick[u'id'] = trick.pop(u'_id')
@@ -72,8 +74,12 @@ def index():
 
         trick['descr'] = markdown(trick['descr'])
 
-    context['tricks'] = _dumps(tricks)
+        for t in trick['tags']:
+            tags[t].append(trick[u'id'])
 
+    context['tricks'] = _dumps(tricks)
+    context['tags']   = _dumps(tags)
+    print context
     if json_field:
         r = json.dumps(context[json_field])
     else:

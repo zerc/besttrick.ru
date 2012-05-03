@@ -11,6 +11,11 @@ from .utils import grouped_stats
 
 
 ### Models
+class TrickMigration(DocumentMigration):
+    def migration01__add_tags(self):
+        self.target = {'tags':{'$exists':False}}
+        self.update = {'$set':{'tags': [unicode]}}
+
 class Trick(Document):
     __database__   = app.config['MONGODB_DB']
     __collection__ = "trick"
@@ -23,9 +28,12 @@ class Trick(Document):
         'descr'      : unicode,
         'score'      : float,
         'wssa_score' : float,
+        'tags'       : [unicode],
     }
     default_values  = {'thumb': u'3', 'score': 1.0, 'wssa_score': 0.0}
     required_fields = ['title']
+    indexes = [{'fields': ['tags']}]
+
 connection.register([Trick])
 
 
@@ -47,6 +55,15 @@ class TrickUser(Document):
     required_fields = ['user', 'trick']
 connection.register([TrickUser])
 
+# список доступных тегов
+TAGS = [
+    u'sitting',
+    u'jumping',
+    u'wheeling',
+    u'spinning',
+    u'slalom',
+    u'slides',
+]
 
 ### Views
 @app.route('/trick/full/<trick_id>/', methods=['GET'])

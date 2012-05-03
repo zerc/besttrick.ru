@@ -42,18 +42,21 @@ def import_tricks(options):
             "descr"         : u"""В лучших русских традициях.""",
             "videos"        : [u"http://www.youtube.com/embed/JxJvchXvQAg"],
             "direction"     : u"forward",
+            "tags"          : [u'sitting', u'jumping', u'slalom'],
         },
         {
             "title"         : u"Korean Spin",
             "thumb"         : u"2",
             "descr"         : u"""Отвертка на передних колесах.""",
             "videos"        : [u"http://www.youtube.com/embed/Bby-06T_Vxo"],
+            "tags"          : [u'spinning', u'slalom',],
         },
         {
             "title"         : u"Russian Spin",
             "thumb"         : u"3",
             "descr"         : u"""Русский вольт на передних колесах.""",
             "videos"        : [u"http://www.youtube.com/embed/gfkJAcz2Vgs"],
+            "tags"          : [u'spinning', u'slalom',],
         },
         {
             "title"         : u"Chicken Leg",
@@ -61,16 +64,19 @@ def import_tricks(options):
             "descr"         : u"""В русском слаломе трюк известен как **Бэк факир на тое с грэбом.**""",
             "videos"        : [u"http://www.youtube.com/embed/rYLMXZfTWCM"],
             "direction"     : u"backward",
+            "tags"          : [u'wheeling', u'spinning', u'slalom'],
         },
         {
             "title"         : u"Toe Machine",
             "videos"        : [u"http://www.youtube.com/embed/Q5qFX8YPtaU"],
             "descr"         : u"""Трюк так же известен как Швейная машинка.""",
+            "tags"          : [u'wheeling', u'slalom'],
         },
         {
             "title"         : u"Day Night",
             "descr"         : u"""Своеобразный ответ на No Wiper. Выполняется как хиле, так и на тое.""",
             "videos"        : [u"http://www.youtube.com/embed/vRb0PAeBe2g"],
+            "tags"          : [u'wheeling', u'slalom'],
         },
         {
             "title"         : u"Footgun Toe",
@@ -78,6 +84,7 @@ def import_tricks(options):
             "videos"        : [u"http://www.youtube.com/embed/m2JPr2geQxA"],
             "descr"         : u"""Пистолет на переднем колесе. Существуют варианты с полном приседом, и с коленом под прямым углом.""",
             "direction"     : u"forward",
+            "tags"          : [u'wheeling', u'slalom', u'sitting',],
         },
         {
             "title"         : u"OneWheel",
@@ -85,17 +92,20 @@ def import_tricks(options):
             "videos"        : [u"http://www.youtube.com/embed/okiGOwGfhY0"],
             "descr"         : u"""Езда на одном колесе лицом вперед. Может выполнятся как на переднем (тое), так и на заднем (хил) колесах.""",
             "direction"     : u"forward",
+            "tags"          : [u'wheeling', u'slalom'],
         },
         {
             "title"         : u"Confraglide",
             "videos"        : [u"http://www.youtube.com/embed/F6897UqZBw8"],
             "descr"         : u"""В русском слаломе, трюк так же известен как Бабочка.""",
+            "tags"          : [u'slalom'],
         },
         {
             "title"         : u"Cobra",
             "videos"        : [u"http://www.youtube.com/embed/P_gyByoM4qg"],
             "descr"         : u"""Кобра спиной вперед. """,
             "direction"     : u"backward",
+            "tags"          : [u'slalom'],
         },
         {
             "title"         : u"Seven",
@@ -108,6 +118,7 @@ def import_tricks(options):
 Выполняется на тое или хиле.
             """,
             "direction"     : u"forward",
+            "tags"          : [u'wheeling', u'slalom', u'spinning'],
         },
         {
             "title"         : u"No wiper",
@@ -117,12 +128,14 @@ def import_tricks(options):
 
 Может выполнятся как на внутреннем, так и на внешнем ребре.
             """,
+            "tags"          : [u'wheeling', u'slalom']
         },
         {
             "title"         : u"Foot spin",
             "thumb"         : u"2",
             "videos"        : [u"http://www.youtube.com/embed/Q9fTQOopwF8"],
-            "descr"         : u"""Можно рассматривать как подготовоку к Day Night :)"""
+            "descr"         : u"""Можно рассматривать как подготовоку к Day Night :)""",
+            "tags"          : [u'slalom', u'spinning'],
         },
     ]
 
