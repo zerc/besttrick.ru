@@ -117,7 +117,7 @@ window.app = function (tricks, tags, user) {
             } else {
                 app.navigate(el.attr('href').replace('#', ''), true);
             }
-            
+
             return false;
         },
 
@@ -127,7 +127,7 @@ window.app = function (tricks, tags, user) {
 
         save: function () {
             var cones = parseInt(this.$el.find('#dialog__cones').val(), 10);
-            
+
             this.model.set('cones', cones, {silent: true});
             if (!this.model.get('user_do_this')) {
                 this.model.set('users', this.model.get('users')+1, {silent: true});
@@ -171,7 +171,7 @@ window.app = function (tricks, tags, user) {
                     alert('error');
                 }
             })
-            
+
             return self;
         },
 
@@ -179,7 +179,63 @@ window.app = function (tricks, tags, user) {
             var html = '<iframe width="315" height="190" src="'+this.model.get('videos')[0]+'" frameborder="0" allowfullscreen></iframe>';
             this.$el.find('.trick_video_preview').replaceWith(html);
         }
-    }); 
+    });
+
+    TagsView = Backbone.View.extend({
+        el: 'div.tricks_filter',
+
+        events: {
+            'click a.tricks_filter__tag': 'add_tag',
+        },
+
+        initialize: function (v) {
+            _.bindAll(this, 'render', 'add_tag');
+            this.collection = v.collection;
+            this.v = v.v;
+        },
+
+        render: function () {
+            var html = _.template('<a class="tricks_filter__tag<% if (major) { %> major_tag<% } %>" href="#<%= tag_id %>"><%= tag_title %></a>');
+            this.$el.html('');
+            _(tags).each(function (tag_info, tag_id) {
+                this.$el.append(html({tag_id: tag_id, tag_title: tag_info.title, major: tag_info.major}));
+            }, this);
+            this.$el.append('<div class="clear"></div>');
+
+        },
+
+        add_tag: function (e) {
+            $(e.target).toggleClass('tag__selected');
+
+            var activated = _.map(this.$el.find('.tag__selected'), function (e) {
+                    return $(e).attr('href').replace('#', '');
+                }),
+                ids = [],
+                new_collection;
+
+            /* TODO: реализовать фильтрацию трюков более качественно (не проверять include ом например)
+             * срефакторить название переменных
+             */
+            _.each(activated, function (tag_name) {
+                ids = _.union(ids, tags[tag_name]['tricks']);
+            });
+
+            new_collection = this.collection.filter(function (m) {
+                return _.include(ids, m.get('id'));
+            });
+
+            if (activated.length > 0) {
+                app.navigate('filter=' + activated.join(','), false);
+                this.v.render(new_collection);
+            } else {
+                app.navigate('', true);
+                this.v.render(this.collection.models);
+            }
+
+            return false;
+        }
+
+    });
 
     TricksList = Backbone.Collection.extend({
         url: '/?json=tricks',
@@ -192,12 +248,25 @@ window.app = function (tricks, tags, user) {
         initialize: function () {
             _.bindAll(this, 'render');
             this.collection = new TricksList(tricks);
+            this.tags       = new TagsView({
+                collection: this.collection,
+                v: this
+            });
         },
 
-        render: function () {
-            var el = $('<div class="tricks_list"></div>');
+        render: function (collection) {
+            var el = $('<div class="tricks_list"></div>'),
+                models;
             this.$el.html(el);
-            _(this.collection.models).each(function (item) {               
+
+            if (collection) {
+                models = collection;
+            } else {
+                models = this.collection.models;
+                this.tags.render();
+            }
+
+            _(models).each(function (item) {
                 el.append(
                     new TrickView({model: item}).render().el
                 );
@@ -205,23 +274,6 @@ window.app = function (tricks, tags, user) {
         },
     });
 
-    TagsView = Backbone.View.extend({
-        el: 'div.tricks_filter',
-
-        initialize: function () {
-            _.bindAll(this, 'render');
-        },
-
-        render: function () {
-            var html = _.template('<a class="tricks_filter__tag" href="#<%= tag_id %>"><%= tag_id %></a>');
-
-            _(tags).each(function (tricks_ids, tag_id) {
-                this.$el.append(html({tag_id: tag_id}));
-            }, this);
-            this.$el.append('<div class="clear"></div>');
-        }
-
-    });
 
     Login = Backbone.View.extend({
         el: 'div.user_container',
@@ -307,13 +359,13 @@ window.app = function (tricks, tags, user) {
                     context: this,
                     type: 'POST',
                     success: function () {
-                        this.render({success: true});        
+                        this.render({success: true});
                     },
                     error: function () {
                         alert('Произошла непредвиденная ошибка.');
                     }
                 });
-            } else {    
+            } else {
                 return false;
             }
         }
@@ -369,7 +421,7 @@ window.app = function (tricks, tags, user) {
                 dataType: 'json',
                 success: function (response) {
                     context['tricks'] = response;
-                    self.$el.html(self.template.render(context));        
+                    self.$el.html(self.template.render(context));
                 },
                 error: function () {
                     alert('error');
@@ -416,7 +468,7 @@ window.app = function (tricks, tags, user) {
             var template = new EJS({url: '/static/templates/user.ejs'}),
                 el = $('<div class="user__profile"></div>'),
                 self = this;
-            
+
             this.$el.html(el);
 
             $.ajax({
@@ -449,7 +501,6 @@ window.app = function (tricks, tags, user) {
             this.tricksView = new TricksView();
             this.trickFull  = new TrickFullView();
             this.feedback   = new FeedBack();
-            this.tags       = new TagsView();
 
             // Назначаю общие действия при переходе по страницам
             this.bind('all', function () {
@@ -466,7 +517,6 @@ window.app = function (tricks, tags, user) {
             window.document.title = 'Besttrick';
             $('h1 span').text('');
             this.tricksView.render();
-            //this.tags.render();
         },
 
         fresh_index: function () {
@@ -482,7 +532,7 @@ window.app = function (tricks, tags, user) {
             return this.trickFull.render({model: this.tricksView.collection.get(trick)});
         }
     });
-    
+
     // приделать перехват ошибок
     var app = new App();
     Backbone.history.start();

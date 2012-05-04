@@ -32,6 +32,43 @@ def toggle_admin(options):
     print user
 
 
+def tags(options):
+    """ Вгоняет тэги в базу """
+    data = [
+        {
+            '_id'   : u'sitting',
+            'title' : u'сидячие',
+        },
+        {
+            '_id'   : u'jumping',
+            'title' : u'прыжковые',
+        },
+        {
+            '_id'   : u'wheeling',
+            'title' : u'вилинги',
+        },
+        {
+            '_id'   : u'spinning',
+            'title' : u'вращательные',
+        },
+        {
+            '_id'   : u'slalom',
+            'title' : u'слалом',
+            'major' : True,
+        },
+        {
+            '_id'   : u'slides',
+            'title' : u'слайды',
+            'major' : True,
+        }
+    ]
+
+    for t in data:
+        tag = connection.Tag()
+        tag.update(t)
+        tag.save()
+
+
 # Список трюков вынести в отдельный файл, типа "дамп базы"
 parser.add_option("-t", "--update_thumbs", dest="update_thumbs", help="update_thumbs ?", action="store_true")
 def import_tricks(options):

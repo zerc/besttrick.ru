@@ -55,15 +55,19 @@ class TrickUser(Document):
     required_fields = ['user', 'trick']
 connection.register([TrickUser])
 
-# список доступных тегов
-TAGS = [
-    u'sitting',
-    u'jumping',
-    u'wheeling',
-    u'spinning',
-    u'slalom',
-    u'slides',
-]
+
+class Tag(Document):
+    __database__   = app.config['MONGODB_DB']
+    __collection__ = "tag"
+
+    structure = {
+        'title': unicode,
+        'major': bool,
+    }
+    default_values  = {'major': False}
+    required_fields = ['title']
+connection.register([Tag])
+
 
 ### Views
 @app.route('/trick/full/<trick_id>/', methods=['GET'])
@@ -76,13 +80,13 @@ def trick_full(trick_id):
 @app.route('/trick/', methods=['PUT'])
 def trick():
     user_id = session.get('user_id', False)
-    
+
     if user_id is False:
         return 'Access Deny', 403
 
     trick_data = json.loads(unicode(request.data, 'utf-8'))
     trick_data['_id'] = trick_data.pop('id')
-    
+
     try:
         trick_data['cones'] = int(trick_data['cones'])
     except TypeError:
@@ -118,7 +122,7 @@ def trick():
     trick_data.update(best_result)
     trick_data['best_user'] = db.user.find_one({'_id': best_result['best_user_id']})
     trick_data['user_do_this'] = True
-    
+
     return json.dumps(trick_data)
 
 

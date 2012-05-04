@@ -51,29 +51,13 @@
         {% endif %}
         <h1><a href="#!">BestTrick</a><span></span></h1>
 
-        <style type="text/css">
-            .tricks_filter {
-                padding:10px 170px 10px 10px; margin-bottom:10px; border-bottom:1px solid #E8E9EB;
-                background-color:#fefefe;
-            }
-            .tricks_filter__tag {
-                float:right; margin-left:10px; padding:5px 10px; border-radius:5px; color:#555;
-            }
-
-            a.tricks_filter__tag:hover {color:#555; text-decoration:none;}
-
-            .major_tag {float:left; margin-right:10px;}
-
-            .tag__selected {background:#B55A5A; color:#fff; text-decoration:none;}
-        </style>
-
         <div class="tricks_filter">
         </div>
 
         <div class="content {% if 'bt_open' not in request.cookies and not config.DEBUG %}closed{% endif %}">
             {% if 'bt_open' not in request.cookies or config.DEBUG  %}
             <p>
-                Проект находится в закрытом тестировании, и в ближайшее время 
+                Проект находится в закрытом тестировании, и в ближайшее время
                 будет готов явить себя миру.
             </p>
 
@@ -83,12 +67,12 @@
             </p>
             {% endif %}
         </div>
-        
+
         <div class="copyright">
             <a href="http://www.zerc.ru/" target="_blank">zerc</a>, 2012
         </div>
     </div>
-    
+
 
     {% if 'bt_open' in request.cookies or config.DEBUG  %}
     <script type="text/javascript">

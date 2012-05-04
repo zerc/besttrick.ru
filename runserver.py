@@ -7,9 +7,9 @@ from flaskext.mail import Message, email_dispatched
 from mongokit import Connection
 
 from project import app, connection, db, mail, markdown
-from apps import tricks as tricks_view
+from apps import tricks as tricks_view, users as users_view
 
-        
+
 @app.route('/')
 def index():
     context, user = {'user': False}, False
@@ -36,7 +36,7 @@ def index():
         prev.users += 1;
 
         %s
-        
+
     }""" % (("if (obj.user === %s) { prev.user_do_this = true; }" % user_id) if user_id is not False else '')
     best_users_qs = db.trick_user.group(['trick'], None, {'best_user_cones': 0, 'best_user_id': '', 'users': 0, 'user_do_this': False}, reduce_func)
     best_users = {}
@@ -57,7 +57,10 @@ def index():
             k = x.pop(u'trick')
             user_stats[k] = x
 
-    tags = dict((x, []) for x in tricks_view.TAGS)
+    tags = {}
+    for x in db.tag.find():
+        x[u'tricks'] = []
+        tags[x.pop(u'_id')] = x
 
     # навешиваем
     for trick in tricks:
@@ -75,11 +78,11 @@ def index():
         trick['descr'] = markdown(trick['descr'])
 
         for t in trick['tags']:
-            tags[t].append(trick[u'id'])
+            tags[t]['tricks'].append(trick[u'id'])
 
     context['tricks'] = _dumps(tricks)
     context['tags']   = _dumps(tags)
-    print context
+
     if json_field:
         r = json.dumps(context[json_field])
     else:
@@ -92,7 +95,7 @@ def index():
 
 @app.route('/feedback/', methods=['POST'])
 def feedback():
-    body = u'\n'.join(['%s:%s' % (k,v) for k, v in request.form.items()]) 
+    body = u'\n'.join(['%s:%s' % (k,v) for k, v in request.form.items()])
     msg = Message(u"Feedback", recipients=app.config['ADMINS'])
     msg.body = body
     mail.send(msg)
