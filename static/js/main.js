@@ -182,7 +182,7 @@ window.app = function (tricks, tags, user) {
     });
 
     TagsView = Backbone.View.extend({
-        el: 'div.tricks_filter',
+        el: 'div.content',
 
         events: {
             'click a.tricks_filter__tag': 'add_tag',
@@ -194,19 +194,27 @@ window.app = function (tricks, tags, user) {
             this.v = v.v;
         },
 
-        render: function () {
-            var html = _.template('<a class="tricks_filter__tag<% if (major) { %> major_tag<% } %>" href="#<%= tag_id %>"><%= tag_title %></a>');
-            this.$el.html('');
+        render: function (tags_selected) {
+            var html = _.template('<a class="tricks_filter__tag<% if (major) { %> major_tag<% } %><% if (selected) {%> tag__selected<% } %>" href="#<%= tag_id %>"><%= tag_title %></a>'),
+                el = $('<div class="tricks_filter"></div>');
+            
+            this.$el.prepend(el);
+
+            //this.$el.html('');
             _(tags).each(function (tag_info, tag_id) {
-                this.$el.append(html({tag_id: tag_id, tag_title: tag_info.title, major: tag_info.major}));
+                var context = {tag_id: tag_id, tag_title: tag_info.title, major: tag_info.major, selected: false};
+                if (_.include(tags_selected, tag_id)) context['selected'] = true;
+                el.append(html(context));
             }, this);
-            this.$el.append('<div class="clear"></div>');
+            el.append('<div class="clear"></div>');
+            
+            if (tags_selected) {
+                this.filter();
+            }
 
         },
 
-        add_tag: function (e) {
-            $(e.target).toggleClass('tag__selected');
-
+        filter: function () {
             var activated = _.map(this.$el.find('.tag__selected'), function (e) {
                     return $(e).attr('href').replace('#', '');
                 }),
@@ -226,12 +234,16 @@ window.app = function (tricks, tags, user) {
 
             if (activated.length > 0) {
                 app.navigate('filter=' + activated.join(','), false);
-                this.v.render(new_collection);
+                this.v.render({models: new_collection});
             } else {
                 app.navigate('', true);
-                this.v.render(this.collection.models);
+                this.v.render();
             }
+        },
 
+        add_tag: function (e) {
+            $(e.target).toggleClass('tag__selected');
+            this.filter();
             return false;
         }
 
@@ -254,16 +266,24 @@ window.app = function (tricks, tags, user) {
             });
         },
 
-        render: function (collection) {
-            var el = $('<div class="tricks_list"></div>'),
+        render: function (args) {
+            var el,
                 models;
-            this.$el.html(el);
-
-            if (collection) {
-                models = collection;
+            
+            if (this.$el.find('div.tricks_list').length === 0) {
+                el = $('<div class="tricks_list"></div>');
+                this.$el.html(el);
             } else {
-                models = this.collection.models;
-                this.tags.render();
+                el = $(this.$el.find('div.tricks_list')[0]);
+            }
+
+            el.html('');
+
+            if (!args || !args.models) {
+                models = this.collection.models
+                this.tags.render(args ? args.tags_selected : undefined);
+            } else if (args) {
+                models = args.models;
             }
 
             _(models).each(function (item) {
@@ -489,7 +509,8 @@ window.app = function (tricks, tags, user) {
             '!'                         : 'fresh_index',
             'u:user_id/'                : 'my',
             'trick/:trick'              : 'trick',
-            'profile-:user_id'          : 'profile'
+            'profile-:user_id'          : 'profile',
+            'filter=:tags_selected'     : 'index'
         },
 
         initialize: function () {
@@ -513,10 +534,10 @@ window.app = function (tricks, tags, user) {
             if (this.user) this.user.render();
         },
 
-        index: function () {
+        index: function (tags_selected) {
             window.document.title = 'Besttrick';
             $('h1 span').text('');
-            this.tricksView.render();
+            this.tricksView.render(tags_selected ? {tags_selected: tags_selected.split(',')} : {});
         },
 
         fresh_index: function () {

@@ -129,7 +129,7 @@ a.tricks_filter__tag:hover {color:#555; text-decoration:none;}
 
 .major_tag {float:left; margin-right:10px;}
 
-.tag__selected {background:#B55A5A; color:#fff; text-decoration:none;}
+.tag__selected, .tag__selected:hover {background:#B55A5A; color:#fff; text-decoration:none;}
 
 /* Trick full page */
 .trick__users {float:left;}

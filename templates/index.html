@@ -51,9 +51,6 @@
         {% endif %}
         <h1><a href="#!">BestTrick</a><span></span></h1>
 
-        <div class="tricks_filter">
-        </div>
-
         <div class="content {% if 'bt_open' not in request.cookies and not config.DEBUG %}closed{% endif %}">
             {% if 'bt_open' not in request.cookies or config.DEBUG  %}
             <p>
