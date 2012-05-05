@@ -49,7 +49,7 @@ window.app = function (tricks, tags, user) {
     'use strict';
 
     var App,
-        Trick, TrickView, TrickFullView, TricksList, TricksView, TagsView,
+        Trick, TrickView, TrickFullView, TricksList, TricksView,
         UserModel, UserView, UserProfile,
         Login, FeedBack;
 
@@ -181,74 +181,6 @@ window.app = function (tricks, tags, user) {
         }
     });
 
-    TagsView = Backbone.View.extend({
-        el: 'div.content',
-
-        events: {
-            'click a.tricks_filter__tag': 'add_tag',
-        },
-
-        initialize: function (v) {
-            _.bindAll(this, 'render', 'add_tag');
-            this.collection = v.collection;
-            this.v = v.v;
-        },
-
-        render: function (tags_selected) {
-            var html = _.template('<a class="tricks_filter__tag<% if (major) { %> major_tag<% } %><% if (selected) {%> tag__selected<% } %>" href="#<%= tag_id %>"><%= tag_title %></a>'),
-                el = $('<div class="tricks_filter"></div>');
-            
-            this.$el.prepend(el);
-
-            //this.$el.html('');
-            _(tags).each(function (tag_info, tag_id) {
-                var context = {tag_id: tag_id, tag_title: tag_info.title, major: tag_info.major, selected: false};
-                if (_.include(tags_selected, tag_id)) context['selected'] = true;
-                el.append(html(context));
-            }, this);
-            el.append('<div class="clear"></div>');
-            
-            if (tags_selected) {
-                this.filter();
-            }
-
-        },
-
-        filter: function () {
-            var activated = _.map(this.$el.find('.tag__selected'), function (e) {
-                    return $(e).attr('href').replace('#', '');
-                }),
-                ids = [],
-                new_collection;
-
-            /* TODO: реализовать фильтрацию трюков более качественно (не проверять include ом например)
-             * срефакторить название переменных
-             */
-            _.each(activated, function (tag_name) {
-                ids = _.union(ids, tags[tag_name]['tricks']);
-            });
-
-            new_collection = this.collection.filter(function (m) {
-                return _.include(ids, m.get('id'));
-            });
-
-            if (activated.length > 0) {
-                app.navigate('filter=' + activated.join(','), false);
-                this.v.render({models: new_collection});
-            } else {
-                app.navigate('', true);
-                this.v.render();
-            }
-        },
-
-        add_tag: function (e) {
-            $(e.target).toggleClass('tag__selected');
-            this.filter();
-            return false;
-        }
-
-    });
-
     TricksList = Backbone.Collection.extend({
         url: '/?json=tricks',
         model: Trick
@@ -257,41 +189,92 @@ window.app = function (tricks, tags, user) {
     TricksView = Backbone.View.extend({
         el: 'div.content',
 
+        events: {
+            'click a.tricks_filter__tag': 'activate_tag'
+        },
+
         initialize: function () {
             _.bindAll(this, 'render');
-            this.collection = new TricksList(tricks);
-            this.tags       = new TagsView({
-                collection: this.collection,
-                v: this
-            });
+            this.collection         = new TricksList(tricks);
+            this.selected_tags      = [];
+            this.activated_tricks   = [];
         },
 
-        render: function (args) {
-            var el,
-                models;
-            
-            if (this.$el.find('div.tricks_list').length === 0) {
-                el = $('<div class="tricks_list"></div>');
-                this.$el.html(el);
+        activate_tag: function (e) {
+            $(e.target).toggleClass('tag__selected');
+
+            this.selected_tags = _.map(this.tags_container.find('.tag__selected'), function (e) {
+                return $(e).attr('href').replace('#', '');
+            });
+            console.log(this.selected_tags);
+            this.filter();
+
+            if (this.selected_tags.length > 0) {
+                app.navigate('filter=' + this.selected_tags.join(','), false);
             } else {
-                el = $(this.$el.find('div.tricks_list')[0]);
+                app.navigate('', true);
             }
 
-            el.html('');
+            this.render_tricks();
 
-            if (!args || !args.models) {
-                models = this.collection.models
-                this.tags.render(args ? args.tags_selected : undefined);
-            } else if (args) {
-                models = args.models;
-            }
+            return false;
+        },
 
-            _(models).each(function (item) {
-                el.append(
-                    new TrickView({model: item}).render().el
-                );
+        filter: function (tags_querystring) {
+            if (tags_querystring) this.selected_tags = tags_querystring.split(',');
+            this.activated_tricks = [];
+
+            _.each(this.selected_tags, function (tag_name) {
+                this.activated_tricks = _.union(this.activated_tricks, tags[tag_name]['tricks']);
             }, this);
         },
+
+        reset_filter: function () {
+            this.selected_tags      = [];
+            this.activated_tricks   = [];
+        },
+
+        render_tricks: function () {
+            this.tricks_container.html('');
+            _(this.collection.models).each(function (m) {
+                if (this.selected_tags.length === 0 || _.include(this.activated_tricks, m.get('id'))) {
+                    this.tricks_container.append(new TrickView({model: m}).render().el);
+                }
+            }, this);
+        },
+
+        render_tags: function () {
+            var tag_html = _.template('<a class="tricks_filter__tag<% if (major) { %> major_tag<% } %><% if (selected) {%> tag__selected<% } %>" href="#<%= tag_id %>"><%= tag_title %></a>');
+            this.tags_container.html('');
+            _(tags).each(function (tag_info, tag_id) {
+                var context = {
+                    major       : tag_info.major,
+                    tag_id      : tag_id,
+                    selected    : _.include(this.tags_selected, tag_id),
+                    tag_title   : tag_info.title
+                };
+                this.tags_container.append(tag_html(context));
+            }, this);
+            this.tags_container.append('<div class="clear"></div>');
+        },
+
+        render: function () {
+            var exists_containers = this.$el.find('div.tricks_filter, div.tricks_list');
+
+            if (exists_containers.length !== 2) {
+                this.$el.html('');
+                this.tags_container   = $('<div class="tricks_filter"></div>');
+                this.tricks_container = $('<div class="tricks_list"></div>');
+
+                this.$el.append(this.tags_container, this.tricks_container);
+            } else {
+                this.tags_container   = $(exists_containers[0]);
+                this.tricks_container = $(exists_containers[1]);
+            }
+
+            this.render_tags();
+            this.render_tricks();
+        }
     });
 
 
@@ -510,7 +493,7 @@ window.app = function (tricks, tags, user) {
             'u:user_id/'                : 'my',
             'trick/:trick'              : 'trick',
             'profile-:user_id'          : 'profile',
-            'filter=:tags_selected'     : 'index'
+            'filter=:tags_selected'     : 'filter'
         },
 
         initialize: function () {
@@ -530,6 +513,11 @@ window.app = function (tricks, tags, user) {
 
         },
 
+        filter: function (tags_selected) {
+            this.tricksView.filter(tags_selected);
+            this.index();
+        },
+
         my: function () {
             if (this.user) this.user.render();
         },
@@ -537,10 +525,11 @@ window.app = function (tricks, tags, user) {
         index: function (tags_selected) {
             window.document.title = 'Besttrick';
             $('h1 span').text('');
-            this.tricksView.render(tags_selected ? {tags_selected: tags_selected.split(',')} : {});
+            this.tricksView.render();
         },
 
         fresh_index: function () {
+            this.tricksView.reset_filter();
             this.tricksView.collection.fetch();
             this.index();
         },
