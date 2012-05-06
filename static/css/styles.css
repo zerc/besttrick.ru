@@ -12,6 +12,11 @@ body {background-color:#F2F2F2;}
 
 body .as_block {display:block;}
 
+a.logo {
+    display:block; height:24px; width:128px; text-indent:-9999px; margin-top:5px;
+    background:url('/static/i/logo.png') 0 0 no-repeat; float:left;
+}
+
 .copyright{
     border-top:1px solid #E8E9EB; margin-top:10px; padding:5px;
     text-align: center;
