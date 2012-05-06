@@ -314,8 +314,15 @@ window.app = function (tricks, tags, user) {
         },
 
         initialize: function () {
+            var self = this;
+
             _.bindAll(this, 'render', 'toggle_form', 'send');
             this._container = this.$el.find('div');
+
+            $(document).bind('click', function (e) {
+                if ($(e.target).closest('div.' + self.$el.attr('class')).length === 0) self.toggle_form();
+            });
+
         },
 
         render: function (success) {
@@ -349,9 +356,8 @@ window.app = function (tricks, tags, user) {
 
             _.map(this.$el.find('input, textarea'), function (el) {
                 var $el = $(el);
-
                 if (!$el.val()) {
-                    if ($el.attr('type') === 'text') $el.addClass('error');
+                    if ($el.attr('type') === 'text' || $el.attr('id') === 'id_text') $el.addClass('error');
                 } else {
                     data[$el.attr('id').replace('id_', '')] = $el.val();
                     $el.removeClass('error');
