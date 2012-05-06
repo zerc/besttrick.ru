@@ -111,7 +111,8 @@ window.app = function (tricks, tags, user) {
         },
 
         router: function (e) {
-            var el = $(e.target);
+            var el = $(e.target).closest('a');
+
             if (el.attr('bind')) {
                 this[el.attr('bind')]();
             } else {
@@ -127,6 +128,8 @@ window.app = function (tricks, tags, user) {
 
         save: function () {
             var cones = parseInt(this.$el.find('#dialog__cones').val(), 10);
+            // TODO: предусмотреть вывод сообшения об ошибке ввода
+            if (cones <= 0) { return; }
 
             this.model.set('cones', cones, {silent: true});
             if (!this.model.get('user_do_this')) {
@@ -206,7 +209,7 @@ window.app = function (tricks, tags, user) {
             this.selected_tags = _.map(this.tags_container.find('.tag__selected'), function (e) {
                 return $(e).attr('href').replace('#', '');
             });
-            console.log(this.selected_tags);
+
             this.filter();
 
             if (this.selected_tags.length > 0) {
@@ -250,7 +253,7 @@ window.app = function (tricks, tags, user) {
                 var context = {
                     major       : tag_info.major,
                     tag_id      : tag_id,
-                    selected    : _.include(this.tags_selected, tag_id),
+                    selected    : _.include(this.selected_tags, tag_id),
                     tag_title   : tag_info.title
                 };
                 this.tags_container.append(tag_html(context));
