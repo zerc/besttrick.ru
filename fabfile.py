@@ -1,11 +1,16 @@
 #!venv/bin/python
 # -*- coding: utf-8 -*-
 from fabric.api import *
+from project import app, project_scripts, final_script_name
+from os.path import join as path_join
 
 
 env.hosts = _app.config['FLASK_HOSTS']
  
 def roll():
+    execute(static)
+    put(path_join(app.static_folder, final_script_name), 'www/static/js/main.js')
+    
     local('git push origin master')
     run("""
         cd www/ &&
@@ -26,4 +31,13 @@ def update_tricks():
 def pull():
     local('git pull origin master')
 
-    
+def static():
+    final_file = open(path_join(app.static_folder, final_script_name), 'w+')
+    print >> final_file, 'window.app = function (args) {'
+
+    for f in project_scripts:
+        with open(path_join(app.static_folder, f), 'r') as js_file:
+            print >> final_file, js_file.read()
+
+    print >> final_file, 'var app = new App(args); };'
+    final_file.close()

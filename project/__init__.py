@@ -19,8 +19,17 @@ connection = Connection(app.config['MONGODB_HOST'], app.config['MONGODB_PORT'])
 db = connection.besttrick
 
 assets = Environment(app)
-js = Bundle('js/underscore.js','js/backbone.js','js/ejs.js','js/main.js',
-            filters='jsmin', output='js/main_min.js')
+
+scripts_names = ('js/underscore.js', 'js/backbone.js', 'js/ejs.js',)
+project_scripts = ('js/tricks.js', 'js/users.js', 'js/app.js')
+final_script_name = 'js/main.js'
+
+if (app.config['DEBUG']):
+    scripts_names = scripts_names + project_scripts
+else:
+    scripts_names = scripts_names + (final_script_name,)
+
+js = Bundle(*scripts_names, filters='jsmin', output='js/main_min.js')
 assets.register('js_all', js)
 
 

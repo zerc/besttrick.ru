@@ -73,9 +73,20 @@
 
     {% if 'bt_open' in request.cookies or config.DEBUG  %}
     <script type="text/javascript">
-        (function () {
-            new window.app({{ tricks|safe }}, {{ tags|safe }}, {{ user|safe if user != False else 'false' }});
-        }());
+        var args = {
+            'tricks' : {{ tricks|safe }},
+            'user'   : {{ user|safe if user != False else 'false' }},
+            'tags'   : {{ tags|safe }}
+        };
+
+        {# В продакшене все приложение заворачивается в замыкание #}
+        {% if config.DEBUG %}
+            var app = new App(args);
+        {% else %}
+            (function () {
+                new window.app(args);
+            }());
+        {% endif %}
     </script>
     {% endif %}
 </body>
