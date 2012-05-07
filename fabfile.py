@@ -9,8 +9,7 @@ env.hosts = _app.config['FLASK_HOSTS']
  
 def roll():
     execute(static)
-    put(path_join(app.static_folder, final_script_name), 'www/static/js/main.js')
-    
+
     local('git push origin master')
     run("""
         cd www/ &&
@@ -41,3 +40,4 @@ def static():
 
     print >> final_file, 'var app = new App(args); };'
     final_file.close()
+    put(path_join(app.static_folder, final_script_name), 'www/static/js/main.js')
