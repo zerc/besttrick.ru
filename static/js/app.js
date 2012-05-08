@@ -16,7 +16,6 @@ EJS.Helpers.prototype.row_if_exists = function (row, label) {
 };
 
 EJS.Helpers.prototype.set_title = function (title) {
-    $('h1 span').text(title);
     window.document.title = 'Besttrick - ' + title;
 
 };
@@ -66,7 +65,7 @@ var App = Backbone.Router.extend({
         this.profile    = new UserProfile();
         this.loginView  = new Login({user: userModel});
         this.tricksView = new TricksView({tricks: args.tricks, tags: args.tags, user: userModel});
-        this.trickFull  = new TrickFullView();
+        this.trickFull  = new TrickFullView({user: userModel});
         this.feedback   = new FeedBack({user: userModel});
 
         // Назначаю общие действия при переходе по страницам

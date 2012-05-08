@@ -77,7 +77,7 @@ def trick_full(trick_id):
     return json.dumps(sorted(rows, key=lambda x: x['cones'], reverse=True))
 
 
-@app.route('/trick/', methods=['PUT'])
+@app.route('/checktrick/', methods=['PUT'])
 def trick():
     user_id = session.get('user_id', False)
 

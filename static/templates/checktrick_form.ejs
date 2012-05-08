@@ -1,0 +1,37 @@
+<% if (view === 'minify') { %>
+    <div class="trick__dialog dialog_overflow"></div>
+    <div class="trick__dialog">
+        <a href="#" class="dialog__close toggle_dialog">x</a>
+        <label for="dialog__cones">Сколько банок?</label>
+        <p>На <input type="text" id="dialog__cones" class="text cones" value="<%= model.get('cones') %>" />
+        <a href="#" class="dialog__save">делаю</a>!</p>
+    </div>
+
+    <div class="stats__row">
+        делают: <%= model.get('users') %>
+        <% if (user !== false) { %>
+            <a class="trick__dialog_control toggle_dialog" href="#">+</a>
+        <% } %>
+    </div>
+    <div class="stats__row row__best_user">
+        <% if (model.get('best_user')) { %>
+            <a href="#profile-<%= model.get('best_user')._id %>" class="view_profile" title="<%= model.get('best_user').nick %> лучше всех делает этот трюк!"><%= format_username(model.get('best_user').nick) %></a> 
+            <%= plural(model.get('best_user_cones'), 'банка', 'банки', 'банок') %>
+        <% } else { %>
+            <div class="no_king">место короля свободно ...</div>
+        <% } %>
+    </div>
+
+    <br class="clearfix">
+<% } else if (view === 'full') { %>
+    <div class="full_trick__dialog_holder">
+        <div class="full_trick__dialog dialog_overflow"></div>
+        <div class="full_trick__dialog">
+            <a href="#" class="dialog__close toggle_dialog">x</a>
+            <p>На <input type="text" id="dialog__cones" class="text cones" value="<%= model.get('cones') %>" />
+            <a href="#" class="dialog__save">делаю</a>!</p>
+        </div>
+
+        <h5><%= model.get_title() %></h5> <% if (user) { %><a class="check_full_trick_icon" href="#" title="<% if (model.get('cones') > 0) { %>Вы делаете этот трюк на <%= plural(model.get('cones'), 'банку', 'банки', 'банок') %>.<% } else { %>Вы еще не делаете этот трюк.<% } %>"><%= model.get('cones') || 0 %></a><% } %>
+    </div>
+<% } %>

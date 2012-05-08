@@ -1,9 +1,61 @@
 /*global jQuery, window, document */
 /*jslint nomen: true, maxerr: 50, indent: 4 */
-var Trick, TrickView, TrickFullView, TricksList, TricksView, CheckTrick;
+var Trick, TrickView, TrickFullView, TricksList, TricksView, CheckTrickView;
+
+
+
+CheckTrickView = Backbone.View.extend({
+    template    : new EJS({url: '/static/templates/checktrick_form.ejs'}),
+    events      : {
+        'click a.toggle_dialog' : 'toggle_dialog',
+        'click a.dialog__save'  : 'save',
+        'click a.check_full_trick_icon': 'toggle_dialog'
+    },
+
+    initialize: function (args) {
+        _.bindAll(this, 'render', 'save');
+        this.user = args.user;
+    },
+
+    toggle_dialog: function () {
+        this.$el.toggleClass('showing_dialog');
+        return false;
+    },
+
+    render: function (view_type) {
+        var context = {
+            'model' : this.model,
+            'user'  : this.user,
+            'view'  : view_type || 'minify'
+        }
+        return this.template.render(context);
+    },
+
+    save: function (callback) {
+        var cones = parseInt(this.$el.find('#dialog__cones').val(), 10);
+        // TODO: предусмотреть вывод сообшения об ошибке ввода
+        if (cones <= 0) { return; }
+
+        this.model.set('cones', cones, {silent: true});
+
+        if (!this.model.get('user_do_this')) {
+            this.model.set('users', this.model.get('users')+1, {silent: true});
+        }
+
+        if (this.model.hasChanged() && this.model.isValid()) {
+            this.model.save();
+        }
+
+        this.toggle_dialog();
+
+        if (this.after_save) this.after_save();
+
+        return false;
+    }
+})
 
 Trick = Backbone.Model.extend({
-    url: '/trick/',
+    url: '/checktrick/',
 
     defaults: {
         _id         : '',
@@ -15,6 +67,7 @@ Trick = Backbone.Model.extend({
         score       : 0,
         wssa_score  : 0,
 
+        // параметры о чекине/чекинах пользователей
         user_do_this : false, // делает ли пользователь этот трюк
         users        : 0,     // сколько пользователей делает этот трюк
         cones        : 0,
@@ -38,59 +91,29 @@ TrickView = Backbone.View.extend({
     tagName     : 'div',
     className   : 'trick',
     template    : new EJS({url: '/static/templates/trick.ejs'}),
-    events      : {'click a': 'router'},
 
     initialize: function (args) {
-        var self = this;
         _.bindAll(this, 'render');
         this.model.on('sync', this.render, this);
         this.user = args.user;
+        this.checktrick = new CheckTrickView({
+            el    : this.el,
+            user  : this.user,
+            model : this.model
+        });
     },
 
     render: function () {
         var context = {
-            'model'     : this.model,
-            'user_id'   : this.user ? this.user.get('id') : false
-        }
-        this.$el.html(this.template.render(context));
-        if (this.model.get('user_do_this')) {
-            this.$el.addClass('user_do_this');
-        }
+                'model'     : this.model,
+                'user_id'   : this.user ? this.user.get('id') : false
+            };
+
+        this.$el.html(this.template.render(context) + this.checktrick.render());
+        
+        if (this.model.get('user_do_this')) this.$el.addClass('user_do_this');
 
         return this;
-    },
-
-    router: function (e) {
-        var el = $(e.target).closest('a');
-
-        if (el.attr('bind')) {
-            this[el.attr('bind')]();
-        } else {
-            app.navigate(el.attr('href').replace('#', ''), true);
-        }
-
-        return false;
-    },
-
-    toggle_dialog: function () {
-        this.$el.toggleClass('showing_dialog');
-    },
-
-    save: function () {
-        var cones = parseInt(this.$el.find('#dialog__cones').val(), 10);
-        // TODO: предусмотреть вывод сообшения об ошибке ввода
-        if (cones <= 0) { return; }
-
-        this.model.set('cones', cones, {silent: true});
-        if (!this.model.get('user_do_this')) {
-            this.model.set('users', this.model.get('users')+1, {silent: true});
-        }
-
-        if (this.model.hasChanged() && this.model.isValid()) {
-            this.model.save();
-        }
-
-        this.toggle_dialog();
     }
 });
 
@@ -103,13 +126,21 @@ TrickFullView = Backbone.View.extend({
 
     template: new EJS({url: '/static/templates/trick_full.ejs'}),
 
-    initialize: function () {
+    initialize: function (args) {
         _.bindAll(this, 'render', 'load_video');
+        this.checktrick = new CheckTrickView({user: args.user, el: this.el});
     },
 
     render: function (options) {
         var self = this;
-        _.extend(self, options);
+
+        // кэшируем последние опции, с которыми вызывался рендер
+        this.last_options = options;
+        _.extend(self, options || this.last_options || {});
+
+        // манки-патчим форму чекина
+        this.checktrick.model = this.model;
+        this.checktrick.after_save = this.render;
 
         $.ajax({
             url: '/trick/full/' + self.model.get('id') + '/',
@@ -117,7 +148,8 @@ TrickFullView = Backbone.View.extend({
             success: function (response) {
                 self.$el.html(self.template.render({
                     'users': response,
-                    'trick': self.model
+                    'trick': self.model,
+                    'checktrick': self.checktrick
                 }));
             },
             error: function () {
@@ -131,6 +163,7 @@ TrickFullView = Backbone.View.extend({
     load_video: function () {
         var html = '<iframe width="315" height="190" src="'+this.model.get('videos')[0]+'" frameborder="0" allowfullscreen></iframe>';
         this.$el.find('.trick_video_preview').replaceWith(html);
+        return false;
     }
 });
 
@@ -153,6 +186,7 @@ TricksView = Backbone.View.extend({
         this.selected_tags      = [];
         this.activated_tricks   = [];
         this.user               = args.user;
+        this.checktrick         = args.checktrick;
     },
 
     activate_tag: function (e) {
@@ -193,7 +227,7 @@ TricksView = Backbone.View.extend({
         this.tricks_container.html('');
         _(this.collection.models).each(function (m) {
             if (this.selected_tags.length === 0 || _.include(this.activated_tricks, m.get('id'))) {
-                this.tricks_container.append(new TrickView({model: m, user: this.user}).render().el);
+                this.tricks_container.append(new TrickView({model: m, user: this.user, checktrick: this.checktrick}).render().el);
             }
         }, this);
     },

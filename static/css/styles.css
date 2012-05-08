@@ -1,11 +1,8 @@
 /* Common */
 h1 {
-    font-size:28px; line-height:1.5; margin-left:10px; margin-bottom:0;
+    font-size:28px; line-height:1.5; margin-left:10px; margin-bottom:0; display:block; height:50px;
     font-family: HelveticaNeue, 'Helvetica Neue', Helvetica, Arial, sans-serif;
 
-}
-h1 span {
-    font-size:20px; margin-left:10px; color:#D37474;
 }
 
 body {background-color:#F2F2F2;}
@@ -71,7 +68,6 @@ a.logo {
 }
 .row__best_user .no_king {text-indent:0;}
 
-
 a.trick__dialog_control {
     margin: 0;
     float: right;
@@ -114,7 +110,7 @@ a.dialog__close {
 
 .showing_dialog .dialog_overflow,
 .showing_dialog .trick__dialog {display: block;}
-.trick__dialog .cones {width: 25px; text-align: center; margin: 0 5px; display: inline;}
+.trick__dialog .cones, .full_trick__dialog .cones {width: 25px; text-align: center; margin: 0 5px; display: inline;}
 .user_do_this {background-color:#fdecdd;}
 .user_do_this .user_do_this_icon {display:block}
 .user_do_this_icon {
@@ -155,15 +151,25 @@ a.tricks_filter__tag:hover {color:#555; text-decoration:none;}
 .no_one {padding-left:10px; width: 490px;}
 .trick__info {position:relative; float:right; width:315px; background:white; padding:10px;}
 
-.trick_video_preview img {
-    width:315px; height:190px;
-}
-
+.trick_video_preview {position:relative;}
+.trick_video_preview img {width:315px; height:190px;}
 .trick_video_preview_button {
-    width:25px;height:25px;position:absolute;left:155px;top:90px;
+    width:25px;height:25px;position:absolute;left:140px;top:75px;
     background:#CCC url('/static/i/common.png') 9px -14px no-repeat;
     border:1px solid #333;border-radius:5px;
 }
+
+.full_trick__dialog_holder {margin:-10px -10px 10px -10px; padding:10px; border-bottom: 1px solid #E8E9EB;}
+.full_trick__dialog_holder h5 {display:inline; line-height:20px;}
+.check_full_trick_icon {margin-left:10px;}
+
+.full_trick__dialog {
+    position:absolute; height:42px; width:335px; top:0; left:0; display: none;
+}
+
+.full_trick__dialog p {padding:5px;}
+.showing_dialog .full_trick__dialog {display:block;}
+
 
 /* User page */
 .user {}
