@@ -65,7 +65,7 @@ var App = Backbone.Router.extend({
         this.user       = userModel ? new UserView({model: userModel}) : false;
         this.profile    = new UserProfile();
         this.loginView  = new Login({user: userModel});
-        this.tricksView = new TricksView({tricks: args.tricks, tags: args.tags});
+        this.tricksView = new TricksView({tricks: args.tricks, tags: args.tags, user: userModel});
         this.trickFull  = new TrickFullView();
         this.feedback   = new FeedBack({user: userModel});
 

@@ -1,6 +1,6 @@
 /*global jQuery, window, document */
 /*jslint nomen: true, maxerr: 50, indent: 4 */
-var Trick, TrickView, TrickFullView, TricksList, TricksView;
+var Trick, TrickView, TrickFullView, TricksList, TricksView, CheckTrick;
 
 Trick = Backbone.Model.extend({
     url: '/trick/',
@@ -52,7 +52,6 @@ TrickView = Backbone.View.extend({
             'model'     : this.model,
             'user_id'   : this.user ? this.user.get('id') : false
         }
-
         this.$el.html(this.template.render(context));
         if (this.model.get('user_do_this')) {
             this.$el.addClass('user_do_this');
@@ -153,6 +152,7 @@ TricksView = Backbone.View.extend({
         this.tags               = args.tags;
         this.selected_tags      = [];
         this.activated_tricks   = [];
+        this.user               = args.user;
     },
 
     activate_tag: function (e) {
@@ -193,7 +193,7 @@ TricksView = Backbone.View.extend({
         this.tricks_container.html('');
         _(this.collection.models).each(function (m) {
             if (this.selected_tags.length === 0 || _.include(this.activated_tricks, m.get('id'))) {
-                this.tricks_container.append(new TrickView({model: m}).render().el);
+                this.tricks_container.append(new TrickView({model: m, user: this.user}).render().el);
             }
         }, this);
     },
