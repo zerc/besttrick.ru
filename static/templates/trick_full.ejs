@@ -5,7 +5,9 @@
     <% _.map(users, function (row, i) {%>
         <div class="trick__user<% if (i === 0) { %> trick__user_king<% } %>">
             <span><%= row.cones %></span>
-            <a class="has_video" href="<%= row.video_url %>" target="_blank" title="есть видео подтверждение"></a>
+            <% if (row.video_url) { %>
+                <a class="has_video" href="<%= row.video_url %>" target="_blank" title="есть видео подтверждение"></a>
+            <% } %>
             <img src="<%= row.user.photo %>" class="trick__user__photo">
             <a href="#profile-<%= row.user._id %>"><%= row.user.nick %></a>
         </div>
