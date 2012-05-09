@@ -1,20 +1,139 @@
 /*global jQuery, window, document */
 /*jslint nomen: true, maxerr: 50, indent: 4 */
-var Trick, TrickView, TrickFullView, TricksList, TricksView, CheckTrickView;
+var Trick, TrickView, TrickFullView, TricksList, TricksView, CheckTrickView, 
+    UploadVideoForm, video_form;
 
+UploadVideoForm = function () {
+    var body = $('body'),
+        doc  = $(document),
+        overflow = $('<div class="upload_video_form_overflow"></div>'),
+        container = $('<div class="upload_video_form_container"></div>'),
+        template = new EJS({url: '/static/templates/upload_video_form.ejs'});;
+
+    overflow.height(doc.height());
+    body.append(overflow, container);
+
+    function get_params(trick_id) {
+        var params = false;
+
+        $.ajax({
+            url: '/prepare_youtube_upload/',
+            data: {'trick_id': trick_id},
+            dataType: 'json',
+            async: false,
+
+            success: function (response) {
+                params = response;
+            },
+            error: function () {
+                alert('Ошибка получения параметров загрузки. Попробуйте еще раз.');
+            }
+        });
+
+        return params;
+    };
+
+    function print_error(form, text) {
+        form.find('div.error_holder').html(text);
+    };
+
+
+    /*
+     * Показывает форму загрзки. Умеет получать параметры загрызки видео.
+     * После успешной загрузки вызывает callback функцию, куда передает id video.
+     */
+    this.show = function (trick_id, callback) {
+        var params = get_params(trick_id),
+            form;
+
+        if (!params) return;
+
+        container.html(template.render(params));
+
+        form = container.find('form');
+
+        form.find('button.upload_form__close').bind('click', this.hide);
+
+        form.ajaxForm({
+            iframe: true, // так как ютуб использует редирект, нам нужно прогрузить его через iframe
+            dataType: 'json',
+
+            beforeSubmit: function (arr, form, options) {
+                var file_selected = false; // выбран ли файл?
+
+                if (!form.find('input[type="checkbox"]').is(':checked')) {
+                    print_error(form, 'Вы должны согласиться с правилами загрузки.');
+                    return false;
+                }
+
+                _(arr).each(function (el) {
+                    if (el.name === "file" && el.value) file_selected = true;
+                });
+
+                if (!file_selected) {
+                    print_error(form, 'Выберите файл для загрузки.');
+                    return false;
+                }
+
+                // валидация пройдена, дисайблим кнопку, показываем лоадер, все дела
+                print_error(form, '');
+                form.find('button').addClass('disabled').attr('disabled', 'disabled');
+                form.find('div.upload_form__loader').show();
+                body.css('cursor', 'wait');
+
+                return true;
+            },
+
+            complete: function (xhr) {
+                var response = JSON.parse(xhr.responseText);
+
+                if (response.status[0] !== '200') {
+                    alert('Ошибка загрузки видео со стороны YouTube.');
+                    return;
+                }
+                callback(response.id[0]);
+            }
+        });
+        
+        body.addClass('show_upload_form');
+    },
+    this.hide = function () {
+        body.removeClass('show_upload_form').css('cursor', 'default');
+    }
+
+    return this;
+}
+
+$(function () {
+    video_form = new UploadVideoForm();    
+});
 
 
 CheckTrickView = Backbone.View.extend({
     template    : new EJS({url: '/static/templates/checktrick_form.ejs'}),
     events      : {
-        'click a.toggle_dialog' : 'toggle_dialog',
-        'click a.dialog__save'  : 'save',
-        'click a.check_full_trick_icon': 'toggle_dialog'
+        'click a.toggle_dialog'         : 'toggle_dialog',
+        'click a.dialog__save'          : 'save',
+        'click a.check_full_trick_icon' : 'toggle_dialog',
+        'click a.upload_video_link'     : 'show_upload_form'
     },
 
     initialize: function (args) {
         _.bindAll(this, 'render', 'save');
         this.user = args.user;
+    },
+
+    show_upload_form: function () {
+        var self = this;
+
+        video_form.show(this.model.get('id'), function (video_id) {
+            var url = 'http://youtu.be/' + video_id
+            self.$el.find('#dialog__video_url').val(url);
+            //self.save();
+            video_form.hide();
+        });
+
+        return false;
     },
 
     toggle_dialog: function () {
@@ -32,11 +151,14 @@ CheckTrickView = Backbone.View.extend({
     },
 
     save: function (callback) {
-        var cones = parseInt(this.$el.find('#dialog__cones').val(), 10);
+        var cones = parseInt(this.$el.find('#dialog__cones').val(), 10),
+            video_url = this.$el.find('#dialog__video_url').val();
+
         // TODO: предусмотреть вывод сообшения об ошибке ввода
         if (cones <= 0) { return; }
 
         this.model.set('cones', cones, {silent: true});
+        this.model.set('video_url', video_url, {silent: true});
 
         if (!this.model.get('user_do_this')) {
             this.model.set('users', this.model.get('users')+1, {silent: true});
@@ -68,12 +190,13 @@ Trick = Backbone.Model.extend({
         wssa_score  : 0,
 
         // параметры о чекине/чекинах пользователей
-        user_do_this : false, // делает ли пользователь этот трюк
-        users        : 0,     // сколько пользователей делает этот трюк
-        cones        : 0,
-        best_user    : '',
+        user_do_this    : false, // делает ли пользователь этот трюк
+        users           : 0,     // сколько пользователей делает этот трюк
+        cones           : 0,
+        video_url       : '',    // сслыка на подтверждающий видос
+        best_user       : '',
         best_user_cones : 0,
-        users_full  : []
+        users_full      : []
     },
 
     validate: function (attrs) {

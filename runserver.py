@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 import simplejson as json
 
-from flask import g, Flask, render_template, request, session, make_response
+from flask import g, Flask, render_template, request, session, make_response, jsonify
 from flaskext.mail import Message, email_dispatched
 from mongokit import Connection
 
@@ -50,8 +50,11 @@ def index():
     # результат пользователя
     user_stats = {}
     if user_id is not False:
-        reduce_func = u"""function(obj, prev) { prev.cones = obj.cones; }"""
-        user_stats_qs = db.trick_user.group(['trick'], {'user': user_id}, {'cones': 0}, reduce_func)
+        reduce_func = u"""function(obj, prev) { 
+            prev.cones = obj.cones;
+            prev.video_url = obj.video_url;
+        }"""
+        user_stats_qs = db.trick_user.group(['trick'], {'user': user_id}, {'cones': 0, 'video_url': ''}, reduce_func)
 
         for x in user_stats_qs:
             k = x.pop(u'trick')
@@ -100,6 +103,14 @@ def feedback():
     msg.body = body
     mail.send(msg)
     return 'Ok'
+
+@app.route('/youtube_reciver/')
+def youtube_reciver():
+    """
+    Просто принимаем ответ от ютуба и переводим его в json
+    """
+    return jsonify(request.args)
+
 
 
 if __name__ == '__main__':

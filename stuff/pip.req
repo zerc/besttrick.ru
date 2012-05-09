@@ -7,3 +7,4 @@ Flask-Mail
 Flask-Markdown
 Flask-ErrorMail
 fabric
+gdata

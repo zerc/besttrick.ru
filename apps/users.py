@@ -103,7 +103,6 @@ def register(user_data):
         except KeyError:
             continue
 
-
     new_user['_id'] = db.seqs.find_and_modify({"_id": "user_seq"}, {"$inc": {"val": 1}})['val']
     new_user.save()
     return new_user

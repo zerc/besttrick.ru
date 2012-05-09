@@ -9,13 +9,21 @@ from mongokit import Document, DocumentMigration
 from project import app, connection, db
 from .utils import grouped_stats
 
+from gdata.youtube import service
+from gdata import media, youtube
+
+
+# авторизуемся на ютубе, чтобы заливать видосы
+yt_service = service.YouTubeService()
+yt_service.email = app.config['G_EMAIL'] 
+yt_service.password = app.config['G_PASSWORD'] 
+yt_service.source = app.config['G_SOURCE'] 
+yt_service.developer_key = app.config['G_DEV_KEY'] 
+yt_service.client_id = app.config['G_SOURCE']
+yt_service.ProgrammaticLogin()
+
 
 ### Models
-class TrickMigration(DocumentMigration):
-    def migration01__add_tags(self):
-        self.target = {'tags':{'$exists':False}}
-        self.update = {'$set':{'tags': [unicode]}}
-
 class Trick(Document):
     __database__   = app.config['MONGODB_DB']
     __collection__ = "trick"
@@ -33,9 +41,13 @@ class Trick(Document):
     default_values  = {'thumb': u'3', 'score': 1.0, 'wssa_score': 0.0}
     required_fields = ['title']
     indexes = [{'fields': ['tags']}]
-
 connection.register([Trick])
 
+
+class TrickUserMigration(DocumentMigration):
+    def migration01__add_video_url(self):
+        self.target = {'video_url':{'$exists':False}}
+        self.update = {'$set':{'video_url': unicode}}
 
 class TrickUser(Document):
     __database__   = app.config['MONGODB_DB']
@@ -46,13 +58,14 @@ class TrickUser(Document):
         'trick'      : unicode,
         'cones'      : int,
         'approved'   : bool,
+        'video_url'  : unicode,
         'time_added' : datetime,
     }
 
     indexes = [{'fields':['user', 'trick']}]
-
     default_values  = {'cones': 0, 'approved': False, 'time_added': datetime.now}
     required_fields = ['user', 'trick']
+    migration_handler = TrickUserMigration
 connection.register([TrickUser])
 
 
@@ -70,6 +83,45 @@ connection.register([Tag])
 
 
 ### Views
+@app.route('/prepare_youtube_upload/', methods=['GET'])
+def prepare_youtube_upload():
+    # TODO: вынести проверку на авторизованность в декоратор
+    user_id = session.get('user_id', False)
+    if user_id is False:
+        return 'Access Deny', 403
+
+    user = db.user.find_one({'_id': user_id})
+
+    try:
+        trick_id = request.args['trick_id']
+    except (KeyError, TypeError):
+        return 'Bad trick_id', 403
+
+    trick = db.trick.find_one({'_id': unicode(trick_id)})
+    if not trick:
+        return 'Unknow trick with id = %s' % trick_id, 403
+
+    # create media group as usual
+    my_media_group = media.Group(
+        title=media.Title(text = u'Besttick video: %s' %  trick['title']),
+        description=media.Description(description_type = 'plain', text = u'Raider: %s' % user['nick']),
+        keywords=media.Keywords(text=u", ".join(trick['tags'])),
+        category=[media.Category(text='Sports', scheme='http://gdata.youtube.com/schemas/2007/categories.cat', label=u'Спорт')],
+        player=None
+    )
+
+    # create video entry as usual
+    video_entry = youtube.YouTubeVideoEntry(media=my_media_group)
+
+    # upload meta data only
+    response = yt_service.GetFormUploadToken(video_entry)
+
+    # parse response tuple and use the variables to build a form (see next code snippet)
+    post_url, token = response
+
+    return jsonify({'post_url': post_url, 'token': token})
+
+
 @app.route('/trick/full/<trick_id>/', methods=['GET'])
 def trick_full(trick_id):
     """ Лучшие пользователи по этому трюку """
@@ -94,16 +146,19 @@ def trick():
 
 
     trick_user = db.trick_user.find_one({'user': user_id, 'trick': trick_data['_id']})
+    update_data = {
+        'cones': int(trick_data['cones']), 
+        'video_url': unicode(trick_data['video_url']),
+    }
 
     if trick_user:
-        db.trick_user.update({'user': user_id, 'trick': trick_data['_id']}, {'$set': {
-            'cones': int(trick_data['cones']),
-        }})
+        db.trick_user.update({'user': user_id, 'trick': trick_data['_id']}, {'$set': update_data})
     else:
         trick_user = connection.TrickUser()
         trick_user['user'] = user_id
         trick_user['trick'] = trick_data['_id']
-        trick_user['cones'] = int(trick_data['cones'])
+        trick_user.update(update_data)
+        #trick_user['cones'] = int(trick_data['cones'])
         trick_user.save()
 
     # TODO: срефакторить это в универсальную функциюю, так как

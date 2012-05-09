@@ -2,9 +2,12 @@
     <div class="trick__dialog dialog_overflow"></div>
     <div class="trick__dialog">
         <a href="#" class="dialog__close toggle_dialog">x</a>
-        <label for="dialog__cones">Сколько банок?</label>
-        <p>На <input type="text" id="dialog__cones" class="text cones" value="<%= model.get('cones') %>" />
-        <a href="#" class="dialog__save">делаю</a>!</p>
+
+        <input type="text" id="dialog__cones" class="text cones" placeholder="сколько банок?" value="<%= model.get('cones') || '' %>" /> <a href="#" class="dialog__save">сохранить</a>
+
+        <input type="text" id="dialog__video_url" class="text video_url" placeholder="ссылка на видео" value="<%= model.get('video_url') || '' %>"/> или 
+        <a href="#" class="upload_video_link">загрузить</a>
+     
     </div>
 
     <div class="stats__row">
