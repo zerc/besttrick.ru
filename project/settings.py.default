@@ -21,3 +21,9 @@ DEFAULT_MAIL_SENDER = 'root@besttrick.ru'
 # MAIL_DEBUG = True
 # MAIL_USERNAME : default None
 # MAIL_PASSWORD : default None
+
+# настройки для загрузки видео на ютуб
+G_EMAIL     = 'test@gmail.com'
+G_PASSWORD  = 'password'
+G_SOURCE    = 'source'
+G_DEV_KEY   = 'secret_key'
