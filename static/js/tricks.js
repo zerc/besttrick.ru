@@ -1,6 +1,6 @@
 /*global jQuery, window, document */
 /*jslint nomen: true, maxerr: 50, indent: 4 */
-var Trick, TrickView, TrickFullView, TricksList, TricksView, CheckTrickView, 
+var Trick, TrickView, TrickFullView, TricksList, TricksView, CheckTrickView,
     UploadVideoForm, video_form;
 
 UploadVideoForm = function () {
@@ -94,7 +94,7 @@ UploadVideoForm = function () {
                 callback(response.id[0]);
             }
         });
-        
+
         body.addClass('show_upload_form');
     },
     this.hide = function () {
@@ -105,7 +105,7 @@ UploadVideoForm = function () {
 }
 
 $(function () {
-    video_form = new UploadVideoForm();    
+    video_form = new UploadVideoForm();
 });
 
 
@@ -203,6 +203,14 @@ Trick = Backbone.Model.extend({
         if (_.isNaN(attrs.cones) || attrs.cones < 0) {
             return 'укажите число конусов';
         }
+
+        if (attrs.cones >= 1000) {
+            return 'не верим :)';
+        }
+
+        if (attrs.video_url && !/^(http|https):\/\/(www\.youtube\.com|youtu.be)\/[a-zA-Z0-9\?&\/=]+$/gmi.test(attrs.video_url)) {
+            return 'укажите ссылку на видео с YouTube';
+        }
     },
 
     get_title: function () {
@@ -233,7 +241,7 @@ TrickView = Backbone.View.extend({
             };
 
         this.$el.html(this.template.render(context) + this.checktrick.render());
-        
+
         if (this.model.get('user_do_this')) this.$el.addClass('user_do_this');
 
         return this;

@@ -147,9 +147,11 @@ def trick():
 
     trick_user = db.trick_user.find_one({'user': user_id, 'trick': trick_data['_id']})
     update_data = {
-        'cones': int(trick_data['cones']), 
-        'video_url': unicode(trick_data['video_url']),
+        'cones': int(trick_data['cones']),
     }
+    
+    if trick_data.get('video_url'):
+        update_data['video_url'] = unicode(trick_data['video_url'])
 
     if trick_user:
         db.trick_user.update({'user': user_id, 'trick': trick_data['_id']}, {'$set': update_data})
