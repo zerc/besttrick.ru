@@ -133,6 +133,10 @@ UserModel = Backbone.Model.extend({
         if (!attrs.nick) {
             return 'укажите свой ник';
         }
+
+        if (attrs.nick.length >= 125) {
+            return 'у вас нереально большой ник';
+        }
     }
 });
 
