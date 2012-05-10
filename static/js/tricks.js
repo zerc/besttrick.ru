@@ -200,7 +200,11 @@ CheckTrickView = Backbone.View.extend({
             this.show_error(this.model.validate(this.model.changedAttributes()));
         }
 
-        if (this.after_save) this.after_save();
+        if (this.after_save) {
+            setTimeout(function () {
+                self.after_save();
+            }, 250);
+        }
 
         return false;
     }
@@ -301,8 +305,10 @@ TrickFullView = Backbone.View.extend({
 
         // манки-патчим форму чекина
         this.checktrick.model = this.model;
-        this.checktrick.after_save = this.render;
-
+        // TODO: обрабатывать данные на клиенте, для этого у нас уже есть
+        // список пользователей с их результатами. Добавляем-изменяем свой,
+        // сортируем все дела :)
+        this.checktrick.after_save = this.render; 
         $.ajax({
             url: '/trick/full/' + self.model.get('id') + '/',
             dataType: 'json',
