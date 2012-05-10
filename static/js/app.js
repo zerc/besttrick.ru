@@ -74,6 +74,9 @@ var App = Backbone.Router.extend({
             $('div.content').attr('class', 'content'); // обнулим все навешаенные на главный див стили
         });
 
+        // инициализирую тултипы
+        $(function () { init_tips(); });
+
         Backbone.history.start();
     },
 

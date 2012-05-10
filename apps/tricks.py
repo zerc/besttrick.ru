@@ -1,10 +1,12 @@
 # -*- coding: utf-8 -*-
+import re
 import simplejson as json
 from datetime import datetime
 from pytils.utils import takes, one_of
 
 from flask import render_template, request, jsonify, session, redirect, url_for
 from mongokit import Document, DocumentMigration
+from mongokit.schema_document import ValidationError
 
 from project import app, connection, db
 from .utils import grouped_stats
@@ -22,6 +24,18 @@ yt_service.developer_key = app.config['G_DEV_KEY']
 yt_service.client_id = app.config['G_SOURCE']
 yt_service.ProgrammaticLogin()
 
+
+### Validators
+def positive_integer(val):
+    if val <= 0:
+        raise ValidationError(u'%s cones must be > 0')
+    return True
+
+youtube_re = re.compile(r'^(http|https):\/\/(www\.youtube\.com|youtu.be)\/[a-zA-Z0-9\?&\/=\-]+$', re.S|re.I)
+def is_youtube_link(val):
+    if val and not youtube_re.findall(val):
+        raise ValidationError(u'%s is not youtube link!')
+    return True
 
 ### Models
 class Trick(Document):
@@ -66,6 +80,12 @@ class TrickUser(Document):
     default_values  = {'cones': 0, 'approved': False, 'time_added': datetime.now}
     required_fields = ['user', 'trick']
     migration_handler = TrickUserMigration
+
+    validators = {
+        'cones': positive_integer,
+        'video_url': is_youtube_link,
+    }
+
 connection.register([TrickUser])
 
 
@@ -160,7 +180,6 @@ def trick():
         trick_user['user'] = user_id
         trick_user['trick'] = trick_data['_id']
         trick_user.update(update_data)
-        #trick_user['cones'] = int(trick_data['cones'])
         trick_user.save()
 
     # TODO: срефакторить это в универсальную функциюю, так как

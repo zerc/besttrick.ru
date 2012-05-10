@@ -20,7 +20,7 @@ db = connection.besttrick
 
 assets = Environment(app)
 
-scripts_names = ('js/underscore.js', 'js/backbone.js', 'js/ejs.js', 'js/jquery.form.js')
+scripts_names = ('js/underscore.js', 'js/backbone.js', 'js/ejs.js', 'js/jquery.form.js', 'js/bootstrap-tooltip.js')
 project_scripts = ('js/tricks.js', 'js/users.js', 'js/app.js')
 final_script_name = 'js/main.js'
 

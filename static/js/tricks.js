@@ -1,7 +1,20 @@
 /*global jQuery, window, document */
 /*jslint nomen: true, maxerr: 50, indent: 4 */
 var Trick, TrickView, TrickFullView, TricksList, TricksView, CheckTrickView,
-    UploadVideoForm, video_form;
+    UploadVideoForm, video_form, init_tips;
+
+
+// Просто функция для инициализации типсов на инпутах
+init_tips = function () {
+    $('input.cones')
+        .tooltip({trigger: 'focus'})
+        .errortip({trigger: 'manual'});
+        
+    $('input.video_url')
+        .tooltip({trigger: 'focus', placement: 'bottom'})
+        .errortip({trigger: 'manual', placement: 'bottom'});
+}
+
 
 UploadVideoForm = function () {
     var body = $('body'),
@@ -137,7 +150,8 @@ CheckTrickView = Backbone.View.extend({
     },
 
     toggle_dialog: function () {
-        this.$el.toggleClass('showing_dialog');
+        this.$el.toggleClass('showing_dialog').
+            find('input').errortip('hide');
         return false;
     },
 
@@ -150,12 +164,27 @@ CheckTrickView = Backbone.View.extend({
         return this.template.render(context);
     },
 
-    save: function (callback) {
-        var cones = parseInt(this.$el.find('#dialog__cones').val(), 10),
-            video_url = this.$el.find('#dialog__video_url').val();
+    // принимает ошибку "вида поле_с_ошибкой::текст ошибки"
+    // и рендерит это дело в тултип
+    show_error: function (error) {
+        var error_field, error_text;
 
-        // TODO: предусмотреть вывод сообшения об ошибке ввода
-        if (cones <= 0) { return; }
+        error = error.split('::');
+        error_field = error[0];
+        error_text  = error[1];
+
+        this.$el.find('input.' + error_field)
+            .attr('data-error-title', error_text)
+            .tooltip('disable').errortip('enable').errortip('show')
+            .one('focusout, keydown', function () {
+                $(this).errortip('hide').errortip('disable').tooltip('enable');
+            });
+    },
+
+    save: function (callback) {
+        var self = this,
+            cones = parseInt(this.$el.find('#dialog__cones').val(), 10),
+            video_url = this.$el.find('#dialog__video_url').val();
 
         this.model.set('cones', cones, {silent: true});
         this.model.set('video_url', video_url, {silent: true});
@@ -166,9 +195,10 @@ CheckTrickView = Backbone.View.extend({
 
         if (this.model.hasChanged() && this.model.isValid()) {
             this.model.save();
+            this.toggle_dialog();
+        } else if (this.model.hasChanged()) {
+            this.show_error(this.model.validate(this.model.changedAttributes()));
         }
-
-        this.toggle_dialog();
 
         if (this.after_save) this.after_save();
 
@@ -200,16 +230,16 @@ Trick = Backbone.Model.extend({
     },
 
     validate: function (attrs) {
-        if (_.isNaN(attrs.cones) || attrs.cones < 0) {
-            return 'укажите число конусов';
+        if (_.isNaN(attrs.cones) || attrs.cones <= 0) {
+            return 'cones::введите положительное число';
         }
 
         if (attrs.cones >= 1000) {
-            return 'не верим :)';
+            return 'cones::не верим :)';
         }
 
-        if (attrs.video_url && !/^(http|https):\/\/(www\.youtube\.com|youtu.be)\/[a-zA-Z0-9\?&\/=]+$/gmi.test(attrs.video_url)) {
-            return 'укажите ссылку на видео с YouTube';
+        if (attrs.video_url && !/^(http|https):\/\/(www\.youtube\.com|youtu.be)\/[a-zA-Z0-9\?&\/=\-]+$/gmi.test(attrs.video_url)) {
+            return 'video_url::укажите ссылку на видео с YouTube';
         }
     },
 
