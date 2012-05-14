@@ -27,11 +27,13 @@ a.logo {
 .closed .six.columns {width:400px; border-right:1px solid #f2f2f2; margin-left:0;}
 .closed .six.alpha {margin:0; border:0;}
 
-#jr_wrap {}
-.wrap_active {border:1px solid #ec8888; padding:10px; background-color:#fff; margin-bottom:20px;}
-#jr_wrap p {margin:0; line-height:1.7;}
-#jr_wrap ul {display:block; width:450px; margin:5px auto;}
-#jr_wrap ul li {float:left; margin-right:10px;}
+#jr_holder #jr_wrap {position:relative; text-align:left; width:auto; margin-bottom:20px;}
+#jr_holder #jr_inner {border:1px solid #ec8888; padding:10px; font-size:1em;}
+
+#jr_holder p {margin:0; line-height:1.7;}
+#jr_holder #jr_inner ul {display:block; width:500px; margin:5px auto;}
+#jr_holder #jr_inner ul li {float:left; margin-right:10px; width:auto; height:auto; text-align:left;}
+#jr_holder #jr_inner ul li a {font-size:1em;}
 
 .user_container {
     position:relative; display:block; float:right; line-height:40px; margin-right:10px;

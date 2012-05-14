@@ -3,6 +3,7 @@ import re
 import simplejson as json
 from datetime import datetime
 from pytils.utils import takes, one_of
+from httplib import socket
 
 from flask import render_template, request, jsonify, session, redirect, url_for
 from mongokit import Document, DocumentMigration
@@ -16,13 +17,17 @@ from gdata import media, youtube
 
 
 # авторизуемся на ютубе, чтобы заливать видосы
-yt_service = service.YouTubeService()
-yt_service.email = app.config['G_EMAIL'] 
-yt_service.password = app.config['G_PASSWORD'] 
-yt_service.source = app.config['G_SOURCE'] 
-yt_service.developer_key = app.config['G_DEV_KEY'] 
-yt_service.client_id = app.config['G_SOURCE']
-yt_service.ProgrammaticLogin()
+try:
+    yt_service = service.YouTubeService()
+    yt_service.email = app.config['G_EMAIL'] 
+    yt_service.password = app.config['G_PASSWORD'] 
+    yt_service.source = app.config['G_SOURCE'] 
+    yt_service.developer_key = app.config['G_DEV_KEY'] 
+    yt_service.client_id = app.config['G_SOURCE']
+    yt_service.ProgrammaticLogin()
+except socket.gaierror, e:
+    # нет коннекта до YouTube
+    yt_service = None
 
 
 ### Validators
@@ -109,6 +114,9 @@ def prepare_youtube_upload():
     user_id = session.get('user_id', False)
     if user_id is False:
         return 'Access Deny', 403
+
+    if yt_service is None:
+        return 'YouTube is unavilible now', 403
 
     user = db.user.find_one({'_id': user_id})
 

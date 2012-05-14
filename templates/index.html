@@ -15,20 +15,25 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='css/skeleton.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/layout.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/jquery.reject.css') }}">
 
     <!--[if lt IE 9]>
         <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
     <![endif]-->
 
+    {#
     <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
-
-    {% if 'bt_open' in request.cookies or config.DEBUG  %}
+    #}
+    {#
+    <script type="text/javascript" src="/static/js/jquery.min.js"></script>
+    #}
+    
         {% assets "js_all" %}
             <script type="text/javascript" src="{{ ASSET_URL }}"></script>
         {% endassets %}
 
         <script src="http://loginza.ru/js/widget.js" type="text/javascript"></script>
-    {% endif %}
+    
     <script type="text/javascript" src="/static/js/jquery.reject.js"></script>
 
     <!-- Favicons
@@ -71,7 +76,7 @@
             <div class="im_intrigued">
                 <p>Прямо сейчас проект активно тестируется, исправляются баги, рисуются иконки, пишутся пиар тексты - осталось подождать еще чуть-чуть, и мы откроемся.</p>
 
-                <div id="jr_wrap"></div>
+                <div id="jr_holder"></div>
 
                 <p>Ну если вы чувствуете непреодолимое желание оказать помощь и ускорить процесс - то просто напишите мне на <a href="mailto:zero13cool@yandex.ru" style="color:red;">zero13cool@yandex.ru</a> и мы договоримся.</p>
             </div>
@@ -89,16 +94,18 @@
         $(function () {
             $.reject({
                 reject: {
-                    msie7       : true,
-                    firefox1    : true,
-                    firefox2    : true,
+                    msieX       : true,
+                    firefoxX    : true,
                     konqueror   : true,
-                    opera7      : true,
-                    opera8      : true,
-                    opera9      : true,
-                    opera10     : true
+                    operaX      : true,
+                    chromeX     : true
                 },
-                paragraph: "Кстати, чтобы в полной мере воспользоваться возможностями сайта - обновите, или смените свой браузер.<br>Сейчас в моде:"
+                imagePath: null,
+                header: null,
+                paragraph1: null,
+                el: '#jr_holder',
+                close: false,
+                paragraph2: "Кстати, чтобы в полной мере воспользоваться возможностями сайта - обновите, или смените свой браузер.<br>Сейчас в моде:"
             });
         });
     </script>

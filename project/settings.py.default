@@ -4,6 +4,7 @@ ADMINS = ['zero13cool@yandex.ru']
 
 DEBUG        = True
 ASSETS_DEBUG = True
+OPENED       = False
 
 MONGODB_DB   = 'source'
 MONGODB_HOST = 'localhost'

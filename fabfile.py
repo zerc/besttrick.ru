@@ -1,7 +1,7 @@
 #!venv/bin/python
 # -*- coding: utf-8 -*-
 from fabric.api import *
-from project import app, project_scripts, final_script_name
+from project import app, JS_PROJECT, final_script_name
 from os.path import join as path_join
 
 
@@ -35,7 +35,7 @@ def static():
     final_file = open(path_join(app.static_folder, final_script_name), 'w+')
     print >> final_file, 'window.app = function (args) {'
 
-    for f in project_scripts:
+    for f in JS_PROJECT:
         with open(path_join(app.static_folder, f), 'r') as js_file:
             print >> final_file, js_file.read()
 
