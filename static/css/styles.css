@@ -1,8 +1,12 @@
 /* Common */
+html * {font-family: HelveticaNeue, 'Helvetica Neue', Helvetica, Arial, sans-serif;}
 h1 {
     font-size:28px; line-height:1.5; margin-left:10px; margin-bottom:0; display:block; height:50px;
     font-family: HelveticaNeue, 'Helvetica Neue', Helvetica, Arial, sans-serif;
+}
 
+h2 {
+    font-size:22px; text-transform:uppercase;
 }
 
 body {background-color:#F2F2F2;}
@@ -19,7 +23,15 @@ a.logo {
     text-align: center;
 }
 
-.closed {padding-left:10px;}
+.closed {padding:10px; text-shadow:rgba(0, 0, 0, .2) 0 1px 0; color:#555;}
+.closed .six.columns {width:400px; border-right:1px solid #f2f2f2; margin-left:0;}
+.closed .six.alpha {margin:0; border:0;}
+
+#jr_wrap {}
+.wrap_active {border:1px solid #ec8888; padding:10px; background-color:#fff; margin-bottom:20px;}
+#jr_wrap p {margin:0; line-height:1.7;}
+#jr_wrap ul {display:block; width:450px; margin:5px auto;}
+#jr_wrap ul li {float:left; margin-right:10px;}
 
 .user_container {
     position:relative; display:block; float:right; line-height:40px; margin-right:10px;
