@@ -24,7 +24,7 @@ a.logo {
 }
 
 .closed {padding:10px; text-shadow:rgba(0, 0, 0, .2) 0 1px 0; color:#555;}
-.closed .six.columns {width:400px; border-right:1px solid #f2f2f2; margin-left:0;}
+.closed .six.columns {position:relative; width:400px; border-right:1px solid #f2f2f2; margin-left:0;}
 .closed .six.alpha {margin:0; border:0;}
 
 #jr_holder #jr_wrap {position:relative; text-align:left; width:auto; margin-bottom:20px;}

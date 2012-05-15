@@ -20,19 +20,12 @@
     <!--[if lt IE 9]>
         <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
     <![endif]-->
-
-    {#
-    <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
-    #}
-    {#
-    <script type="text/javascript" src="/static/js/jquery.min.js"></script>
-    #}
     
-        {% assets "js_all" %}
-            <script type="text/javascript" src="{{ ASSET_URL }}"></script>
-        {% endassets %}
+    {% assets "js_all" %}
+        <script type="text/javascript" src="{{ ASSET_URL }}"></script>
+    {% endassets %}
 
-        <script src="http://loginza.ru/js/widget.js" type="text/javascript"></script>
+    <script src="http://loginza.ru/js/widget.js" type="text/javascript"></script>
     
     <script type="text/javascript" src="/static/js/jquery.reject.js"></script>
 
@@ -63,7 +56,8 @@
             </div>
             <div class="six columns">
                 <h2>Отмечайте свои достижения</h2>
-                <p>Когда вы станете ПРО - то сможете посмотреть с чего все начиналось.</p>
+                <p>Когда вы станете ПРО - то сможете посмотреть с чего начинали.</p>
+                <span style="display:block; position:absolute; top:10px; right:2px; font-size:20px; color:red;">и</span>
             </div>
 
             <div class="six columns alpha">

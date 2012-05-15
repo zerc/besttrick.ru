@@ -26,6 +26,7 @@ JS_LIBS = (
     'js/ejs.js',
     'js/jquery.form.js',
     'js/bootstrap-tooltip.js',
+    'js/jquery.reject.js',
 )
 JS_PROJECT = (
     'js/tricks.js',
