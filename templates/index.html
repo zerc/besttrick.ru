@@ -38,7 +38,7 @@
 </head>
 <body>
     <div class="container">
-        {% if 'bt_open' in request.cookies or config.DEBUG %}
+        {% if 'bt_open' in request.cookies or config.OPENED %}
             <div class="user_container"></div>
             <div class="feedback">
                 <a href="#">Оставь совет</a>
@@ -47,8 +47,8 @@
         {% endif %}
         <h1><a href="#!" class="logo">BestTrick</a></h1>
 
-        <div class="content {% if 'bt_open' not in request.cookies and not config.DEBUG %}closed{% endif %}">
-            {% if 'bt_open' not in request.cookies or config.DEBUG  %}
+        <div class="content {% if 'bt_open' not in request.cookies and not config.OPENED %}closed{% endif %}">
+            {% if 'bt_open' not in request.cookies or config.OPENED  %}
             <div class="project_description">
                 <p>Это проект для людей, которые любят сложные трюки и высокие оценки. Их цель - стремление к пределу своих возможностей. Они не боятся цифровой камеры и им есть что показать.</p>
             </div>
@@ -102,7 +102,7 @@
         });
     </script>
 
-    {% if 'bt_open' in request.cookies or config.DEBUG  %}
+    {% if 'bt_open' in request.cookies or config.OPENED  %}
     <script type="text/javascript">
         var args = {
             'tricks' : {{ tricks|safe }},
@@ -111,7 +111,7 @@
         };
 
         {# В продакшене все приложение заворачивается в замыкание #}
-        {% if config.DEBUG %}
+        {% if config.OPENED %}
             var app = new App(args);
         {% else %}
             (function () {
