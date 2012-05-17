@@ -71,11 +71,9 @@ var App = Backbone.Router.extend({
         // Назначаю общие действия при переходе по страницам
         this.bind('all', function () {
             self.feedback.hide();
+            remove_tooltips();
             $('div.content').attr('class', 'content'); // обнулим все навешаенные на главный див стили
         });
-
-        // инициализирую тултипы
-        $(function () { init_tips(); });
 
         Backbone.history.start();
     },

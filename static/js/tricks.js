@@ -1,20 +1,21 @@
 /*global jQuery, window, document */
 /*jslint nomen: true, maxerr: 50, indent: 4 */
 var Trick, TrickView, TrickFullView, TricksList, TricksView, CheckTrickView,
-    UploadVideoForm, video_form, init_tips;
+    UploadVideoForm, video_form, remove_tooltips, init_tooltips;
 
+remove_tooltips = function () {
+    $('div.tooltip').remove(); // удалим все тултипы
+}
 
-// Просто функция для инициализации типсов на инпутах
-init_tips = function () {
-    $('input.cones')
+init_tooltips = function (el) {
+    el.find('input.cones')
         .tooltip({trigger: 'focus'})
         .errortip({trigger: 'manual'});
-        
-    $('input.video_url')
+
+    el.find('input.video_url')
         .tooltip({trigger: 'focus', placement: 'bottom'})
         .errortip({trigger: 'manual', placement: 'bottom'});
 }
-
 
 UploadVideoForm = function () {
     var body = $('body'),
@@ -187,7 +188,7 @@ CheckTrickView = Backbone.View.extend({
 
     save: function (callback) {
         var self = this,
-            cones = parseInt(this.$el.find('#dialog__cones').val(), 10),
+            cones = parseInt(this.$el.find('#dialog__cones').val(), 10) || -1,
             video_url = this.$el.find('#dialog__video_url').val();
 
         this.model.set('cones', cones, {silent: true});
@@ -205,7 +206,9 @@ CheckTrickView = Backbone.View.extend({
             }});
             
         } else if (this.model.hasChanged()) {
+            console.log(this.model.changedAttributes());
             this.show_error(this.model.validate(this.model.changedAttributes()));
+            this.model.set(this.model.previousAttributes(), {silent: true});
         }
 
         return false;
@@ -280,6 +283,9 @@ TrickView = Backbone.View.extend({
 
         if (this.model.get('user_do_this')) this.$el.addClass('user_do_this');
 
+        init_tooltips(this.$el);
+        
+
         return this;
     }
 });
@@ -322,9 +328,11 @@ TrickFullView = Backbone.View.extend({
                     'trick': self.model,
                     'checktrick': self.checktrick
                 }));
+
+                init_tooltips(self.$el);
             },
             error: function () {
-                alert('error');
+                alert('Network error');
             }
         })
 
@@ -338,10 +346,12 @@ TrickFullView = Backbone.View.extend({
     }
 });
 
+
 TricksList = Backbone.Collection.extend({
     url: '/?json=tricks',
     model: Trick
 });
+
 
 TricksView = Backbone.View.extend({
     el: 'div.content',
@@ -376,6 +386,7 @@ TricksView = Backbone.View.extend({
         }
 
         this.render_tricks();
+        remove_tooltips();
 
         return false;
     },

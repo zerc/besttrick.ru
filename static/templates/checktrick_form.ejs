@@ -31,10 +31,14 @@
         <div class="full_trick__dialog dialog_overflow"></div>
         <div class="full_trick__dialog">
             <a href="#" class="dialog__close toggle_dialog">x</a>
-            <p>На <input type="text" id="dialog__cones" class="text cones" value="<%= model.get('cones') %>" />
-            <a href="#" class="dialog__save">делаю</a>!</p>
+            <a href="#" class="dialog__save">+</a>
+
+            <input type="text" id="dialog__cones" class="text cones" placeholder="банок" value="<%= model.get('cones') || '' %>" title="Только число" data-error-title="Только числа!" />
+
+            <input type="text" id="dialog__video_url" class="text video_url" placeholder="ссылка на видео" value="<%= model.get('video_url') || '' %>" title="На YouTube" data-error-title="Это должна быть ссылка на видео с YouTube"/> или <a href="#" class="upload_video_link">загрузить</a>
         </div>
 
-        <h5><%= model.get_title() %></h5> <% if (user) { %><a class="check_full_trick_icon" href="#" title="<% if (model.get('cones') > 0) { %>Вы делаете этот трюк на <%= plural(model.get('cones'), 'банку', 'банки', 'банок') %>.<% } else { %>Вы еще не делаете этот трюк.<% } %>"><%= model.get('cones') || 0 %></a><% } %>
+        <h5><%= model.get_title() %>:</h5><% if (user) { %><a class="check_full_trick_icon" href="#" title="<% if (model.get('cones') > 0) { %>Вы делаете этот трюк на <%= plural(model.get('cones'), 'банку', 'банки', 'банок') %>.<% } else { %>Вы еще не делаете этот трюк.<% } %>"><%= model.get('cones') || 0 %></a>
+            <% } %>
     </div>
 <% } %>

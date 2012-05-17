@@ -124,7 +124,9 @@ a.trick__dialog_control {
     text-align: center;
     font-size: 18px;
     color: white;
-    border-radius: 2px;
+    -webkit-border-radius: 2px;
+     -moz-border-radius: 2px;
+          border-radius: 2px;
 }
 a.trick__dialog_control:hover {color:#333;}
 
@@ -173,7 +175,8 @@ a.dialog__close {
     background-color:#fefefe;
 }
 .tricks_filter__tag {
-    float:right; margin-left:10px; padding:5px 10px; border-radius:5px; color:#555;
+    float:right; margin-left:10px; padding:5px 10px; color:#555;
+    -webkit-border-radius: 5px; -moz-border-radius: 5px; border-radius: 5px; 
 }
 
 a.tricks_filter__tag:hover {color:#555; text-decoration:none;}
@@ -192,7 +195,7 @@ a.tricks_filter__tag:hover {color:#555; text-decoration:none;}
     display:block; float:left; background:#AEAEAE; text-align:center;
     width:40px; height:40px; line-height:36px; color:white;
 }
-.trick__user__photo {height:40px; float:right; margin-left:10px;}
+.trick__user__photo {height:40px; width:40px; float:right; margin-left:10px;}
 .trick__user a {float:right;}
 
 .trick__user_king {background:#B55A5A;}
@@ -206,23 +209,41 @@ a.tricks_filter__tag:hover {color:#555; text-decoration:none;}
 .trick_video_preview_button {
     width:25px;height:25px;position:absolute;left:140px;top:75px;
     background:#CCC url('/static/i/common.png') 9px -14px no-repeat;
-    border:1px solid #333;border-radius:5px;
+    border:1px solid #333; 
+    -webkit-border-radius:5px; -moz-border-radius:5px; border-radius:5px;
 }
 
-.full_trick__dialog_holder {margin:-10px -10px 10px -10px; padding:10px; border-bottom: 1px solid #E8E9EB;}
+.full_trick__dialog_holder {
+    margin:-10px -10px 10px -10px; padding:10px; padding-bottom:9px; 
+    border-bottom: 1px solid #E8E9EB;
+}
 .full_trick__dialog_holder h5 {display:inline; line-height:20px;}
-.check_full_trick_icon {margin-left:10px;}
+a.check_full_trick_icon {
+    padding:6px; background:#aeaeae; color:#fff; margin-left:10px;
+    -webkit-border-radius:3px; -moz-border-radius:3px; border-radius:3px;
+}
 
 .full_trick__dialog {
-    position:absolute; height:42px; width:335px; top:0; left:0; display: none;
+    position:absolute; height:41px; width:329px; top:0; left:0; display: none;
+    padding:6px 0 6px 6px;
 }
+
+.full_trick__dialog .dialog__close {
+  display:block; position:absolute; width:20px; height:20px; right:-20px; top:10px;
+  text-align:center; background:#A4A4A4; 
+}
+.full_trick__dialog .dialog__save {
+  display:block; position:absolute; width:20px; height:20px; top:10px; right:10px;
+  text-align:center; color:#fff; background-color:red; text-decoration:none; font-size:18px;
+}
+.full_trick__dialog .dialog__save:hover {color:#333;}
+
+.full_trick__dialog input.cones {display:inline; width:50px;}
+.full_trick__dialog input.video_url {display:inline; width:110px;}
 
 .full_trick__dialog p {padding:5px;}
 .showing_dialog .full_trick__dialog {display:block;}
-
-a.has_video {
-    display:block; width:10px; height:10px; float:left; margin:15px 0 0 15px; background:red;
-}
+a.has_video {display:block; width:10px; height:10px; float:left; margin:15px 0 0 15px; background:red;}
 
 /* User page */
 .user {}
