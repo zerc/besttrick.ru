@@ -37,7 +37,7 @@ final_script_name = 'js/main.js'
 
 if app.config['DEBUG']:
     JS_LIBS = JS_LIBS + JS_PROJECT
-elif app.config['OPENED']:
+else:
     JS_LIBS = JS_LIBS + (final_script_name,)
 
 js = Bundle(*JS_LIBS, filters='jsmin', output='js/main_min.js')

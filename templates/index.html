@@ -82,7 +82,6 @@
     </div>
 
     <script type="text/javascript">
-        // TODO: исправить баг с неработающими алиасами (firefox - цепляет все фаерфоксы, а не только 1-3 как заявлено)
         $(function () {
             $.reject({
                 reject: {
@@ -111,7 +110,7 @@
         };
 
         {# В продакшене все приложение заворачивается в замыкание #}
-        {% if config.OPENED %}
+        {% if config.DEBUG %}
             var app = new App(args);
         {% else %}
             (function () {
