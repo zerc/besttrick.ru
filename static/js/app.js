@@ -97,9 +97,11 @@ var App = Backbone.Router.extend({
     },
 
     fresh_index: function () {
+        var self = this;
         this.tricksView.reset_filter();
-        this.tricksView.collection.fetch();
-        this.index();
+        this.tricksView.collection.fetch({success: function () {
+            self.index();
+        }});
     },
 
     profile: function (user_id) {

@@ -156,11 +156,15 @@ CheckTrickView = Backbone.View.extend({
     },
 
     render: function (view_type) {
-        var context = {
+        var context;
+        
+        this.view_type = view_type || 'minify';
+        context = {
             'model' : this.model,
             'user'  : this.user,
-            'view'  : view_type || 'minify'
-        }
+            'view'  : this.view_type
+        };
+        
         return this.template.render(context);
     },
 
@@ -194,16 +198,14 @@ CheckTrickView = Backbone.View.extend({
         }
 
         if (this.model.hasChanged() && this.model.isValid()) {
-            this.model.save();
-            this.toggle_dialog();
+            this.model.save(null, {success: function (model, response) {
+                // в заивисимости от типа формы триггерем нужное событие
+                self.toggle_dialog();
+                model.trigger('sync::' + self.view_type);
+            }});
+            
         } else if (this.model.hasChanged()) {
             this.show_error(this.model.validate(this.model.changedAttributes()));
-        }
-
-        if (this.after_save) {
-            setTimeout(function () {
-                self.after_save();
-            }, 250);
         }
 
         return false;
@@ -259,7 +261,7 @@ TrickView = Backbone.View.extend({
 
     initialize: function (args) {
         _.bindAll(this, 'render');
-        this.model.on('sync', this.render, this);
+        this.model.on('sync::minify', this.render, this);
         this.user = args.user;
         this.checktrick = new CheckTrickView({
             el    : this.el,
@@ -305,10 +307,12 @@ TrickFullView = Backbone.View.extend({
 
         // манки-патчим форму чекина
         this.checktrick.model = this.model;
+        
         // TODO: обрабатывать данные на клиенте, для этого у нас уже есть
         // список пользователей с их результатами. Добавляем-изменяем свой,
         // сортируем все дела :)
-        this.checktrick.after_save = this.render; 
+        this.model.on('sync::full', this.render, this);
+
         $.ajax({
             url: '/trick/full/' + self.model.get('id') + '/',
             dataType: 'json',
@@ -392,7 +396,7 @@ TricksView = Backbone.View.extend({
 
     render_tricks: function () {
         this.tricks_container.html('');
-        _(this.collection.models).each(function (m) {
+        this.collection.each(function (m) {
             if (this.selected_tags.length === 0 || _.include(this.activated_tricks, m.get('id'))) {
                 this.tricks_container.append(new TrickView({model: m, user: this.user, checktrick: this.checktrick}).render().el);
             }
@@ -421,7 +425,6 @@ TricksView = Backbone.View.extend({
             this.$el.html('');
             this.tags_container   = $('<div class="tricks_filter"></div>');
             this.tricks_container = $('<div class="tricks_list"></div>');
-
             this.$el.append(this.tags_container, this.tricks_container);
         } else {
             this.tags_container   = $(exists_containers[0]);

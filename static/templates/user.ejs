@@ -15,15 +15,15 @@
 <div class="user__data">
     <img class="user__photo" src="<%= user.get('photo') %>" />
     <% if (profile) { %>
-        <%= row_if_exists(user.get('nick'), 'Ник') %>
-        <%= row_if_exists(user.get('team'), 'Команда') %>
+        <%= row_if_exists(user.get('nick'),  'Ник') %>
+        <%= row_if_exists(user.get('team'),  'Команда') %>
         <%= row_if_exists(user.get('phone'), 'Телефон') %>
-        <%= row_if_exists(user.get('city'), 'Город') %>
-        <%= row_if_exists(user.get('icq'), 'ICQ') %>
+        <%= row_if_exists(user.get('city'),  'Город') %>
+        <%= row_if_exists(user.get('icq'),   'ICQ') %>
         <%= row_if_exists(user.get('skype'), 'Skype') %>
         <%= row_if_exists(user.get('rolls'), 'Ролики') %>
-        <%= row_if_exists(user.get('epxs'), 'Стаж') %>
-        <%= row_if_exists(user.get('bio'), 'Информация') %>
+        <%= row_if_exists(user.get('epxs'),  'Стаж') %>
+        <%= row_if_exists(user.get('bio'),   'Информация') %>
     <% } else { %>
         <input placeholder="ник" type="text" id="id_nick" name="nick" value="<%= user.get('nick') %>" maxlength="100" />
         <input placeholder="команда" type="text" id="id_team" name="team" value="<%= user.get('team') %>" maxlength="100" />
