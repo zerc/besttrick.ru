@@ -9,7 +9,6 @@ from mongokit import Connection
 from project import app, connection, db, mail, markdown
 from apps import tricks as tricks_view, users as users_view
 
-
 @app.route('/')
 def index():
     context, user = {'user': False}, False
