@@ -7,7 +7,7 @@ from flaskext.mail import Message, email_dispatched
 from mongokit import Connection
 
 from project import app, connection, db, mail, markdown
-from apps import tricks as tricks_view, users as users_view
+from apps import tricks as tricks_view, users as users_view, utils
 
 @app.route('/')
 def index():
@@ -21,6 +21,7 @@ def index():
     if user_id is not False:
         user = db.user.find_one({'_id': user_id})
         user['id'] = user.pop('_id')
+        user['rating'] = utils.get_user_rating(user['id'])
         context = {'user': _dumps(user)}
 
     tricks = list(db.trick.find())

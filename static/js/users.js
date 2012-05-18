@@ -3,6 +3,7 @@
 var UserModel, UserView, UserProfile,
     Login, FeedBack;
 
+
 Login = Backbone.View.extend({
     el: 'div.user_container',
 
@@ -13,6 +14,7 @@ Login = Backbone.View.extend({
     initialize: function (args) {
         _.bindAll(this, 'render', 'my');
         this.user = args.user;
+        this.user.on('change', this.render, this);
         this.render();
     },
 
@@ -126,7 +128,8 @@ UserModel = Backbone.Model.extend({
         phone    : '',
         bio      : '',
         rolls    : '',
-        epxs     : ''
+        epxs     : '',
+        rating   : 0.0
     },
 
     validate: function (attrs) {

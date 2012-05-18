@@ -5,7 +5,7 @@ from mongokit import Document, DocumentMigration
 
 from flask import render_template, request, jsonify, session, redirect, url_for
 from project import app, connection, db
-from .utils import grouped_stats
+from .utils import grouped_stats, get_user_rating
 
 def get_field(d, field_name):
     """ Использует точечную нотацию в имени поля, для работы со вложенными словарями """
@@ -148,20 +148,25 @@ def my():
     if user_id is False:
         return redirect(url_for('index'))
 
-    params = json.loads(unicode(request.data, 'utf-8'))
-    params.pop('id', None)
-    params.pop('_id', None)
+    if request.method == 'PUT':
+        params = json.loads(unicode(request.data, 'utf-8'))
+        params.pop('id', None)
+        params.pop('_id', None)
 
-    # типа валидация перед апдейтом данных
-    for p in params.keys():
-        try:
-            User.structure[p]
-        except KeyError:
-            del params[p]
+        # типа валидация перед апдейтом данных
+        for p in params.keys():
+            try:
+                User.structure[p]
+            except KeyError:
+                del params[p]
 
-    db.user.update({'_id': user_id}, {'$set': params})
-    
-    return '{"success":1}'
+        db.user.update({'_id': user_id}, {'$set': params})
+        
+        return '{"success":1}'
+
+    user = db.user.find_one({'_id': user_id})
+    user['rating'] = get_user_rating(user_id)
+    return json.dumps(user)
 
 
 @app.route('/profile/<user_id>/')
@@ -174,6 +179,7 @@ def user_profile(user_id):
     except TypeError:
         return 'Unknow user', 403
 
+    user['rating'] = get_user_rating(user['_id'])
     context['user'] = user
 
     user_tricks = grouped_stats('trick', {'user': int(user_id)})

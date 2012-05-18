@@ -118,6 +118,7 @@ UploadVideoForm = function () {
     return this;
 }
 
+
 $(function () {
     video_form = new UploadVideoForm();
 });
@@ -191,8 +192,8 @@ CheckTrickView = Backbone.View.extend({
             cones = parseInt(this.$el.find('#dialog__cones').val(), 10) || -1,
             video_url = this.$el.find('#dialog__video_url').val();
 
-        this.model.set('cones', cones, {silent: true});
-        this.model.set('video_url', video_url, {silent: true});
+        if (cones) this.model.set('cones', cones, {silent: true});
+        if (video_url) this.model.set('video_url', video_url, {silent: true});
 
         if (!this.model.get('user_do_this')) {
             this.model.set('users', this.model.get('users')+1, {silent: true});
@@ -204,9 +205,8 @@ CheckTrickView = Backbone.View.extend({
                 self.toggle_dialog();
                 model.trigger('sync::' + self.view_type);
             }});
-            
+            this.user.fetch(); // обновим рейтинг пользователя
         } else if (this.model.hasChanged()) {
-            console.log(this.model.changedAttributes());
             this.show_error(this.model.validate(this.model.changedAttributes()));
             this.model.set(this.model.previousAttributes(), {silent: true});
         }

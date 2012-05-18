@@ -15,6 +15,7 @@
 <div class="user__data">
     <img class="user__photo" src="<%= user.get('photo') %>" />
     <% if (profile) { %>
+        <%= row_if_exists(user.get('rating'),  'Рейтинг') %>
         <%= row_if_exists(user.get('nick'),  'Ник') %>
         <%= row_if_exists(user.get('team'),  'Команда') %>
         <%= row_if_exists(user.get('phone'), 'Телефон') %>

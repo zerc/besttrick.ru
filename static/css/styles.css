@@ -35,9 +35,15 @@ a.logo {
 #jr_holder #jr_inner ul li {float:left; margin-right:10px; width:auto; height:auto; text-align:left;}
 #jr_holder #jr_inner ul li a {font-size:1em;}
 
-.user_container {
-    position:relative; display:block; float:right; line-height:40px; margin-right:10px;
+.user_container {position:relative; display:block; float:right; line-height:40px; margin-right:10px;}
+.user_rating {
+    background:#AEAEAE; padding:2px 5px; color:#fff; -webkit-border-radius: 3px;
+    -moz-border-radius: 3px; border-radius: 3px; margin-right:10px;
 }
+
+
+
+
 .user_container .logout {margin-left:15px;}
 .user_container .loginza img {margin-bottom:-3px;}
 

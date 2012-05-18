@@ -2,6 +2,7 @@
 from pytils.utils import takes, one_of
 from project import db
 
+
 @takes(one_of('trick', 'user'))
 def grouped_stats(key, _filter):
     """
@@ -25,3 +26,24 @@ def grouped_stats(key, _filter):
         rows.append(x)
 
     return rows
+
+
+def get_user_rating(user_id):
+    """
+    Считает и возвращает рейтинг пользователя.
+    NOTE: нужно будет переписать, когда будет введена история трюков пользователя.
+    """
+    tricks_user = db.trick_user.find({"user": user_id})
+    grouped_data = {}
+
+    for trick_user in tricks_user:
+        if trick_user[u'video_url'] and trick_user[u'approved']:
+            grouped_data[trick_user[u'trick']] = trick_user['cones'] * (1 if trick_user['cones'] > 3 else 1.2)
+        else:
+            grouped_data[trick_user[u'trick']] = min(trick_user['cones'], 3)
+
+
+    for trick in db.trick.find({'_id': {'$in': grouped_data.keys()}}):
+        grouped_data[trick['_id']] *= trick['score']
+
+    return float('%.2f' % sum(grouped_data.values()))

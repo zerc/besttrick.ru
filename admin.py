@@ -10,6 +10,20 @@ from apps.users import User
 from apps.tricks import Trick
 from project import connection, db, app
 
+# Kazachok        0.6
+# Korean Spin     0.6
+# Russian Spin    0.2
+# Chicken Leg     0.7
+# Toe Machine     0.7
+# Day Night       0.8
+# Footgun Toe     0.8
+# OneWheel        0.4
+# Confraglide     0.7
+# Cobra           0.6
+# Seven           0.7
+# No wiper        0.8
+# Foot Spin       0.3
+
 parser = OptionParser(u"Admin scripts for besttrick app")
 
 def clean_do(options):
@@ -80,6 +94,7 @@ def import_tricks(options):
             "videos"        : [u"http://www.youtube.com/embed/JxJvchXvQAg"],
             "direction"     : u"forward",
             "tags"          : [u'sitting', u'jumping', u'slalom'],
+            "score"         : 0.6,
         },
         {
             "title"         : u"Korean Spin",
@@ -87,6 +102,7 @@ def import_tricks(options):
             "descr"         : u"""Отвертка на передних колесах.""",
             "videos"        : [u"http://www.youtube.com/embed/Bby-06T_Vxo"],
             "tags"          : [u'spinning', u'slalom',],
+            "score"         : 0.6,
         },
         {
             "title"         : u"Russian Spin",
@@ -94,6 +110,7 @@ def import_tricks(options):
             "descr"         : u"""Русский вольт на передних колесах.""",
             "videos"        : [u"http://www.youtube.com/embed/gfkJAcz2Vgs"],
             "tags"          : [u'spinning', u'slalom',],
+            "score"         : 0.2,
         },
         {
             "title"         : u"Chicken Leg",
@@ -102,18 +119,21 @@ def import_tricks(options):
             "videos"        : [u"http://www.youtube.com/embed/rYLMXZfTWCM"],
             "direction"     : u"backward",
             "tags"          : [u'wheeling', u'spinning', u'slalom'],
+            "score"         : 0.7,
         },
         {
             "title"         : u"Toe Machine",
             "videos"        : [u"http://www.youtube.com/embed/Q5qFX8YPtaU"],
             "descr"         : u"""Трюк так же известен как Швейная машинка.""",
             "tags"          : [u'wheeling', u'slalom'],
+            "score"         : 0.7,
         },
         {
             "title"         : u"Day Night",
             "descr"         : u"""Своеобразный ответ на No Wiper. Выполняется как хиле, так и на тое.""",
             "videos"        : [u"http://www.youtube.com/embed/vRb0PAeBe2g"],
             "tags"          : [u'wheeling', u'slalom'],
+            "score"         : 0.8,
         },
         {
             "title"         : u"Footgun Toe",
@@ -122,6 +142,7 @@ def import_tricks(options):
             "descr"         : u"""Пистолет на переднем колесе. Существуют варианты с полном приседом, и с коленом под прямым углом.""",
             "direction"     : u"forward",
             "tags"          : [u'wheeling', u'slalom', u'sitting',],
+            "score"         : 0.8,
         },
         {
             "title"         : u"OneWheel",
@@ -130,12 +151,14 @@ def import_tricks(options):
             "descr"         : u"""Езда на одном колесе лицом вперед. Может выполнятся как на переднем (тое), так и на заднем (хил) колесах.""",
             "direction"     : u"forward",
             "tags"          : [u'wheeling', u'slalom'],
+            "score"         : 0.4,
         },
         {
             "title"         : u"Confraglide",
             "videos"        : [u"http://www.youtube.com/embed/F6897UqZBw8"],
             "descr"         : u"""В русском слаломе, трюк так же известен как Бабочка.""",
             "tags"          : [u'slalom'],
+            "score"         : 0.7,
         },
         {
             "title"         : u"Cobra",
@@ -143,6 +166,7 @@ def import_tricks(options):
             "descr"         : u"""Кобра спиной вперед. """,
             "direction"     : u"backward",
             "tags"          : [u'slalom'],
+            "score"         : 0.6,
         },
         {
             "title"         : u"Seven",
@@ -156,6 +180,7 @@ def import_tricks(options):
             """,
             "direction"     : u"forward",
             "tags"          : [u'wheeling', u'slalom', u'spinning'],
+            "score"         : 0.7,
         },
         {
             "title"         : u"No wiper",
@@ -165,7 +190,8 @@ def import_tricks(options):
 
 Может выполнятся как на внутреннем, так и на внешнем ребре.
             """,
-            "tags"          : [u'wheeling', u'slalom']
+            "tags"          : [u'wheeling', u'slalom'],
+            "score"         : 0.8,
         },
         {
             "title"         : u"Foot spin",
@@ -173,6 +199,7 @@ def import_tricks(options):
             "videos"        : [u"http://www.youtube.com/embed/Q9fTQOopwF8"],
             "descr"         : u"""Можно рассматривать как подготовоку к Day Night :)""",
             "tags"          : [u'slalom', u'spinning'],
+            "score"         : 0.3,
         },
     ]
 
