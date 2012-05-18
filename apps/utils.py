@@ -37,7 +37,7 @@ def get_user_rating(user_id):
     grouped_data = {}
 
     for trick_user in tricks_user:
-        if trick_user[u'video_url'] and trick_user[u'approved']:
+        if trick_user.get(u'video_url') and trick_user.get(u'approved'):
             grouped_data[trick_user[u'trick']] = trick_user['cones'] * (1 if trick_user['cones'] > 3 else 1.2)
         else:
             grouped_data[trick_user[u'trick']] = min(trick_user['cones'], 3)
