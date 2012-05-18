@@ -9,7 +9,7 @@ h2 {
     font-size:22px; text-transform:uppercase;
 }
 
-body {background-color:#F2F2F2;}
+body {background-color:#F2F2F2; overflow-y:scroll;}
 
 body .as_block {display:block;}
 
@@ -366,3 +366,8 @@ a.has_video {display:block; width:10px; height:10px; float:left; margin:15px 0 0
 .tooltip.bottom.error .tooltip-arrow {border-bottom: 5px solid red;}
 .tooltip.right.error .tooltip-arrow {border-right: 5px solid red;}
 .tooltip.error .tooltip-inner {background-color: red;}
+
+
+/* About page */
+div.about a {color:red;}
+div.about a:hover {text-decoration:none;}

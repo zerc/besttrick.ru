@@ -54,7 +54,8 @@ var App = Backbone.Router.extend({
         'u:user_id/'                : 'my',
         'trick/:trick'              : 'trick',
         'profile-:user_id'          : 'profile',
-        'filter=:tags_selected'     : 'filter'
+        'filter=:tags_selected'     : 'filter',
+        'about'                     : 'about'
     },
 
     initialize: function (args) {
@@ -76,6 +77,11 @@ var App = Backbone.Router.extend({
         });
 
         Backbone.history.start();
+    },
+
+    about: function () {
+        var template = new EJS({url: '/static/templates/about.ejs'});
+        $('div.content').html(template.render());
     },
 
     filter: function (tags_selected) {
