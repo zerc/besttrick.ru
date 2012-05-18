@@ -14,7 +14,7 @@ Login = Backbone.View.extend({
     initialize: function (args) {
         _.bindAll(this, 'render', 'my');
         this.user = args.user;
-        this.user.on('change', this.render, this);
+        if (this.user) this.user.on('change', this.render, this);
         this.render();
     },
 
