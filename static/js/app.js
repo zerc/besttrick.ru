@@ -61,7 +61,7 @@ var App = Backbone.Router.extend({
     initialize: function (args) {
         var self = this,
             userModel = args.user ? new UserModel(args.user) : false;
-        window.userModel = userModel;
+
         this.user       = userModel ? new UserView({model: userModel}) : false;
         this.profile    = new UserProfile();
         this.loginView  = new Login({user: userModel});
