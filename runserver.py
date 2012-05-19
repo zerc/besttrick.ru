@@ -61,7 +61,9 @@ def index():
             user_stats[k] = x
 
     tags = {}
-    for x in db.tag.find():
+    # так как сейчас у нас только слалом - отключил мажорные тэги вообще
+    # чтобы не смущать народ
+    for x in db.tag.find({'major': {'$ne': True}}):
         x[u'tricks'] = []
         tags[x.pop(u'_id')] = x
 
@@ -81,7 +83,11 @@ def index():
         trick['descr'] = markdown(trick['descr'])
 
         for t in trick['tags']:
-            tags[t]['tricks'].append(trick[u'id'])
+            try:
+                tags[t]['tricks'].append(trick[u'id'])
+            except KeyError:
+                # тэг отключен
+                continue
 
     context['tricks'] = _dumps(tricks)
     context['tags']   = _dumps(tags)
