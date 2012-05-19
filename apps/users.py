@@ -5,7 +5,7 @@ from mongokit import Document, DocumentMigration
 
 from flask import render_template, request, jsonify, session, redirect, url_for
 from project import app, connection, db
-from .utils import grouped_stats, get_user_rating
+from .utils import grouped_stats, get_user_rating, get_valid_cones_per_trick
 
 def get_field(d, field_name):
     """ Использует точечную нотацию в имени поля, для работы со вложенными словарями """
@@ -187,3 +187,22 @@ def user_profile(user_id):
 
     return json.dumps(context)
 
+#TODO: cached this!
+@app.route('/rating/', methods=['GET'])
+def top_users():
+    users = list(db.user.find())
+
+    tricks_scores = {}
+    for trick in db.trick.find():
+        tricks_scores[trick['_id']] = trick['score']
+
+    for user in users:
+        cones_per_trick = get_valid_cones_per_trick(user['_id'])
+        user['rating'] = 0
+
+        for k, v in cones_per_trick.items():
+            user['rating'] += tricks_scores[k] * v
+
+        user['rating'] = float('%.2f' % user['rating'])
+
+    return json.dumps(sorted(users, key=lambda user: user['rating'], reverse=True))

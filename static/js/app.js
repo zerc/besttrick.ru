@@ -55,13 +55,15 @@ var App = Backbone.Router.extend({
         'trick/:trick'              : 'trick',
         'profile-:user_id'          : 'profile',
         'filter=:tags_selected'     : 'filter',
-        'about'                     : 'about'
+        'about'                     : 'about',
+        'top'                       : 'top_users'
     },
 
     initialize: function (args) {
         var self = this,
             userModel = args.user ? new UserModel(args.user) : false;
 
+        this.$el        = $('div.content');
         this.user       = userModel ? new UserView({model: userModel}) : false;
         this.profile    = new UserProfile();
         this.loginView  = new Login({user: userModel});
@@ -79,9 +81,25 @@ var App = Backbone.Router.extend({
         Backbone.history.start();
     },
 
+    top_users: function () {
+        var self = this,
+            template = new EJS({url: '/static/templates/top_users.ejs'});
+            
+        $.ajax({
+            url: '/rating/',
+            dataType: 'json',
+            success: function (response) {
+                self.$el.html(template.render({'users': response}));
+            },
+            error: function () {
+                alert('Network error');
+            }
+        });
+    },
+
     about: function () {
         var template = new EJS({url: '/static/templates/about.ejs'});
-        $('div.content').html(template.render());
+        this.$el.html(template.render());
     },
 
     filter: function (tags_selected) {

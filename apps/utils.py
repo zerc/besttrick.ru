@@ -27,23 +27,31 @@ def grouped_stats(key, _filter):
 
     return rows
 
-
+#TODO: cached this!
 def get_user_rating(user_id):
     """
     Считает и возвращает рейтинг пользователя.
     NOTE: нужно будет переписать, когда будет введена история трюков пользователя.
     """
-    tricks_user = db.trick_user.find({"user": user_id})
+    cones_per_trick = get_valid_cones_per_trick(user_id)
+
+    for trick in db.trick.find({'_id': {'$in': cones_per_trick.keys()}}):
+        cones_per_trick[trick['_id']] *= trick['score']
+
+    return float('%.2f' % sum(cones_per_trick.values()))
+
+
+def get_valid_cones_per_trick(user_id):
+    """
+    Возвращает "правильное" кол-во конусов для трюка, в зависиомости
+    от положения луны
+    """
     grouped_data = {}
 
-    for trick_user in tricks_user:
+    for trick_user in db.trick_user.find({"user": user_id}):
         if trick_user.get(u'video_url') and trick_user.get(u'approved'):
-            grouped_data[trick_user[u'trick']] = trick_user['cones'] * (1 if trick_user['cones'] > 3 else 1.2)
+            grouped_data[trick_user['trick']] = trick_user['cones'] * (1 if trick_user['cones'] > 3 else 1.2)
         else:
-            grouped_data[trick_user[u'trick']] = min(trick_user['cones'], 3)
+            grouped_data[trick_user['trick']] = min(trick_user['cones'], 3)
 
-
-    for trick in db.trick.find({'_id': {'$in': grouped_data.keys()}}):
-        grouped_data[trick['_id']] *= trick['score']
-
-    return float('%.2f' % sum(grouped_data.values()))
+    return grouped_data

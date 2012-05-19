@@ -19,8 +19,7 @@ a.logo {
 }
 
 .copyright{
-    border-top:1px solid #E8E9EB; margin-top:10px; padding:5px;
-    text-align: center;
+    border-top:1px solid #E8E9EB; margin-top:10px; padding:5px; text-align: center; font-size:12px;
 }
 
 .closed {padding:10px; text-shadow:rgba(0, 0, 0, .2) 0 1px 0; color:#555;}
@@ -36,9 +35,9 @@ a.logo {
 #jr_holder #jr_inner ul li a {font-size:1em;}
 
 .user_container {position:relative; display:block; float:right; line-height:40px; margin-right:10px;}
-.user_rating {
+a.user_rating {
     background:#AEAEAE; padding:2px 5px; color:#fff; -webkit-border-radius: 3px;
-    -moz-border-radius: 3px; border-radius: 3px; margin-right:10px;
+    -moz-border-radius: 3px; border-radius: 3px; margin-right:10px; text-decoration:none;
 }
 
 .user_container .logout {margin-left:15px;}
@@ -194,9 +193,9 @@ a.tricks_filter__tag:hover {color:#555; text-decoration:none;}
     width:500px; height:40px; clear:both; float:none;
     margin-bottom:10px; background:white; line-height:35px;
 }
-.trick__user span {
+.trick__user span.left_block {
     display:block; float:left; background:#AEAEAE; text-align:center;
-    width:40px; height:40px; line-height:36px; color:white;
+    width:40px; height:40px; line-height:36px; color:white; margin-right:10px;
 }
 .trick__user__photo {height:40px; width:40px; float:right; margin-left:10px;}
 .trick__user a {float:right;}
@@ -374,3 +373,10 @@ a.has_video {display:block; width:10px; height:10px; float:left; margin:15px 0 0
 /* About page */
 div.about a {color:red;}
 div.about a:hover {text-decoration:none;}
+
+/* Top users page */
+.top_users {float:none;}
+.top_users .trick__user {width:100%;}
+.top_users .info_block {margin:0 10px; line-height:38px;}
+.top_users .trick__user_king {color:#fff;}
+.top_users .info_block_team {float:right; font-size:12px; margin-right:5px; margin-top:-5px; color:#aeaeae;}

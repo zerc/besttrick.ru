@@ -4,7 +4,7 @@
 <% if (users.length > 0) { %>
     <% _.map(users, function (row, i) {%>
         <div class="trick__user<% if (i === 0) { %> trick__user_king<% } %>">
-            <span><%= row.cones %></span>
+            <span class="left_block"><%= row.cones %></span>
             <% if (row.video_url) { %>
                 <a class="has_video" href="<%= row.video_url %>" target="_blank" title="есть видео подтверждение"></a>
             <% } %>

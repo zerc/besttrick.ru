@@ -334,7 +334,7 @@ TrickFullView = Backbone.View.extend({
             error: function () {
                 alert('Network error');
             }
-        })
+        });
 
         return self;
     },
