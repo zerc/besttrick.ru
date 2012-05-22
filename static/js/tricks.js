@@ -201,11 +201,11 @@ CheckTrickView = Backbone.View.extend({
 
         if (this.model.hasChanged() && this.model.isValid()) {
             this.model.save(null, {success: function (model, response) {
-                // в заивисимости от типа формы триггерем нужное событие
                 self.toggle_dialog();
+                // в заивисимости от типа формы триггерем нужное событие
                 model.trigger('sync::' + self.view_type);
+                self.user.fetch(); // обновим рейтинг пользователя
             }});
-            this.user.fetch(); // обновим рейтинг пользователя
         } else if (this.model.hasChanged()) {
             this.show_error(this.model.validate(this.model.changedAttributes()));
             this.model.set(this.model.previousAttributes(), {silent: true});
