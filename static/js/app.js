@@ -72,10 +72,13 @@ var App = Backbone.Router.extend({
         this.feedback   = new FeedBack({user: userModel});
 
         // Назначаю общие действия при переходе по страницам
-        this.bind('all', function () {
+        this.bind('all', function (a, b, c) {
             self.feedback.hide();
             remove_tooltips();
             $('div.content').attr('class', 'content'); // обнулим все навешаенные на главный див стили
+            
+            // google analutics avent push
+            _gaq.push(['_trackPageview', '/' + location.hash]);
         });
 
         Backbone.history.start();
