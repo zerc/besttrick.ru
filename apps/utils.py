@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 from pytils.utils import takes, one_of
-from pytils.numeral import choose_plural, get_plural
+from pytils.numeral import get_plural
 
 from project import db, app
 
