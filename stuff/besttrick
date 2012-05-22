@@ -24,6 +24,10 @@ server {
 		autoindex off;
 	}
 
+	location /sitemap.txt {
+		root /home/bt/www/static;
+	}
+
 	#error_page  404  /404.html;
 
 	# redirect server error pages to the static page /50x.html
