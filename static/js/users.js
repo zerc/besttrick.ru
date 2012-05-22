@@ -7,12 +7,8 @@ var UserModel, UserView, UserProfile,
 Login = Backbone.View.extend({
     el: 'div.user_container',
 
-    events: {
-        'click a.my': 'my',
-    },
-
     initialize: function (args) {
-        _.bindAll(this, 'render', 'my');
+        _.bindAll(this, 'render');
         this.user = args.user;
         if (this.user) this.user.on('change', this.render, this);
         this.render();
@@ -20,13 +16,6 @@ Login = Backbone.View.extend({
 
     render: function () {
         this.$el.html(new EJS({url: '/static/templates/user_container.ejs'}).render({'user': this.user}));
-    },
-
-    my: function () {
-        if (this.user) {
-            app.navigate('u' + this.user.get('id') + '/', true);
-        }
-        return false;
     }
 });
 

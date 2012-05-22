@@ -18,7 +18,7 @@
     </div>
     <div class="stats__row row__best_user">
         <% if (model.get('best_user')) { %>
-            <a href="#profile-<%= model.get('best_user')._id %>" class="view_profile" title="<%= model.get('best_user').nick %> лучше всех делает этот трюк!"><%= format_username(model.get('best_user').nick) %></a> 
+            <a href="#!profile-<%= model.get('best_user')._id %>" class="view_profile" title="<%= model.get('best_user').nick %> лучше всех делает этот трюк!"><%= format_username(model.get('best_user').nick) %></a> 
             <%= plural(model.get('best_user_cones'), 'банка', 'банки', 'банок') %>
         <% } else { %>
             <div class="no_king">место короля свободно ...</div>

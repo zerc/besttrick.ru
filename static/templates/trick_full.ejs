@@ -9,7 +9,7 @@
                 <a class="has_video" href="<%= row.video_url %>" target="_blank" title="есть видео подтверждение"></a>
             <% } %>
             <img src="<%= row.user.photo %>" class="trick__user__photo">
-            <a href="#profile-<%= row.user._id %>"><%= row.user.nick %></a>
+            <a href="#!profile-<%= row.user._id %>"><%= row.user.nick %></a>
         </div>
     <%}) %>
 <% } else { %>

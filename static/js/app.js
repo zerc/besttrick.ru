@@ -49,14 +49,14 @@ EJS.Helpers.prototype.browser_info = function () {
 
 var App = Backbone.Router.extend({
     routes: {
-        ''                          : 'index',
-        '!'                         : 'fresh_index',
-        'u:user_id/'                : 'my',
-        'trick/:trick'              : 'trick',
-        'profile-:user_id'          : 'profile',
-        'filter=:tags_selected'     : 'filter',
-        'about'                     : 'about',
-        'top'                       : 'top_users'
+        ''                           : 'index',
+        '!'                          : 'fresh_index',
+        '!u'                         : 'my',
+        '!trick/:trick'              : 'trick',
+        '!profile-:user_id'          : 'profile',
+        '!filter=:tags_selected'     : 'filter',
+        '!about'                     : 'about',
+        '!top'                       : 'top_users'
     },
 
     initialize: function (args) {
