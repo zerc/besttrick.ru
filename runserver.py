@@ -13,7 +13,10 @@ from apps import tricks as tricks_view, users as users_view, utils
 def index():
     context, user = {'user': False}, False
     user_id = session.get('user_id', False)
+
+    # TODO: завернуть в декоратор
     json_field = request.args.get('json', False)
+    crawler = request.args.get('_escaped_fragment_', False)
 
     def _dumps(d):
         return d if json_field else json.dumps(d)
@@ -94,11 +97,14 @@ def index():
 
     if json_field:
         r = json.dumps(context[json_field])
+    elif crawler is not False:
+        r = get_content_for_crawler(crawler, context)
     else:
         r = render_template('index.html', **context)
 
     response = make_response(r)
     response.headers['X-Frame-Options'] = 'SAMEORIGIN'
+    
     return response
 
 
@@ -109,6 +115,38 @@ def feedback():
     msg.body = body
     mail.send(msg)
     return 'Ok'
+
+
+def get_content_for_crawler(crawler_path, context):
+    """
+    Рендерит контент запрошенной пауком страницы
+    """
+    if crawler_path == '':
+        return render_template('crawler.html', **context)
+
+    c = app.url_map.bind('')
+
+    if not crawler_path.startswith('/'):
+        crawler_path = '/' + crawler_path
+
+    if not crawler_path.endswith('/'):
+        crawler_path += '/'
+
+    view_function_name, view_params = c.match(crawler_path)
+    view_function = app.view_functions[view_function_name]
+    result = view_function(**view_params)
+
+    if isinstance(result, basestring):
+        # TODO: перехват ошибки распаковки
+        result = json.loads(result)
+
+    result.update({
+        'view_name'   : view_function_name,
+        'global_data' : context
+    })
+
+    return render_template('crawler.html', **result)
+
 
 @app.route('/youtube_reciver/')
 def youtube_reciver():

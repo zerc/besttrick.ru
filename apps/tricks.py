@@ -150,11 +150,20 @@ def prepare_youtube_upload():
     return jsonify({'post_url': post_url, 'token': token})
 
 
-@app.route('/trick/full/<trick_id>/', methods=['GET'])
+@app.route('/trick/<trick_id>/', methods=['GET'])
 def trick_full(trick_id):
     """ Лучшие пользователи по этому трюку """
     rows = grouped_stats('user', {'trick': trick_id})
-    return json.dumps(sorted(rows, key=lambda x: x['cones'], reverse=True))
+    rows = sorted(rows, key=lambda x: x['cones'], reverse=True)
+
+    if request.args.get('_escaped_fragment_', False) is False:    
+        return json.dumps(rows)
+
+    # контент для робота
+    return {
+        'trick_users': rows,
+        'trick': db.trick.find_one({'_id': unicode(trick_id)})
+    }
 
 
 @app.route('/checktrick/', methods=['PUT'])

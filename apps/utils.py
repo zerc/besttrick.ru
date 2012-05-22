@@ -1,6 +1,13 @@
 # -*- coding: utf-8 -*-
 from pytils.utils import takes, one_of
-from project import db
+from pytils.numeral import choose_plural, get_plural
+
+from project import db, app
+
+
+@app.template_filter('plural')
+def plural(s, amount):
+    return get_plural(int(s), amount)
 
 
 @takes(one_of('trick', 'user'))

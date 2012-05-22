@@ -320,7 +320,7 @@ TrickFullView = Backbone.View.extend({
         this.model.on('sync::full', this.render, this);
 
         $.ajax({
-            url: '/trick/full/' + self.model.get('id') + '/',
+            url: '/trick/' + self.model.get('id') + '/',
             dataType: 'json',
             success: function (response) {
                 self.$el.html(self.template.render({

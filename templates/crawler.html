@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="google-site-verification" content="730fx2__4ABjLwjgIEtX_VXFlY6Jh_kgFekL4S3g-tk" />
+
+    <title>Besttrick</title>
+    <meta name="description" content="">
+    <meta name="author" content="">
+    
+    <link rel="shortcut icon" href="{{ url_for('static', filename='i/favicon.ico') }}">
+</head>
+<body>
+    {# Шаблончик для подсовывания поисковому роботу #}
+    {% if view_name == 'trick_full' %}
+        <h1>{{ trick.title }} {{ trick.direction }}</h1>
+        <p><img src="/static/images/{{ trick._id }}-0.jpg" /></p>
+        <p>{{ trick.descr|safe }}</p>
+
+        <h2>{{ trick_users[0].user.nick }} делает этот трюк лучше всех!</h2>
+
+        <p>Его рекорд {{ trick_users[0].cones|plural(['банкa', 'банки', 'банок']) }}</p>
+
+        <h2>Пользователи, освоившие этот трюк:</h2>
+
+        {% for row in trick_users %}
+            <p>{{ row.user.nick }} делает {{ trick.title }} {{ trick.direction }} на {{ row.cones|plural(['банку', 'банки', 'банок']) }}</p>
+        {% endfor %}
+
+    {% endif %}
+</body>
+</html>
