@@ -1,6 +1,7 @@
 #!venv/bin/python
 # -*- coding: utf-8 -*-
 ADMINS = ['zero13cool@yandex.ru']
+HOST   = "http://localhost:8000" # используется для генерации сайтмапа
 
 DEBUG        = True
 ASSETS_DEBUG = True

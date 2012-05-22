@@ -20,7 +20,7 @@ def sitemap():
     xml.extend([trick_tmpl % (app.config['HOST'], trick['_id']) for trick in tricks])
 
     # flatpages
-    xml.append(u"""<url><loc>%s/#!about</loc></url>""" % app.config['HOST'])
+    #xml.append(u"""<url><loc>%s/#!about</loc></url>""" % app.config['HOST'])
 
     xml.append(u"""</urlset>""")
 
