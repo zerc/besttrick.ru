@@ -10,10 +10,13 @@
     <meta name="google-site-verification" content="730fx2__4ABjLwjgIEtX_VXFlY6Jh_kgFekL4S3g-tk" />
     <meta name='yandex-verification' content='73b6ccbcf5720885' />
 
-    <title>Besttrick</title>
-    <meta name="description" content="">
-    <meta name="author" content="">
+    <meta name="description" content="besttrick - сайт о сложных трюках на роликах">
+    <meta name="keywords" content="трюки, трюки видео, трюки на роликах, соревнование" />
+    <meta name="author" content="zero13cool">
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+    <title>Besttrick - покажи свой лучший трюк!</title>
+    <link rel="shortcut icon" href="{{ url_for('static', filename='i/favicon.ico') }}">
 
     <link rel="stylesheet" href="{{ url_for('static', filename='css/base.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/skeleton.css') }}">
@@ -30,15 +33,6 @@
     {% endassets %}
 
     <script src="http://loginza.ru/js/widget.js" type="text/javascript"></script>
-
-    <!-- Favicons
-    ================================================== -->
-    <link rel="shortcut icon" href="{{ url_for('static', filename='i/favicon.ico') }}">
-    <!--
-    <link rel="apple-touch-icon" href="images/apple-touch-icon.png">
-    <link rel="apple-touch-icon" sizes="72x72" href="images/apple-touch-icon-72x72.png">
-    <link rel="apple-touch-icon" sizes="114x114" href="images/apple-touch-icon-114x114.png">
-    -->
 
     <!-- Google -->
     <script type="text/javascript">
@@ -67,7 +61,7 @@
                 <div class="feedback_holder"></div>
             </div>
         {% endif %}
-        <h1><a href="#!" class="logo">BestTrick</a></h1>
+        <h1><a href="#!" class="logo" title="Видео трюков на роликах">BestTrick</a></h1>
 
         <div class="content {% if 'bt_open' not in request.cookies and not config.OPENED %}closed{% endif %}">
             {% if 'bt_open' not in request.cookies or config.OPENED  %}

@@ -63,6 +63,8 @@ var App = Backbone.Router.extend({
         var self = this,
             userModel = args.user ? new UserModel(args.user) : false;
 
+        this.default_page_title = window.document.title;
+
         this.$el        = $('div.content');
         this.user       = userModel ? new UserView({model: userModel}) : false;
         this.profile    = new UserProfile();
@@ -115,10 +117,8 @@ var App = Backbone.Router.extend({
     },
 
     index: function (tags_selected) {
-        window.document.title = 'Besttrick';
-        $('h1 span').text('');
+        window.document.title = this.default_page_title;
         this.tricksView.render();
-
     },
 
     fresh_index: function () {
