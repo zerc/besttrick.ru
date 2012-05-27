@@ -13,19 +13,25 @@
 <body>
     {# Шаблончик для подсовывания поисковому роботу #}
     {% if view_name == 'trick_full' %}
-        <h1>{{ trick.title }} {{ trick.direction }}</h1>
+        <h1>{{ trick.title }} {{ trick.direction or '' }}</h1>
         <p><img src="/static/images/{{ trick._id }}-0.jpg" /></p>
         <p>{{ trick.descr|safe }}</p>
 
-        <h2>{{ trick_users[0].user.nick }} делает этот трюк лучше всех!</h2>
+        {% if trick_users %}
+            <h2>{{ trick_users[0].user.nick }} делает этот трюк лучше всех!</h2>
 
-        <p>Его рекорд {{ trick_users[0].cones|plural(['банкa', 'банки', 'банок']) }}</p>
+            <p>Его рекорд {{ trick_users[0].cones|plural(['банкa', 'банки', 'банок']) }}</p>
 
-        <h2>Пользователи, освоившие этот трюк:</h2>
+            <h3>Пользователи, освоившие этот трюк:</h3>
 
-        {% for row in trick_users %}
-            <p>{{ row.user.nick }} делает {{ trick.title }} {{ trick.direction }} на {{ row.cones|plural(['банку', 'банки', 'банок']) }}</p>
-        {% endfor %}
+            {% for row in trick_users %}
+                <p>{{ row.user.nick }} делает {{ trick.title }} {{ trick.direction }} на {{ row.cones|plural(['банку', 'банки', 'банок']) }}</p>
+            {% endfor %}
+        {% else %}
+            <p>Еще никто не отметился, что делает этот трюк.</p>
+        {% endif %}
+
+        
 
     {% endif %}
 </body>
