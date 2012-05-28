@@ -1,7 +1,7 @@
 #!venv/bin/python
 # -*- coding: utf-8 -*-
 from fabric.api import *
-from project import app, JS_PROJECT, final_script_name
+from project import app
 from os.path import join as path_join
 
 
