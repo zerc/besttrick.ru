@@ -1,9 +1,55 @@
 /*global jQuery, window, document */
 /*jslint nomen: true, maxerr: 50, indent: 4 */
+
+/*
+ * TODO: Все в неймспейс.
+ * Все, что связано с пользователем.
+ */
+window.BTUsers = {};
+
 var UserModel, UserView, UserProfile,
     Login, FeedBack;
 
 
+/*** Модельки ***/
+window.BTUsers.UserModel = UserModel = Backbone.Model.extend({
+    url: '/user/',
+
+    defaults: {
+        id       : 0,
+        uid      : '',
+        nick     : '',
+        team     : '',
+        photo    : '',
+        admin    : '',
+        identity : '',
+        provider : '',
+        email    : '',
+        city     : '',
+        icq      : '',
+        skype    : '',
+        phone    : '',
+        bio      : '',
+        rolls    : '',
+        epxs     : '',
+        rating   : 0.0
+    },
+
+    validate: function (attrs) {
+        if (!attrs.nick) {
+            return 'укажите свой ник';
+        }
+
+        if (attrs.nick.length >= 125) {
+            return 'у вас нереально большой ник';
+        }
+    }
+});
+
+
+/*** Вьюхи ***/
+
+/* Вью формы логина, или инфы авторизованного пользователя */
 Login = Backbone.View.extend({
     el: 'div.user_container',
 
@@ -18,6 +64,7 @@ Login = Backbone.View.extend({
         this.$el.html(new EJS({url: '/static/templates/user_container.ejs'}).render({'user': this.user}));
     }
 });
+
 
 FeedBack = Backbone.View.extend({
     el: 'div.feedback',
@@ -98,42 +145,15 @@ FeedBack = Backbone.View.extend({
     }
 });
 
-UserModel = Backbone.Model.extend({
-    url: '/user/',
 
-    defaults: {
-        id       : 0,
-        uid      : '',
-        nick     : '',
-        team     : '',
-        photo    : '',
-        admin    : '',
-        identity : '',
-        provider : '',
-        email    : '',
-        city     : '',
-        icq      : '',
-        skype    : '',
-        phone    : '',
-        bio      : '',
-        rolls    : '',
-        epxs     : '',
-        rating   : 0.0
-    },
-
-    validate: function (attrs) {
-        if (!attrs.nick) {
-            return 'укажите свой ник';
-        }
-
-        if (attrs.nick.length >= 125) {
-            return 'у вас нереально большой ник';
-        }
-    }
-});
-
+/*
+ * TODO: так как функционал частично пересекается с вью Профиля, возможно срефакторить через наследование
+ * Личный кабинет пользователя: редактирование данных, отображение списка трюков.
+ */
 UserView = Backbone.View.extend({
     el: 'div.content',
+
+    template: new EJS({url: '/static/templates/user.ejs'}),
 
     events: {
         'click div.user__data button.save': 'update_data'
@@ -141,7 +161,6 @@ UserView = Backbone.View.extend({
 
     initialize: function () {
         _.bindAll(this, 'render');
-        this.template = new EJS({url: '/static/templates/user.ejs'});
     },
 
     render: function () {
@@ -188,6 +207,7 @@ UserView = Backbone.View.extend({
         });
     }
 });
+
 
 UserProfile = Backbone.View.extend({
     el: 'div.content',

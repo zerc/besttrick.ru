@@ -7,11 +7,11 @@ from flaskext.mail import Message, email_dispatched
 from mongokit import Connection
 
 from project import app, connection, db, mail, markdown
-from apps import tricks as tricks_view, users as users_view, utils
+from apps import tricks as tricks_view, users as users_view, utils, admin
 
 @app.route('/')
 def index():
-    context, user = {'user': False}, False
+    context, user = {'user': False, 'user_admin_lvl': 0}, False
     user_id = session.get('user_id', False)
 
     # TODO: завернуть в декоратор
@@ -25,7 +25,7 @@ def index():
         user = db.user.find_one({'_id': user_id})
         user['id'] = user.pop('_id')
         user['rating'] = utils.get_user_rating(user['id'])
-        context = {'user': _dumps(user)}
+        context = {'user': _dumps(user), 'user_admin_lvl': user['admin']}
 
     tricks = list(db.trick.find())
 

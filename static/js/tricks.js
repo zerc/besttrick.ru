@@ -1,11 +1,92 @@
 /*global jQuery, window, document */
 /*jslint nomen: true, maxerr: 50, indent: 4 */
+
+/*
+ * TODO: завернуть все штуки в неймспейс.
+ * Модели, вьюхи и вспомогательные функции, относящиеся к трюкам
+ */
+window.BTTricks = {};
+
+
 var Trick, TrickView, TrickFullView, TricksList, TricksView, CheckTrickView,
     UploadVideoForm, video_form, remove_tooltips, init_tooltips;
 
+
+/*** Модели и коллекции ***/
+window.BTTricks.Trick = Trick = Backbone.Model.extend({
+    url: '/checktrick/',
+
+    defaults: {
+        _id         : '',
+        title       : '',
+        thumb       : '',
+        videos      : [],
+        descr       : '',
+        direction   : '',
+        score       : 0,
+        wssa_score  : 0,
+        tags        : [],
+
+        // NOTE: смешение сущностей: трюк и чекин - не хорошо!
+        // параметры о чекине/чекинах пользователей
+        user_do_this    : false, // делает ли пользователь этот трюк
+        users           : 0,     // сколько пользователей делает этот трюк
+        cones           : 0,
+        video_url       : '',    // сслыка на подтверждающий видос
+        best_user       : '',
+        best_user_cones : 0,
+        users_full      : []
+    },
+
+    schema: {
+        title: {type: 'Text', validators: ['required'], title: 'Название'},
+        direction: {type: 'Select', options: ['', 'forward', 'backward'], title: 'Направ.'},
+        videos: {type: 'YouTube', validators: ['required', 'url'], options: {'thumb_fieldname': 'thumb'}, title: 'Видео'},
+        thumb: {type: 'Hidden'},
+        score: {type: 'Text', validators: ['required'], title: 'Коэф. сложности'},
+        tags: {type: 'Checkboxes', validators: ['required'], title: 'Тэги',
+            // TODO: динамически их подгружать :D
+            options: [
+                {val: 'jumping',  label: 'прыжковый'},
+                {val: 'sitting',  label: 'сидячий'},
+                {val: 'spinning', label: 'вращательный'},
+                {val: 'wheeling', label: 'вилинговый'}
+            ]
+        },
+        descr: {type: 'TextArea', validators: ['required'], title: 'Описание'}
+    },
+
+    validate: function (attrs) {
+        if (this.url !== '/checktrick/') return;
+
+        if (_.isNaN(attrs.cones) || attrs.cones <= 0) {
+            return 'cones::введите положительное число';
+        }
+
+        if (attrs.cones >= 1000) {
+            return 'cones::не верим :)';
+        }
+
+        if (attrs.video_url && !/^(http|https):\/\/(www\.youtube\.com|youtu.be)\/[a-zA-Z0-9\?&\/=\-]+$/gmi.test(attrs.video_url)) {
+            return 'video_url::укажите ссылку на видео с YouTube';
+        }
+    },
+
+    get_title: function () {
+        return (this.get('title') + ' ' + (this.get('direction') || '')).trim();
+    }
+});
+
+TricksList = Backbone.Collection.extend({
+    url: '/?json=tricks',
+    model: Trick
+});
+
+
+/*** Функции ***/
 remove_tooltips = function () {
     $('div.tooltip').remove(); // удалим все тултипы
-}
+};
 
 init_tooltips = function (el) {
     el.find('input.cones')
@@ -15,17 +96,24 @@ init_tooltips = function (el) {
     el.find('input.video_url')
         .tooltip({trigger: 'focus', placement: 'bottom'})
         .errortip({trigger: 'manual', placement: 'bottom'});
-}
+};
 
+
+/*** Views ***/
+
+/*
+ * TODO: переписать с использование backbone.view
+ * Форма загрузки видео на Ютуб.
+ */
 UploadVideoForm = function () {
     var body = $('body'),
         doc  = $(document),
-        overflow = $('<div class="upload_video_form_overflow"></div>'),
+        overflow = $('div.modal_form_overflow'),
         container = $('<div class="upload_video_form_container"></div>'),
-        template = new EJS({url: '/static/templates/upload_video_form.ejs'});;
+        template = new EJS({url: '/static/templates/upload_video_form.ejs'});
 
     overflow.height(doc.height());
-    body.append(overflow, container);
+    container.insertAfter(overflow);
 
     function get_params(trick_id) {
         var params = false;
@@ -51,9 +139,8 @@ UploadVideoForm = function () {
         form.find('div.error_holder').html(text);
     };
 
-
     /*
-     * Показывает форму загрзки. Умеет получать параметры загрызки видео.
+     * Показывает форму загрзки. Умеет получать параметры загрузки видео.
      * После успешной загрузки вызывает callback функцию, куда передает id video.
      */
     this.show = function (trick_id, callback) {
@@ -110,20 +197,21 @@ UploadVideoForm = function () {
         });
 
         body.addClass('show_upload_form');
-    },
+    }
+
     this.hide = function () {
         body.removeClass('show_upload_form').css('cursor', 'default');
     }
 
     return this;
-}
+};
+$(function () { video_form = new UploadVideoForm(); });
 
 
-$(function () {
-    video_form = new UploadVideoForm();
-});
-
-
+/*
+ * Форма чекина.
+ * TODO: Так как форма имеет 2 представленя лучше реализовать через наследование, а не через флажок.
+ */
 CheckTrickView = Backbone.View.extend({
     template    : new EJS({url: '/static/templates/checktrick_form.ejs'}),
     events      : {
@@ -144,7 +232,6 @@ CheckTrickView = Backbone.View.extend({
         video_form.show(this.model.get('id'), function (video_id) {
             var url = 'http://youtu.be/' + video_id
             self.$el.find('#dialog__video_url').val(url);
-            //self.save();
             video_form.hide();
         });
 
@@ -213,49 +300,8 @@ CheckTrickView = Backbone.View.extend({
 
         return false;
     }
-})
-
-Trick = Backbone.Model.extend({
-    url: '/checktrick/',
-
-    defaults: {
-        _id         : '',
-        title       : '',
-        thumb       : '',
-        videos      : [],
-        descr       : '',
-        direction   : '',
-        score       : 0,
-        wssa_score  : 0,
-
-        // параметры о чекине/чекинах пользователей
-        user_do_this    : false, // делает ли пользователь этот трюк
-        users           : 0,     // сколько пользователей делает этот трюк
-        cones           : 0,
-        video_url       : '',    // сслыка на подтверждающий видос
-        best_user       : '',
-        best_user_cones : 0,
-        users_full      : []
-    },
-
-    validate: function (attrs) {
-        if (_.isNaN(attrs.cones) || attrs.cones <= 0) {
-            return 'cones::введите положительное число';
-        }
-
-        if (attrs.cones >= 1000) {
-            return 'cones::не верим :)';
-        }
-
-        if (attrs.video_url && !/^(http|https):\/\/(www\.youtube\.com|youtu.be)\/[a-zA-Z0-9\?&\/=\-]+$/gmi.test(attrs.video_url)) {
-            return 'video_url::укажите ссылку на видео с YouTube';
-        }
-    },
-
-    get_title: function () {
-        return (this.get('title') + ' ' + (this.get('direction') || '')).trim();
-    }
 });
+
 
 TrickView = Backbone.View.extend({
     tagName     : 'div',
@@ -284,11 +330,11 @@ TrickView = Backbone.View.extend({
         if (this.model.get('user_do_this')) this.$el.addClass('user_do_this');
 
         init_tooltips(this.$el);
-        
 
         return this;
     }
 });
+
 
 TrickFullView = Backbone.View.extend({
     el: 'div.content',
@@ -344,12 +390,6 @@ TrickFullView = Backbone.View.extend({
         this.$el.find('.trick_video_preview').replaceWith(html);
         return false;
     }
-});
-
-
-TricksList = Backbone.Collection.extend({
-    url: '/?json=tricks',
-    model: Trick
 });
 
 

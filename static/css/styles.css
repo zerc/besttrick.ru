@@ -60,9 +60,9 @@ a.user_rating {
 .show_form .feedback_holder {display:block;}
 
 .show_upload_form {overflow:hidden;}
-.show_upload_form .upload_video_form_overflow,
+.show_upload_form .modal_form_overflow,
 .show_upload_form .upload_video_form_container {display:block;}
-.upload_video_form_overflow {
+.modal_form_overflow {
     display:none; position:absolute; width:100%; opacity:0.9; -moz-opacity:0.9; filter:alpha(opacity=9);
     top:0; background-color: #F2F2F2; overflow:hidden;
 }
@@ -380,3 +380,44 @@ div.about a:hover {text-decoration:none;}
 .top_users .info_block {margin:0 10px; line-height:38px;}
 .top_users .trick__user_king {color:#fff;}
 .top_users .info_block_team {float:right; font-size:12px; margin-right:5px; margin-top:-5px; color:#aeaeae;}
+
+
+/* admin */
+.admin_panel {position:fixed; width:60px; left:0; z-index:9999; background:#B55A5A; padding:0 5px;}
+.admin_panel .toggle_panel {color:#fff; font-weight:bolder; font-size:18px; text-decoration:none; line-height:30px;}
+.admin_controls {display:none;}
+
+div.admin_panel_opened .admin_panel {width:120px;}
+div.admin_panel_opened .admin_controls {
+    display:block; background:#aeaeae; margin:0 -5px -5px -5px; padding:0 5px 5px 5px;
+}
+
+body.show_trick_add_form .modal_form_overflow,
+body.show_trick_add_form .trick_add_form_container {display:block;}
+
+.trick_add_form_container {
+    position:absolute; display:none; top:50px; left:40%; width:300px;
+    background:white; border: 1px solid #AEAEAE; padding:10px;
+}
+
+.trick_add_form_container .bbf-field input, 
+.trick_add_form_container .bbf-field textarea {width:205px; margin-bottom:5px;}
+.trick_add_form_container .bbf-field select {width:215px;}
+.trick_add_form_container .bbf-field.bbf-error .bbf-editor {outline:none;}
+
+.trick_add_form_container .bbf-field.bbf-error input,
+.trick_add_form_container .bbf-field.bbf-error textarea {border-color:red;}
+
+li.bbf-error .bbf-help {color:red;}
+
+.trick_add_form_container div.bbf-checkboxes label {float:none; width:auto;}
+.trick_add_form_container div.bbf-checkboxes input {width:auto;}
+
+button.trick_add__save {}
+button.trick_add__close {float:right;}
+
+div.bbf-editorYouTube div input {width:190px !important; display:inline;}
+.bbf-editorYouTube .thumb_holder {margin-left:-25%;}
+.thumb_holder img {float:left; margin-right:3px; margin-bottom:3px; width:80px; border:2px solid #fff;}
+.thumb_holder img.selected_thumb {border:2px solid red;}
+.bbf-editorYouTube a.show_thumbs {display:inline-block; background-color:red; width:10px; height:10px; text-decoration:none;}

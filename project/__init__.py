@@ -1,3 +1,5 @@
+#!venv/bin/python
+# -*- coding: utf-8 -*-
 from mongokit import Connection
 
 from flask import Flask
@@ -27,20 +29,14 @@ JS_LIBS = (
     'js/jquery.form.js',
     'js/bootstrap-tooltip.js',
     'js/jquery.reject.js',
-)
-JS_PROJECT = (
+
+    'js/common.js',
     'js/tricks.js',
     'js/users.js',
     'js/app.js',
 )
-final_script_name = 'js/main.js'
 
-if app.config['DEBUG']:
-    JS_LIBS = JS_LIBS + JS_PROJECT
-else:
-    JS_LIBS = JS_LIBS + (final_script_name,)
-
-js = Bundle(*JS_LIBS, filters='jsmin', output='js/main_min.js')
+js = Bundle(*JS_LIBS, filters='jsmin', output='js/main.min.js')
 assets.register('js_all', js)
 
 

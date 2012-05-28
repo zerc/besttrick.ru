@@ -1,51 +1,9 @@
 /*global jQuery, window, document */
 /*jslint nomen: true, maxerr: 50, indent: 4 */
 
-/* EJS view helpers */
-
-// если в имени пользователя больше двух слов - первое выводим полностью, а второе сокращаем
-EJS.Helpers.prototype.format_username = function (username) {
-    var parts = username.trim().split(' ');
-    return parts[1] ? parts[0] + ' ' + parts[1].charAt(0).toUpperCase() + '.' : parts[0];
-}
-
-EJS.Helpers.prototype.row_if_exists = function (row, label) {
-    if (row) {
-        return '<p><strong>' + label + ':</strong> ' + row + '</p>';
-    }
-};
-
-EJS.Helpers.prototype.set_title = function (title) {
-    window.document.title = 'Besttrick - ' + title;
-
-};
-
-EJS.Helpers.prototype.plural = function(number, one, two, five) {
-    var n = number;
-    number = Math.abs(number);
-    number %= 100;
-    if (number >= 5 && number <= 20) {
-        return n + ' ' + five;
-    }
-    number %= 10;
-    if (number == 1) {
-        return n + ' ' + one;
-    }
-    if (number >= 2 && number <= 4) {
-        return n + ' ' + two;
-    }
-    return n + ' ' + five;
-};
-
-EJS.Helpers.prototype.browser_info = function () {
-    var data = {
-        Screen  : window.screen.width + 'x' + window.screen.height,
-        Window  : window.outerWidth   + 'x' + window.outerHeight,
-        Browser : $.browser
-    }
-    return _.escape(JSON.stringify(data));
-};
-
+/*
+ * Роутер, осуществляющий инициализацию и руление приложением.
+ */
 
 var App = Backbone.Router.extend({
     routes: {
@@ -72,15 +30,21 @@ var App = Backbone.Router.extend({
         this.tricksView = new TricksView({tricks: args.tricks, tags: args.tags, user: userModel});
         this.trickFull  = new TrickFullView({user: userModel});
         this.feedback   = new FeedBack({user: userModel});
+        this.admin = args.admin;
 
-        // Назначаю общие действия при переходе по страницам
+        // Общие действия при переходе по страницам
         this.bind('all', function (a, b, c) {
             self.feedback.hide();
             remove_tooltips();
             $('div.content').attr('class', 'content'); // обнулим все навешаенные на главный див стили
             
-            // google analutics avent push
+            // google analytics event push
             _gaq.push(['_trackPageview', '/' + location.hash]);
+            
+            if (this.admin) {
+                if (a !== 'route:trick') delete this.admin.current_trick;
+                this.admin.render();
+            }
         });
 
         Backbone.history.start();
@@ -133,7 +97,9 @@ var App = Backbone.Router.extend({
         this.profile.render(user_id);
     },
 
-    trick: function (trick) {
-        return this.trickFull.render({model: this.tricksView.collection.get(trick)});
+    trick: function (trick_id) {
+        var trick = this.tricksView.collection.get(trick_id);
+        if (this.admin) this.admin.current_trick = trick;
+        return this.trickFull.render({model: trick});
     }
 });

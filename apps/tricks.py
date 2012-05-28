@@ -173,6 +173,11 @@ def trick():
     if user_id is False:
         return 'Access Deny', 403
 
+    try:
+        user_id = int(user_id)
+    except ValueError:
+        return 'Invalid user_id', 4000
+
     trick_data = json.loads(unicode(request.data, 'utf-8'))
     trick_data['_id'] = trick_data.pop('id')
 

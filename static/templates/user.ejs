@@ -1,4 +1,4 @@
-<%= set_title(user.get('nick')) %>
+<%= set_page_title(user.get('nick')) %>
 <div class="user__tricks">
     <% if (tricks.length > 0) { %>
         <% _.map(tricks, function (trick) {%>
@@ -14,18 +14,22 @@
 </div>
 <div class="user__data">
     <img class="user__photo" src="<%= user.get('photo') %>" />
-    <% if (profile) { %>
-        <%= row_if_exists(user.get('rating'),  'Рейтинг') %>
-        <%= row_if_exists(user.get('nick'),  'Ник') %>
-        <%= row_if_exists(user.get('team'),  'Команда') %>
-        <%= row_if_exists(user.get('phone'), 'Телефон') %>
-        <%= row_if_exists(user.get('city'),  'Город') %>
-        <%= row_if_exists(user.get('icq'),   'ICQ') %>
-        <%= row_if_exists(user.get('skype'), 'Skype') %>
-        <%= row_if_exists(user.get('rolls'), 'Ролики') %>
-        <%= row_if_exists(user.get('epxs'),  'Стаж') %>
-        <%= row_if_exists(user.get('bio'),   'Информация') %>
-    <% } else { %>
+    <% if (profile) { 
+        _.each({
+            rating: 'Рейтинг',
+            nick:   'Ник',
+            team:   'Команда',
+            phone:  'Телефон',
+            city:   'Город',
+            icq:    'ICQ',
+            skype:  'Skype',
+            rolls:  'Ролики',
+            epxs:   'Стаж',
+            bio:    'Информация'
+            }, function (key, field_name) {
+    %>
+    <%= print_value_if_exists(key, user.get(field_name)) %> 
+    <%  }); } else { %>
         <input placeholder="ник" type="text" id="id_nick" name="nick" value="<%= user.get('nick') %>" maxlength="100" />
         <input placeholder="команда" type="text" id="id_team" name="team" value="<%= user.get('team') %>" maxlength="100" />
         <input placeholder="e-mail" type="text" id="id_email" name="email" value="<%= user.get('email') %>" />
@@ -33,7 +37,7 @@
         <input placeholder="город" type="text" id="id_city" name="city" value="<%= user.get('city') %>" maxlength="100" />
         <input placeholder="icq" type="text" id="id_icq" name="icq" value="<%= user.get('icq') %>" maxlength="10" />
         <input placeholder="skype" type="text" id="id_skype" name="skype" value="<%= user.get('skype') %>" />
-        <input placeholder="катаю на:" type="text" id="id_rolls" name="rolls" value="<%= user.get('rolls') %>" />
+        <input placeholder="я катаю на" type="text" id="id_rolls" name="rolls" value="<%= user.get('rolls') %>" />
         <input placeholder="стаж" type="text" id="id_epxs" name="epxs" value="<%= user.get('epxs') %>" />
         <textarea placeholder="О себе" id="id_bio" name="bio"><%= user.get('bio') %></textarea>
         <button type="button" class="save">Сохранить</button> <span class="save_status"><%= save_status_text %></span>
