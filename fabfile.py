@@ -7,9 +7,7 @@ from os.path import join as path_join
 
 env.hosts = _app.config['FLASK_HOSTS']
  
-def roll():
-    execute(static)
-    
+def roll():    
     local('git push origin master')
     run("""
         cd www/ &&
