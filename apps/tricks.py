@@ -68,6 +68,9 @@ class TrickUserMigration(DocumentMigration):
     def migration01__add_video_url(self):
         self.target = {'video_url':{'$exists':False}}
         self.update = {'$set':{'video_url': unicode}}
+    def migration02__change_id(self):
+        self.target = {'trick':{'$exists':True}}
+        self.update = {'$set':{'trick': int}}
 
 class TrickUser(Document):
     __database__   = app.config['MONGODB_DB']
@@ -75,7 +78,7 @@ class TrickUser(Document):
 
     structure = {
         'user'       : int,
-        'trick'      : unicode,
+        'trick'      : int,
         'cones'      : int,
         'approved'   : bool,
         'video_url'  : unicode,
