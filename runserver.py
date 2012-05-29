@@ -1,8 +1,9 @@
 #!venv/bin/python
 # -*- coding: utf-8 -*-
+import re
 import simplejson as json
 
-from flask import g, Flask, render_template, request, session, make_response, jsonify
+from flask import g, Flask, render_template, request, redirect, session, make_response, jsonify
 from flaskext.mail import Message, email_dispatched
 from mongokit import Connection
 
@@ -27,7 +28,7 @@ def index():
         user['rating'] = utils.get_user_rating(user['id'])
         context = {'user': _dumps(user), 'user_admin_lvl': user['admin']}
 
-    tricks = list(db.trick.find())
+    tricks = list(db.trick.find().sort("_id", 1))
 
     # лучшие результаты по трюкам + общее число делающих пользователей
     reduce_func = u"""
@@ -74,12 +75,12 @@ def index():
     for trick in tricks:
         trick[u'id'] = trick.pop(u'_id')
         try:
-            trick.update(best_users[unicode(trick[u'id'])])
+            trick.update(best_users[trick[u'id']])
         except KeyError:
             trick.update({'best_user_cones': None, 'best_user': None})
 
         try:
-            trick.update(user_stats[unicode(trick[u'id'])])
+            trick.update(user_stats[trick[u'id']])
         except KeyError:
             trick.update({'cones': 0})
 
@@ -98,7 +99,10 @@ def index():
     if json_field:
         r = json.dumps(context[json_field])
     elif crawler is not False:
-        r = get_content_for_crawler(crawler, context)
+        try:
+            r = get_content_for_crawler(crawler, context)
+        except AttributeError, e:
+            return redirect('/?_escaped_fragment_=%s' % e, code=301)
     else:
         r = render_template('index.html', **context)
 
@@ -123,6 +127,26 @@ def get_content_for_crawler(crawler_path, context):
     """
     if crawler_path == '':
         return render_template('crawler.html', **context)
+
+    # вероятно переход по старому урлу - нужно редиректнуть
+    if not re.findall(r'trick\d+', crawler_path):
+        OLD_IDS_MAP = {
+            # old url       # new
+            'trick/kazachok-f'    : 'trick0',
+            'trick/korean-spin'   : 'trick1',
+            'trick/russian-spin'  : 'trick2',
+            'trick/chicken-leg-b' : 'trick3',
+            'trick/toe-machine'   : 'trick4',
+            'trick/day-night'     : 'trick5',
+            'trick/footgun-toe-f' : 'trick6',
+            'trick/onewheel-f'    : 'trick7',
+            'trick/confraglide'   : 'trick8',
+            'trick/cobra-b'       : 'trick9',
+            'trick/seven-f'       : 'trick10',
+            'trick/no-wiper'      : 'trick11',
+            'trick/foot-spin'     : 'trick12',
+        }
+        raise AttributeError(OLD_IDS_MAP[crawler_path])
 
     c = app.url_map.bind('')
 

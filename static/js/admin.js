@@ -179,23 +179,29 @@ window.BTAdmin.trickForm = Backbone.View.extend({
     },
 
     render: function (trick) {
-        this.form = new Backbone.Form({
-            model: trick || new Trick()
-        }).render();
+        var self = this;
 
-        this.form.model.url = '/admin/trick/';
+        this.form = new Backbone.Form({
+            model: trick
+        }).render();
 
         this.$el.html(this.template.render({trick: trick}));
         this.$el.find('form').replaceWith(this.form.$el);
         this.$el.insertAfter(this.overflow);
 
         this.body.addClass('show_trick_add_form');
-        this.doc.one('keydown', this.close);
+        this.doc.bind('keydown', function (e) {
+            var key = e.keyCode || e.which;
+            if (key === 27) {
+                self.close();
+            }
+        });
 
         return this;
     },
 
     close: function () {
+        this.doc.unbind('keydown');
         this.body.removeClass('show_trick_add_form');
         delete this.form;
         this.$el.remove();
@@ -208,7 +214,8 @@ window.BTAdmin.trickForm = Backbone.View.extend({
         if (errors) return false;
 
         this.form.model.save(null, {
-            success: function (model, response) {self.close();}
+            success: function (model, response) {self.close();},
+            url: '/admin/trick/'
         });
     }
 });
@@ -219,12 +226,13 @@ window.BTAdmin.trickForm = Backbone.View.extend({
 window.BTAdmin.panel = Backbone.View.extend({
     tagName     : 'div',
     className   : 'admin_panel',
-    template: new EJS({url: '/static/templates/admin/admin_panel.ejs'}),
+    template    : new EJS({url: '/static/templates/admin/admin_panel.ejs'}),
     
     active_form: null,
 
     // HOOK: если указан - позволяем его отредактировать
-    current_trick: null,
+    current_trick : null,
+    trick_url     : '/admin/trick/',
 
     events: {'click a': '_router'},
 
@@ -236,7 +244,15 @@ window.BTAdmin.panel = Backbone.View.extend({
         
         this[bind]();
         return false;
-   },
+    },
+
+    set_current_trick: function (trick) {
+        this.current_trick = _.extend({}, trick, {url: this.trick_url});
+    },
+
+    drop_current_trick: function () {
+        this.current_trick = null;
+    },
 
     initialize: function (args) {
         _.bindAll(this, 'render');
@@ -248,13 +264,26 @@ window.BTAdmin.panel = Backbone.View.extend({
     },
 
     add_trick: function () {
+        var trick = new Trick();
+        trick.url = this.trick_url;
         if (this.active_form) this.active_form.close();
-        this.active_form = new window.BTAdmin.trickForm().render();
+        this.active_form = new window.BTAdmin.trickForm().render(trick);
     },
 
     edit_trick: function () {
         if (this.active_form) this.active_form.close();
         this.active_form = new window.BTAdmin.trickForm().render(this.current_trick);
+    },
+
+    delete_trick: function () {
+        if (confirm("Удалить трюк?")) {
+            this.current_trick.destroy({
+                data: JSON.stringify({id: this.current_trick.get('id')}),
+                success: function () {
+                    app.navigate('', {trigger: true});
+                }
+            });
+        }
     },
 
     render: function () {

@@ -26,25 +26,6 @@ from project import connection, db, app
 
 parser = OptionParser(u"Admin scripts for besttrick app")
 
-def clean_do(options):
-    """ Cleaning do'ers list in tricks """
-    tricks = connection.Trick.find()
-
-    for trick in tricks:
-        trick['a_users'] = []
-        trick.save()
-
-    print '>> Cleaing complete'
-
-
-parser.add_option("-u", "--user_id", dest="pk", help="user_id", type="int")
-def toggle_admin(options):
-    """ Bless/Unbless admin power to user """
-    user = connection.User.find_one(options.__dict__)
-    user['admin'] = abs(user.get('admin', 0)-1)
-    user.save()
-    print user
-
 
 def tags(options):
     """ Вгоняет тэги в базу """
@@ -212,14 +193,15 @@ def import_tricks(options):
 
             for x in range(4):
                 response = urllib.urlopen(url % (video_id, x))
-                path = path_join(app.static_folder, 'images', '%s-%s.jpg' % (trick_id, x))
+                path = path_join(app.static_folder, 'images', 'trick%s-%s.jpg' % (trick_id, x))
                 with open(path, 'wb') as f:
                     f.write(response.read())
 
-
-    def _update(trick):
-        _id = "-".join(filter(None, (slugify(trick['title']), trick.get('direction', '')[:1])))
-        trick['thumb'] = u'%s-%s.jpg' % (_id, trick.get('thumb', '3'))
+    def _update(args):
+        _id, trick = args
+        old_id = "-".join(filter(None, (slugify(trick['title']), trick.get('direction', '')[:1])))
+        trick['thumb'] = u'trick%s-%s.jpg' % (_id, trick.get('thumb', '3'))
+        print db.seqs.find_and_modify({"_id": "tricks_seq"}, {"$inc": {"val": 1}}), old_id
 
         if db.trick.find_one({'_id': _id}):
             db.trick.update({'_id': _id}, {'$set': trick})
@@ -234,15 +216,9 @@ def import_tricks(options):
 
         _download_thumbs(_id, trick['videos'])
 
-    map(_update, tricks)
+    db.seqs.find_and_modify({"_id": "tricks_seq"}, {"$set": {"val": 0}})
+    map(_update, enumerate(tricks))
 
-
-
-def clean_db(options):
-    tricks = connection.Trick.find()
-
-    for t in tricks:
-        t.delete()
 
 
 if __name__ == "__main__":

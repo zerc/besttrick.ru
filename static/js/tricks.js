@@ -56,7 +56,7 @@ window.BTTricks.Trick = Trick = Backbone.Model.extend({
         descr: {type: 'TextArea', validators: ['required'], title: 'Описание'}
     },
 
-    validate: function (attrs) {
+    validate: function (attrs, a,b,c) {
         if (this.url !== '/checktrick/') return;
 
         if (_.isNaN(attrs.cones) || attrs.cones <= 0) {
@@ -366,7 +366,7 @@ TrickFullView = Backbone.View.extend({
         this.model.on('sync::full', this.render, this);
 
         $.ajax({
-            url: '/trick/' + self.model.get('id') + '/',
+            url: '/trick' + self.model.get('id') + '/',
             dataType: 'json',
             success: function (response) {
                 self.$el.html(self.template.render({
@@ -420,9 +420,9 @@ TricksView = Backbone.View.extend({
         this.filter();
 
         if (this.selected_tags.length > 0) {
-            app.navigate('filter=' + this.selected_tags.join(','), false);
+            app.navigate('filter=' + this.selected_tags.join(','), {trigger: false});
         } else {
-            app.navigate('', true);
+            app.navigate('', {trigger: true});
         }
 
         this.render_tricks();

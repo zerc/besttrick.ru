@@ -61,6 +61,7 @@ class Trick(Document):
     required_fields = ['title']
     indexes = [{'fields': ['tags']}]
 connection.register([Trick])
+db.seqs.insert({'_id': 'tricks_seq',  'val': 0})
 
 
 class TrickUserMigration(DocumentMigration):
@@ -150,10 +151,10 @@ def prepare_youtube_upload():
     return jsonify({'post_url': post_url, 'token': token})
 
 
-@app.route('/trick/<trick_id>/', methods=['GET'])
+@app.route('/trick<trick_id>/', methods=['GET'])
 def trick_full(trick_id):
     """ Лучшие пользователи по этому трюку """
-    rows = grouped_stats('user', {'trick': trick_id})
+    rows = grouped_stats('user', {'trick': int(trick_id)})
     rows = sorted(rows, key=lambda x: x['cones'], reverse=True)
 
     if request.args.get('_escaped_fragment_', False) is False:    
@@ -162,7 +163,7 @@ def trick_full(trick_id):
     # контент для робота
     return {
         'trick_users': rows,
-        'trick': db.trick.find_one({'_id': unicode(trick_id)})
+        'trick': db.trick.find_one({'_id': int(trick_id)})
     }
 
 

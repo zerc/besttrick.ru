@@ -16,7 +16,7 @@ def sitemap():
     ]
 
     # добавляем трюки
-    trick_tmpl = u"""<url><loc>%s/#!trick/%s</loc></url>"""
+    trick_tmpl = u"""<url><loc>%s/#!trick%s</loc></url>"""
     xml.extend([trick_tmpl % (app.config['HOST'], trick['_id']) for trick in tricks])
 
     # flatpages

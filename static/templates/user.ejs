@@ -4,7 +4,7 @@
         <% _.map(tricks, function (trick) {%>
             <div class="user__trick">
                 <img src="/static/images/<%= trick.trick.thumb %>" class="user__trick__thumb">
-                <a href="#!trick/<%= trick.trick._id %>"><%= trick.trick.title %></a>
+                <a href="#!trick<%= trick.trick._id %>"><%= trick.trick.title %></a>
                 <span><%= trick.cones %></span>
             </div>
         <%}) %>

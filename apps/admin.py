@@ -19,14 +19,14 @@ def _download_thumbs(trick_id, videos_urls):
 
         for x in range(4):
             response = urllib.urlopen(url % (video_id, x))
-            path = path_join(app.static_folder, 'images', '%s-%s.jpg' % (trick_id, x))
+            path = path_join(app.static_folder, 'images', 'trick%s-%s.jpg' % (trick_id, x))
             with open(path, 'wb') as f:
                 f.write(response.read())
 
 
 def _clean_video(url):
     """
-    Приводит урл видо к безопасному виду
+    Приводит урл видео к безопасному виду
     """
     base_url = 'http://www.youtube.com/embed/%s'
 
@@ -39,8 +39,14 @@ def _clean_video(url):
     raise TypeError('Cant parse youtube url')
 
 
-@app.route('/admin/trick/', methods=['POST', 'PUT'])
+@app.route('/admin/trick/', methods=['POST', 'PUT', 'DELETE'])
 def add_trick():
+    """
+    Работа с трюком - создание/редактирование/удаление
+    """
+    ## TODO: разделить на отдельные функции
+
+    # проверям пользователя
     user_id = session.get('user_id', False)
     if user_id is False:
         return 'Access Deny', 403
@@ -50,15 +56,33 @@ def add_trick():
     if not user or user.get('admin', 0) <= 0:
         return 'Access Deny', 403
 
+    # разбираем данные
     raw_trick_data = json.loads(unicode(request.data, 'utf-8'))
     trick_data = {}
 
     # Выбираем только нужные нам поля
     for f in TrickModel.structure.keys():
-        trick_data[f] = raw_trick_data[f]
+        try:
+            trick_data[f] = raw_trick_data[f]
+        except KeyError:
+            if request.method == 'DELETE':
+                continue
+            else:
+                raise
     
-    # Генерируем id
-    trick_data['_id'] = "-".join(filter(None, (slugify(trick_data['title']), trick_data.get('direction', '')[:1])))
+    # Роутим
+    if request.method in ('PUT', 'DELETE'):
+        try:
+            trick_data['_id'] = int(raw_trick_data.pop('id'))
+        except ValueError:
+            return 'Invalid trick id', 400
+    elif request.method == 'POST':
+        trick_data['_id'] = db.seqs.find_and_modify({"_id": "tricks_seq"}, {"$inc": {"val": 1}})['val']
+    
+    if request.method == 'DELETE':
+        db.trick.remove({'_id': trick_data['_id']})
+        # TODO: удаление картинок и связанных данных
+        return json.dumps({'success': '1'})
     
     if not hasattr(trick_data['videos'], '__iter__'):
         trick_data['videos'] = [trick_data['videos']]
@@ -70,10 +94,10 @@ def add_trick():
     new_trick.update(trick_data)
 
     # меняем тумбу, если поле содержит порядковый номер, а не урл
-    if trick_data.get('thumb', '').isdigit():
-        new_trick['thumb'] = u'%s-%s.jpg' % (trick_data['_id'], trick_data['thumb'])
+    thumb = trick_data.get('thumb', '')
+    if not thumb or thumb.isdigit():
+        new_trick['thumb'] = u'trick%s-%s.jpg' % (trick_data['_id'], trick_data['thumb'] or 3)
 
-    # по умолчанию выбираем 3ью тумбу
     new_trick['score'] = float(new_trick['score'])
 
     # качаем тумбы только при создании трюка

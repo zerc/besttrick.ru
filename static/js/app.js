@@ -10,7 +10,8 @@ var App = Backbone.Router.extend({
         ''                           : 'index',
         '!'                          : 'fresh_index',
         '!u'                         : 'my',
-        '!trick/:trick'              : 'trick',
+        '!trick:trick'               : 'trick',
+        '!trick/:trick'              : 'old_trick', // старый урл
         '!profile-:user_id'          : 'profile',
         '!filter=:tags_selected'     : 'filter',
         '!about'                     : 'about',
@@ -30,7 +31,9 @@ var App = Backbone.Router.extend({
         this.tricksView = new TricksView({tricks: args.tricks, tags: args.tags, user: userModel});
         this.trickFull  = new TrickFullView({user: userModel});
         this.feedback   = new FeedBack({user: userModel});
-        this.admin = args.admin;
+        this.admin      = args.admin;
+        
+        if (this.admin) this.admin.render();
 
         // Общие действия при переходе по страницам
         this.bind('all', function (a, b, c) {
@@ -41,8 +44,10 @@ var App = Backbone.Router.extend({
             // google analytics event push
             _gaq.push(['_trackPageview', '/' + location.hash]);
             
-            if (this.admin) {
-                if (a !== 'route:trick') delete this.admin.current_trick;
+            if (this.admin && a !== 'route:trick' && this.admin.current_trick) {
+                this.admin.drop_current_trick();
+                this.admin.render();
+            } else if (this.admin && a === 'route:trick') {
                 this.admin.render();
             }
         });
@@ -99,7 +104,27 @@ var App = Backbone.Router.extend({
 
     trick: function (trick_id) {
         var trick = this.tricksView.collection.get(trick_id);
-        if (this.admin) this.admin.current_trick = trick;
+        if (this.admin) this.admin.set_current_trick(trick);
         return this.trickFull.render({model: trick});
+    },
+
+    old_trick: function (trick_id) {
+        var mapping = {
+            'kazachok-f'    : 0,
+            'korean-spin'   : 1,
+            'russian-spin'  : 2,
+            'chicken-leg-b' : 3,
+            'toe-machine'   : 4,
+            'day-night'     : 5,
+            'footgun-toe-f' : 6,
+            'onewheel-f'    : 7,
+            'confraglide'   : 8,
+            'cobra-b'       : 9,
+            'seven-f'       : 10,
+            'no-wiper'      : 11,
+            'foot-spin'     : 12
+        };
+
+        return this.trick(mapping[trick_id]);
     }
 });
