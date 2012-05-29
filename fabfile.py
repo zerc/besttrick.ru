@@ -12,7 +12,7 @@ def roll():
     run("""
         cd www/ &&
         git reset HEAD --hard &&
-        rm static/js/main_min.js &&
+        rm static/js/main.min.js &&
         /etc/init.d/bt-uwsgi reload
     """)
     sudo("/etc/init.d/nginx reload")
