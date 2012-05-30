@@ -233,6 +233,7 @@ CheckTrickView = Backbone.View.extend({
             var url = 'http://youtu.be/' + video_id
             self.$el.find('#dialog__video_url').val(url);
             video_form.hide();
+            self.save();
         });
 
         return false;
@@ -274,7 +275,7 @@ CheckTrickView = Backbone.View.extend({
             });
     },
 
-    save: function (callback) {
+    save: function () {
         var self = this,
             cones = parseInt(this.$el.find('#dialog__cones').val(), 10) || -1,
             video_url = this.$el.find('#dialog__video_url').val();

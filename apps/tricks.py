@@ -129,7 +129,7 @@ def prepare_youtube_upload():
     except (KeyError, TypeError):
         return 'Bad trick_id', 403
 
-    trick = db.trick.find_one({'_id': unicode(trick_id)})
+    trick = db.trick.find_one({'_id': int(trick_id)})
     if not trick:
         return 'Unknow trick with id = %s' % trick_id, 403
 
