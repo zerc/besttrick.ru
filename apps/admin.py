@@ -167,9 +167,8 @@ def notices_for_type(notice_type):
             notice['data']['_id'] = {'id': '%s' % notice['data'].pop('_id')}
 
         # подсасываем кое-какие данные
-        notice['data']['trickname'] = db.trick.find_one({'_id': notice['data']['trick']})['title']
+        notice['data']['trickname'] =  notice['data'].pop('title')
         notice['data']['username'] = db.user.find_one({'_id': notice['data']['user']})['nick']
-
         return notice
 
     return json.dumps(map(_, notices))

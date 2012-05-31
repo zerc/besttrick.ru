@@ -53,7 +53,7 @@ def send_notify(notify_type, data):
     <p>Отмодерировать это дело можно в админке: <a href="%(admin_url)s" target="_blank">%(admin_url)s</a></a>
     """ % {
         'username'  : db.user.find_one({"_id": notice["data"]["user"]})['nick'],
-        'trickname' : db.trick.find_one({"_id": notice['data']['trick']})['title'],
+        'trickname' : data['title'],
         'video_url' : data['video_url'],
         'admin_url' : app.config['HOST'] + '/#admin/videos/'
     }
