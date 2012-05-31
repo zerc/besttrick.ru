@@ -31,10 +31,7 @@ var App = Backbone.Router.extend({
         this.tricksView = new TricksView({tricks: args.tricks, tags: args.tags, user: userModel});
         this.trickFull  = new TrickFullView({user: userModel});
         this.feedback   = new FeedBack({user: userModel});
-        this.admin      = args.admin;
-        
-        if (this.admin) this.admin.render();
-
+    
         // Общие действия при переходе по страницам
         this.bind('all', function (a, b, c) {
             self.feedback.hide();
@@ -43,13 +40,6 @@ var App = Backbone.Router.extend({
             
             // google analytics event push
             _gaq.push(['_trackPageview', '/' + location.hash]);
-            
-            if (this.admin && a !== 'route:trick' && this.admin.current_trick) {
-                this.admin.drop_current_trick();
-                this.admin.render();
-            } else if (this.admin && a === 'route:trick') {
-                this.admin.render();
-            }
         });
 
         Backbone.history.start();

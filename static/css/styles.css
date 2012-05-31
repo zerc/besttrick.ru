@@ -246,7 +246,7 @@ a.check_full_trick_icon {
 .full_trick__dialog p {padding:5px;}
 .showing_dialog .full_trick__dialog {display:block;}
 a.has_video {display:block; width:10px; height:10px; float:left; margin:15px 0 0 15px; background:red;}
-
+a.video_approved {background:green;}
 /* User page */
 .user {}
 .user input {margin-right:0; margin-bottom:10px;}
@@ -386,6 +386,7 @@ div.about a:hover {text-decoration:none;}
 .admin_panel {position:fixed; width:60px; left:0; z-index:9999; background:#B55A5A; padding:0 5px;}
 .admin_panel .toggle_panel {color:#fff; font-weight:bolder; font-size:18px; text-decoration:none; line-height:30px;}
 .admin_controls {display:none;}
+.admin_controls a {display:block;}
 
 div.admin_panel_opened .admin_panel {width:120px;}
 div.admin_panel_opened .admin_controls {
@@ -421,3 +422,21 @@ div.bbf-editorYouTube div input {width:190px !important; display:inline;}
 .thumb_holder img {float:left; margin-right:3px; margin-bottom:3px; width:80px; border:2px solid #fff;}
 .thumb_holder img.selected_thumb {border:2px solid red;}
 .bbf-editorYouTube a.show_thumbs {display:inline-block; background-color:red; width:10px; height:10px; text-decoration:none;}
+
+
+/* модльное окно с редактированием уведомлений */
+.notice_page_container {
+    position:absolute; top:50px; width:800px; z-index:9999;
+    background:white; border: 1px solid #AEAEAE; padding:10px;
+}
+
+.notice_page_container .new {color:red;}
+.notice_page_container .approved {color:green;}
+.notice_page_container .not_approved {color:#aeaeae;}
+.notice_page_container button.notice__close {margin:0; float:right;}
+.notice_page_container .notice_ok {color:green;}
+.notice_page_container .notice_bad {color:red;}
+table.notices {margin-bottom:10px;}
+tr.notice_video td {padding:5px;}
+table.notices tr.odd {background-color:#ccc;}
+table.notices tr.edd {background-color:#fff;}

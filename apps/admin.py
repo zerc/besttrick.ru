@@ -5,9 +5,30 @@ import simplejson as json
 from os.path import join as path_join
 from pytils.translit import slugify
 
+from flask import request, session, jsonify
+from mongokit import ObjectId
+
 from project import app, db, connection
 from .tricks import Trick as TrickModel
-from flask import request, session
+
+
+def stuff_only(func):
+    """
+    Декоратор - "только для персонала"
+    """
+    def wrap(*args, **kwargs):
+        user_id = session.get('user_id', False)
+        if user_id is False:
+            return 'Access Deny', 403
+
+        user = db.user.find_one({'_id': user_id})
+
+        if not user or user.get('admin', 0) <= 0:
+            return 'Access Deny', 403
+
+        return func(*args, **kwargs)
+
+    return wrap
 
 
 def _download_thumbs(trick_id, videos_urls):
@@ -40,22 +61,11 @@ def _clean_video(url):
 
 
 @app.route('/admin/trick/', methods=['POST', 'PUT', 'DELETE'])
+@stuff_only
 def add_trick():
     """
     Работа с трюком - создание/редактирование/удаление
     """
-    ## TODO: разделить на отдельные функции
-
-    # проверям пользователя
-    user_id = session.get('user_id', False)
-    if user_id is False:
-        return 'Access Deny', 403
-
-    user = db.user.find_one({'_id': user_id})
-
-    if not user or user.get('admin', 0) <= 0:
-        return 'Access Deny', 403
-
     # разбираем данные
     raw_trick_data = json.loads(unicode(request.data, 'utf-8'))
     trick_data = {}
@@ -107,3 +117,59 @@ def add_trick():
     new_trick.save()
 
     return json.dumps(trick_data)
+
+
+### Сообщения администрации
+@stuff_only
+@app.route('/admin/notice_count/', methods=['GET'])
+def get_notice_count():
+    """
+    Возвращает кол-во необработанных сообщений,
+    сгруппированных по типу.
+    """
+    reduce_func = u"""function(obj, prev) {prev.count += 1;}"""
+    counts = db.notice.group(['notice_type'], {'status': 0}, {'count': 0}, reduce_func)
+    return json.dumps(dict((int(x['notice_type']), int(x['count'])) for x in counts))
+
+
+@stuff_only
+@app.route('/admin/notice/<notice_id>/', methods=['PUT'])
+def notice(notice_id):
+    data = json.loads(unicode(request.data, 'utf-8'))
+    notice = db.notice.find_and_modify({"_id": ObjectId(notice_id)}, {"$set": {"status": data["status"]}})
+
+    if isinstance(data['data']['_id'], dict):
+        obj_id = ObjectId(data['data']['_id']['id'])
+    else:
+        obj_id = data['data']['_id']
+
+    status = True if int(data['status']) == 1 else False
+    db.trick_user.find_and_modify({"_id":obj_id}, {"$set": {"approved": status}})
+
+    return request.data
+
+
+@stuff_only
+@app.route('/admin/notices/<int:notice_type>/', methods=['GET'])
+def notices_for_type(notice_type):
+    notices = db.notice.find({'notice_type': notice_type}).sort('time_added', -1)
+
+    def _(notice):
+        notice['id'] = '%s' % notice.pop('_id')
+        notice['time_added'] = '%s' % notice['time_added']
+
+        try:
+            notice[u'data'][u'time_added'] = repr(notice[u'data'].pop(u'time_added'))
+        except KeyError:
+            pass
+
+        if isinstance(notice['data']['_id'], ObjectId):
+            notice['data']['_id'] = {'id': '%s' % notice['data'].pop('_id')}
+
+        # подсасываем кое-какие данные
+        notice['data']['trickname'] = db.trick.find_one({'_id': notice['data']['trick']})['title']
+        notice['data']['username'] = db.user.find_one({'_id': notice['data']['user']})['nick']
+
+        return notice
+
+    return json.dumps(map(_, notices))

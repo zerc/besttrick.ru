@@ -153,6 +153,26 @@ Backbone.Form.editors.Checkboxes = Backbone.Form.editors.Checkboxes.extend({
 });
 
 
+/*** Models ***/
+window.BTAdmin.VideoNoticeModel = Backbone.Model.extend({
+    url: function () {
+        return '/admin/notice/' + this.id + '/';
+    },
+
+    defaults: {
+        notice_type : 0,
+        data        : {},
+        status      : 0
+    },
+});
+
+
+window.BTAdmin.VideoNoticeCollection = Backbone.Collection.extend({
+    url    : '/admin/notices/0/',
+    model  : window.BTAdmin.VideoNoticeModel
+});
+
+
 /*** Views ***/
 
 /*
@@ -220,6 +240,137 @@ window.BTAdmin.trickForm = Backbone.View.extend({
     }
 });
 
+
+window.BTAdmin.VideoNoticeView = Backbone.View.extend({
+    tagName: 'tr',
+    className: 'notice_video',
+    template: new EJS({url: '/static/templates/admin/notice_video.ejs'}),
+
+    events: {
+        'click a.notice_ok'          : 'notice_ok',
+        'click a.notice_bad'         : 'notice_bad'
+    },
+
+    initialize: function (opts) {
+        _.bindAll(this, 'render', 'notice_ok', 'notice_bad');
+        this.$el.addClass(opts.i % 2 === 0 ? 'odd' : 'edd');
+        this.model.on('change', function () {
+            this.model.save();
+            this.render();
+            app.navigate('!', {trigger: true});
+        }, this);
+    },
+
+    render: function (i) {
+        this.$el.html(this.template.render({
+            notice  : this.model,
+            i       : i 
+        }));
+        return this;
+    },
+
+    notice_ok: function () {
+        this.model.set({'status': 1});
+        return false;
+    },
+
+    notice_bad: function () {
+        this.model.set({'status': 2});
+        return false;
+    }
+})
+
+
+
+/*
+ * Страница для списка уведомлений о видеоподтверждениях
+ */
+window.BTAdmin.VideoNoticesView = Backbone.View.extend({
+    tagName     : 'div',
+    className   : 'notice_page_container',
+    template    : new EJS({url: '/static/templates/admin/notice_page_video.ejs'}),
+
+    events: {
+        'click button.notice__close' : 'close'
+    },
+
+    initialize: function (options) {
+        _.bindAll(this, 'render', 'close');
+        this.collection = new window.BTAdmin.VideoNoticeCollection();
+        
+        this.body = $('body');
+        this.doc  = $(document);
+        
+        this.overflow = $('div.modal_form_overflow');
+        this.overflow.height(this.doc.height());
+    },
+
+    _render: function (collection) {
+        var self = this, left, container; 
+
+        this.overflow.show();
+        this.$el.html(this.template.render());
+
+        container = this.$el.find('table.notices');
+        collection.each(function (m, i) {
+            container.append(new window.BTAdmin.VideoNoticeView({model: m, i: i}).render().$el);
+        });
+
+        this.$el.insertAfter(this.overflow);
+
+        left = ($(window).width() - parseInt(this.$el.css('width'), 10)) / 2;
+        this.$el.css('left', left + 'px');
+
+        this.doc.bind('keydown', function (e) {
+            var key = e.keyCode || e.which;
+            if (key === 27) {
+                self.close();
+            }
+        });
+
+        return this;
+    },
+
+    render: function () {
+        var self = this;
+
+        this.collection.fetch({
+            success: function (collection, response) {
+                return self._render(collection);
+            }
+        });
+
+        return this;
+    },
+
+    close: function () {
+        this.overflow.hide();
+        this.doc.unbind('keydown');
+        this.$el.remove();
+        app.navigate('', {trigger: true});
+    },
+
+    notice_ok: function (e) {
+        var el = $(e.target).closest('div.notice_video'),
+            self = this;
+
+        $.ajax({
+            url: '/admin/notices/' + this.notice_type + '/',
+            data: {'id': el.attr('id')},
+            method: 'GET',
+            dataType: 'json',
+            success: function (response) {
+                self.$el.html(self.template.render({notices: self.notices}));
+            }
+        });
+
+        return false;
+    },
+    notice_bad: function (e) {}
+});
+
+
+
 /*
  * Панель админки.
  */
@@ -286,9 +437,54 @@ window.BTAdmin.panel = Backbone.View.extend({
         }
     },
 
+    videos_for_approve: function () {
+        return new window.BTAdmin.VideoNoticesView().render();
+    },
+
+    get_notice_count: function () {
+        var counts_map;
+
+        $.ajax({
+            url: '/admin/notice_count/',
+            dataType: 'json',
+            async: false,
+            success: function (response) {
+                counts_map = response;
+            }
+        });
+
+        return counts_map;
+    },
+
     render: function () {
         this.$el.html(this.template.render({
-            current_trick: this.current_trick
+            current_trick : this.current_trick,
+            notice_count  : this.get_notice_count()
         }));
     }
+});
+
+/*** Модифицируем главный роутер ***/
+var AdminApp =  App.extend({
+    initialize: function (args) {
+        this.route('admin/add_trick/', 'add_trick');
+        this.route('admin/videos/', 'videos_for_approve');
+        this.admin = new window.BTAdmin.panel();
+
+        App.prototype.initialize.call(this, args);
+
+        this.admin.render();
+
+        this.bind('all', function (a, b, c) {
+            if (a !== 'route:trick' && this.admin.current_trick) {
+                this.admin.drop_current_trick();
+                this.admin.render();
+            } else if (a === 'route:trick') {
+                this.admin.render();
+            }
+        });
+    },
+
+    add_trick: function () { this.admin.add_trick(); },
+    videos_for_approve: function () { this.admin.videos_for_approve(); }
 });

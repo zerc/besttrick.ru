@@ -11,6 +11,7 @@ from mongokit.schema_document import ValidationError
 
 from project import app, connection, db
 from .utils import grouped_stats
+from .notify import send_notify, CHECKTRICK_WITH_VIDEO
 
 from gdata.youtube import service
 from gdata import media, youtube
@@ -190,7 +191,6 @@ def trick():
     except TypeError:
         return 'Number of cones must be are integer', 400
 
-
     trick_user = db.trick_user.find_one({'user': user_id, 'trick': trick_data['_id']})
     update_data = {
         'cones': int(trick_data['cones']),
@@ -207,6 +207,10 @@ def trick():
         trick_user['trick'] = trick_data['_id']
         trick_user.update(update_data)
         trick_user.save()
+
+    # отсылаем уведомления, если был запощен видос
+    if trick_data.get('video_url'):
+        send_notify(notify_type=CHECKTRICK_WITH_VIDEO, data=dict(trick_user))
 
     # TODO: срефакторить это в универсальную функциюю, так как
     # нечто подобное используется на главной

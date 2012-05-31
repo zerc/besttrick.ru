@@ -117,10 +117,10 @@
             };
 
             {% if user_admin_lvl > 0 %}
-                args.admin = new window.BTAdmin.panel();
+                window.app = new AdminApp(args);
+            {% else %}
+                window.app = new App(args);
             {% endif %}
-
-            window.app = new App(args);
         }());
     </script>
 </body>

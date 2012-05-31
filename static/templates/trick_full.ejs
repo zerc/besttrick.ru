@@ -6,7 +6,7 @@
         <div class="trick__user<% if (i === 0) { %> trick__user_king<% } %>">
             <span class="left_block"><%= row.cones %></span>
             <% if (row.video_url) { %>
-                <a class="has_video" href="<%= row.video_url %>" target="_blank" title="есть видео подтверждение"></a>
+                <a class="has_video<% if (row.approved) {%> video_approved<% } %>" href="<%= row.video_url %>" target="_blank" title="есть видео подтверждение"></a>
             <% } %>
             <img src="<%= row.user.photo %>" class="trick__user__photo">
             <a href="#!profile-<%= row.user._id %>"><%= row.user.nick %></a>

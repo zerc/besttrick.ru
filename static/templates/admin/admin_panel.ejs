@@ -2,12 +2,18 @@
     <a href="#" class="toggle_panel" bind="toggle">Admin</a>
 
     <div class="admin_controls">
-        <a href="#" bind="add_trick">Добавить трюк</a>
+        <a href="#admin/add_trick/">Добавить трюк</a>
 
         <% if (!!current_trick) { %>
             <a href="#" bind="edit_trick">Редактировать</a>
             <a href="#" bind="delete_trick">Удалить</a>
         <% } %>
+
+        <a href="#admin/videos/">Видео
+            <% if (notice_count['0'] > 0) { %>
+                <span>(<%= notice_count['0'] %>)</span>
+            <% } %>
+        </a>
 
     </div>
 </div>
