@@ -138,13 +138,9 @@ def notice(notice_id):
     data = json.loads(unicode(request.data, 'utf-8'))
     notice = db.notice.find_and_modify({"_id": ObjectId(notice_id)}, {"$set": {"status": data["status"]}})
 
-    if isinstance(data['data']['_id'], dict):
-        obj_id = ObjectId(data['data']['_id']['id'])
-    else:
-        obj_id = data['data']['_id']
-
     status = True if int(data['status']) == 1 else False
-    db.trick_user.find_and_modify({"_id":obj_id}, {"$set": {"approved": status}})
+    cond   = {"user" : int(data['data']['user']), "trick" : int(data['data']['trick'])}
+    db.trick_user.find_and_modify(cond, {"$set": {"approved": status}})
 
     return request.data
 
@@ -163,11 +159,7 @@ def notices_for_type(notice_type):
         except KeyError:
             pass
 
-        if isinstance(notice['data']['_id'], ObjectId):
-            notice['data']['_id'] = {'id': '%s' % notice['data'].pop('_id')}
-
         # подсасываем кое-какие данные
-        notice['data']['trickname'] =  notice['data'].pop('title')
         notice['data']['username'] = db.user.find_one({'_id': notice['data']['user']})['nick']
         return notice
 

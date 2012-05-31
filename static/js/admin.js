@@ -278,8 +278,7 @@ window.BTAdmin.VideoNoticeView = Backbone.View.extend({
         this.model.set({'status': 2});
         return false;
     }
-})
-
+});
 
 
 /*
@@ -313,6 +312,7 @@ window.BTAdmin.VideoNoticesView = Backbone.View.extend({
 
         container = this.$el.find('table.notices');
         collection.each(function (m, i) {
+            if (i === 0) container.html('');
             container.append(new window.BTAdmin.VideoNoticeView({model: m, i: i}).render().$el);
         });
 

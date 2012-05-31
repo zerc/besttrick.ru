@@ -197,6 +197,7 @@ def trick():
     }
     
     if trick_data.get('video_url'):
+        update_data['approved'] = False
         update_data['video_url'] = unicode(trick_data['video_url'])
 
     if trick_user:
@@ -210,7 +211,13 @@ def trick():
 
     # отсылаем уведомления, если был запощен видос
     if trick_data.get('video_url'):
-        send_notify(notify_type=CHECKTRICK_WITH_VIDEO, data=dict(user=user_id, **trick_data))
+        notify_data = dict(**trick_data)
+        notify_data.update({
+            'user'      : user_id,
+            'trick'     : notify_data.pop('_id'),
+            'trickname' : notify_data.pop('title')
+        })
+        send_notify(notify_type=CHECKTRICK_WITH_VIDEO, data=notify_data)
 
     # TODO: срефакторить это в универсальную функциюю, так как
     # нечто подобное используется на главной
