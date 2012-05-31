@@ -210,7 +210,7 @@ def trick():
 
     # отсылаем уведомления, если был запощен видос
     if trick_data.get('video_url'):
-        send_notify(notify_type=CHECKTRICK_WITH_VIDEO, data=dict(trick_user))
+        send_notify(notify_type=CHECKTRICK_WITH_VIDEO, data=trick_data)
 
     # TODO: срефакторить это в универсальную функциюю, так как
     # нечто подобное используется на главной
