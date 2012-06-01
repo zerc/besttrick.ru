@@ -7,6 +7,12 @@
 window.BTCommon = {};
 
 
+if (typeof String.prototype.trim !== 'function') {
+    String.prototype.trim = function() {
+        return this.replace(/^\s+|\s+$/g, ''); 
+    }
+};
+
 /*** EJS ***/
 
 /* Eсли в имени пользователя больше двух слов - первое выводим полностью, а второе сокращаем */
