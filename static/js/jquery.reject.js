@@ -317,8 +317,6 @@ $.reject = function(opts) {
 	 * All CSS elements that do not require JS will be in
 	 * css/jquery.jreject.css
 	 */
-
-
 	if (!opts.el) {
 		// Creates 'background' (div)
 		element.find('#jr_overlay').css({
@@ -396,27 +394,27 @@ $.reject = function(opts) {
 	if (opts.el) {
 		$(opts.el).append(element);
 	} else {
-		$('body').append(element.hide().fadeIn(opts.fadeInTime));
+		$('body').append(element.hide().fadeIn(opts.fadeInTime)).css('overflow', 'hidden');
 	}
 
 	// Handle window resize/scroll events and update overlay dimensions
-	$(window).bind('resize scroll',function() {
+	$(window).bind('resize scroll load',function() {
 		if (opts.el) return false;
 
 		var size = _pageSize(); // Get size
 
 		// Update overlay dimensions based on page size
 		$('#jr_overlay').css({
-			width: size[0],
-			height: size[1]
+			width  : size[0],
+			height : size[1]
 		});
 
 		var scroll = _scrollSize(); // Get page scroll
 
 		// Update modal position based on scroll
 		$('#jr_wrap').css({
-			top: scroll[1] + (size[3]/4),
-			left: scroll[0]
+			top  : scroll[1] + (size[3]/4),
+			left : scroll[0]
 		});
 	});
 
