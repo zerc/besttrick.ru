@@ -9,7 +9,16 @@ window.BTTricks = {};
 
 
 var Trick, TrickView, TrickFullView, TricksList, TricksView, CheckTrickView,
-    UploadVideoForm, video_form, remove_tooltips, init_tooltips;
+    UploadVideoForm, video_form, remove_tooltips, init_tooltips, ya_share_params;
+
+
+ya_share_params = {
+    element: 'share',
+    elementStyle: {
+        'type': 'none',
+        'quickServices': ['vkontakte','facebook','twitter','gplus']
+    }
+};
 
 
 /*** Модели и коллекции ***/
@@ -74,6 +83,13 @@ window.BTTricks.Trick = Trick = Backbone.Model.extend({
 
     get_title: function () {
         return (this.get('title') + ' ' + (this.get('direction') || '')).trim();
+    },
+
+    large_img: function (full) {
+        var relative_path = '/static/images/trick' + this.get('id') + '-0.jpg';
+
+        return  full ? 'http://' + location.host + ':' + location.port + relative_path
+                     : relative_path;
     }
 });
 
@@ -370,6 +386,8 @@ TrickFullView = Backbone.View.extend({
             url: '/trick' + self.model.get('id') + '/',
             dataType: 'json',
             success: function (response) {
+                var share_params = {};
+
                 self.$el.html(self.template.render({
                     'users': response,
                     'trick': self.model,
@@ -377,6 +395,32 @@ TrickFullView = Backbone.View.extend({
                 }));
 
                 init_tooltips(self.$el);
+                
+                // Шаринг
+                if (self.model.get('cones') === 0) {
+                    share_params.title = self.model.get('title') + ' - клевый трюк, надо будет попробовать освоить.';
+                } else if (self.model.get('best_user')._id === self.checktrick.user.id) {
+                    share_params.title = 'Я лучше всех делаю '
+                        + self.model.get_title()
+                        +  '. Мой рекорд - ' + EJS.Helpers.prototype.plural(self.model.get('cones'), 'банка!', 'банки!', 'банок!');
+                } else {
+                    share_params.title = 'Я делаю '
+                        + self.model.get_title()
+                        + ' на ' + EJS.Helpers.prototype.plural(self.model.get('cones'), 'банку!', 'банки!', 'банок!');
+                }
+
+                share_params.serviceSpecific = {
+                    twitter: {title: '#besttrick ' + share_params.title}
+                }
+
+                if (self.model.get('video_url')) {
+                    share_params.link = self.model.get('video_url');
+                }
+
+                share_params.image = self.model.large_img(true);
+                share_params.description = self.model.get('descr');
+
+                this.share = new Ya.share(_.extend({}, ya_share_params, share_params));
             },
             error: function () {
                 alert('Network error');

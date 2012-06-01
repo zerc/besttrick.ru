@@ -1,4 +1,4 @@
-<% set_page_title(trick.get('title')) %>
+<% set_page_title(trick.get_title()) %>
 
 <div class="trick__users">
 <% if (users.length > 0) { %>
@@ -22,8 +22,10 @@
     <%= checktrick.render('full') %>
     <div class="trick_video_preview">
         <div class="trick_video_preview_button"></div>
-        <img src="/static/images/trick<%= trick.get('id') %>-0.jpg" />
+        <img src="<%= trick.large_img() %>" />
     </div>
+
+    <div id="share" style="margin-left:-5px;"></div>
 
     <%= trick.get('descr') %>
 </div>

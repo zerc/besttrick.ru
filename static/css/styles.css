@@ -204,10 +204,11 @@ a.tricks_filter__tag:hover {color:#555; text-decoration:none;}
 .trick__user_king a {color:#fff;}
 .trick__user_king a:hover {color:#f4f4f4;}
 .no_one {padding-left:10px; width: 490px;}
-.trick__info {position:relative; float:right; width:315px; background:white; padding:10px;}
+.trick__info {position:relative; float:right; width:315px; background:white; padding:10px 10px 0 10px;}
+.trick__info p {margin-bottom:10px;}
 
 .trick_video_preview {position:relative;}
-.trick_video_preview img {width:315px; height:190px;}
+.trick_video_preview img {width:315px; height:190px; cursor:pointer;}
 .trick_video_preview_button {
     width:25px;height:25px;position:absolute;left:140px;top:75px;
     background:#CCC url('/static/i/common.png') 9px -14px no-repeat;
@@ -216,8 +217,7 @@ a.tricks_filter__tag:hover {color:#555; text-decoration:none;}
 }
 
 .full_trick__dialog_holder {
-    margin:-10px -10px 10px -10px; padding:10px; padding-bottom:9px; 
-    border-bottom: 1px solid #E8E9EB;
+    margin:-10px -10px 10px -10px; padding:10px; padding-bottom:9px;
 }
 .full_trick__dialog_holder h5 {display:inline; line-height:20px;}
 a.check_full_trick_icon {
