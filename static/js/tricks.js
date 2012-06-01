@@ -357,7 +357,7 @@ TrickFullView = Backbone.View.extend({
     el: 'div.content',
 
     events: {
-        'click .trick_video_preview': 'load_video',
+        'click .trick_video_preview': 'load_video'
     },
 
     template: new EJS({url: '/static/templates/trick_full.ejs'}),
