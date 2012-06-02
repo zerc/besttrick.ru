@@ -146,7 +146,9 @@ def get_content_for_crawler(crawler_path, context):
             'trick/no-wiper'      : 'trick11',
             'trick/foot-spin'     : 'trick12',
         }
-        raise AttributeError(OLD_IDS_MAP[crawler_path])
+
+        if OLD_IDS_MAP.get(crawler_path):
+            raise AttributeError(OLD_IDS_MAP.get(crawler_path))
 
     c = app.url_map.bind('')
 
