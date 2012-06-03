@@ -1,11 +1,44 @@
 # -*- coding: utf-8 -*-
 import urllib
 import simplejson as json
+from functools import wraps
 from mongokit import Document, DocumentMigration
 
 from flask import render_template, request, jsonify, session, redirect, url_for
 from project import app, connection, db
 from .utils import grouped_stats, get_user_rating, get_valid_cones_per_trick
+
+
+def user_only(func):
+    """
+    Декоратор - "только для пользователя"
+    """
+    @wraps(func)
+    def wrapper(*args, **kwargs):
+        user_id = session.get('user_id', False)
+        if user_id is False:
+            return redirect(url_for('index'))
+
+        user = db.user.find_one({'_id': user_id})
+
+        if not user or user['banned']:
+            return 'Access Deny', 403
+
+        return func(*args, **kwargs)
+
+    return wrapper
+
+
+def clean_fields(user_dict):
+    """
+    Убирает из словаря с данными пользователя некоторые "секьюрные" поля.
+    Просто чтобы не палить их на клиенте.
+    """
+    for field in (u'identity', u'provider', u'email', u'banned', u'uid'):
+        user_dict.pop(field)
+
+    return user_dict
+
 
 def get_field(d, field_name):
     """ Использует точечную нотацию в имени поля, для работы со вложенными словарями """
@@ -39,21 +72,25 @@ class UserMigration(DocumentMigration):
     def migration01__add_some_fields(self):
         self.target = {'email':{'$exists':False}}
         self.update = {'$set':{
-            'email'     : unicode,
-            'full_name' : unicode,
-            'city'      : unicode,
-            'icq'       : unicode,
-            'skype'     : unicode,
-            'phone'     : unicode,
-            'bio'       : unicode,
+            'email'     : u'',
+            'full_name' : u'',
+            'city'      : u'',
+            'icq'       : u'',
+            'skype'     : u'',
+            'phone'     : u'',
+            'bio'       : u'',
         }}
 
     def migration02__add_rolls_and_exps_feilds(self):
         self.target = {'rolls':{'$exists':False}}
         self.update = {'$set': {
-            'rolls': unicode,
-            'epxs': unicode,
+            'rolls' : u'',
+            'epxs'  : u'',
         }}
+
+    def allmigration01__add_banned_feild(self):
+        self.target = {'banned':{'$exists':False}}
+        self.update = {'$set': {'banned': False}}
 
 
 class User(Document):
@@ -79,8 +116,10 @@ class User(Document):
         'bio'       : unicode,
         'rolls'     : unicode,
         'epxs'      : unicode,
+
+        'banned'    : bool,
     }
-    default_values  = {'admin': 0}
+    default_values  = {'admin': 0, 'banned': False}
     required_fields = ['identity', 'provider', 'nick']
     migration_handler = UserMigration
 connection.register([User])
@@ -109,6 +148,11 @@ def register(user_data):
 
 
 ### Views
+@app.route('/banned/')
+def banned():
+    return render_template('banned.html')
+
+
 @app.route('/login/', methods=['POST'])
 def login():
     url = "http://loginza.ru/api/authinfo?%s"
@@ -121,8 +165,9 @@ def login():
     user_data = json.loads(unicode(f.read(), 'utf-8'))
     user = db.user.find_one({'identity': user_data['identity']}) or register(user_data)
 
+    if user['banned']: return redirect(url_for('banned'))
+    
     session['user_id'] = user['_id']
-
     return redirect(url_for('index'))
 
 
@@ -133,20 +178,20 @@ def logout():
 
 
 @app.route('/my/tricks/', methods=['GET'])
+@user_only
 def my_tricks():
     user_id = session.get('user_id', False)
     if user_id is False:
-        return redirect(url_for('index'))
+        return 
 
     rows = grouped_stats('trick', {'user': user_id})
     return json.dumps(sorted(rows, key=lambda x: x['cones'], reverse=True))
 
 
 @app.route('/user/', methods=['PUT', 'GET'])
+@user_only
 def my():
-    user_id = session.get('user_id', False)
-    if user_id is False:
-        return redirect(url_for('index'))
+    user_id = session['user_id'] 
 
     if request.method == 'PUT':
         params = json.loads(unicode(request.data, 'utf-8'))
@@ -180,7 +225,7 @@ def user_profile(user_id):
         return 'Unknow user', 403
 
     user['rating'] = get_user_rating(user['_id'])
-    context['user'] = user
+    context['user'] = clean_fields(user)
 
     user_tricks = grouped_stats('trick', {'user': int(user_id)})
     context['tricks'] = sorted(user_tricks, key=lambda x: x['cones'], reverse=True)
@@ -190,13 +235,11 @@ def user_profile(user_id):
 #TODO: cached this!
 @app.route('/rating/', methods=['GET'])
 def top_users():
-    users = list(db.user.find())
-
     tricks_scores = {}
     for trick in db.trick.find():
         tricks_scores[trick['_id']] = trick['score']
 
-    for user in users:
+    def _(user):
         cones_per_trick = get_valid_cones_per_trick(user['_id'])
         user['rating'] = 0
 
@@ -205,4 +248,21 @@ def top_users():
 
         user['rating'] = float('%.2f' % user['rating'])
 
+        clean_fields(user)
+
+        return user
+
+    users = map(_, db.user.find({'banned': False}))
     return json.dumps(sorted(users, key=lambda user: user['rating'], reverse=True))
+
+
+@app.route('/users/', methods=['GET'])
+@user_only
+def list_of_users():
+    is_admin = not not db.user.find_one({'_id': session['user_id']})['admin']
+
+    def _(user):
+        user['id'] = user.pop('_id')
+        return user if is_admin else clean_fields(user)
+
+    return json.dumps([_(dict(user)) for user in db.user.find().sort("_id", -1)])

@@ -1,0 +1,12 @@
+<td>
+    <a href="<%= user.get_profile_url() %>" target="_blank"><%= user.get('nick') %></a>
+</td>
+<td><%= user.get('provider') %></td>
+<td><%= user.get('email') || 'нет мыла' %></td>
+<td style="text-align:right;">
+    <% if (user.get('banned')) { %>
+        <a href="#" class="a_user__unban">Разбанить</a>
+    <% } else { %>
+        <a href="#" class="a_user__ban">Бан</a>
+    <% } %>
+</td>

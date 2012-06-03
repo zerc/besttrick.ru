@@ -1,4 +1,4 @@
-<% if (trick) { %>
+<% if (!trick.isNew()) { %>
     <h4><%= trick.get_title() %></h4>
 <% } else { %>
     <h4>Добавить новый трюк</h4>

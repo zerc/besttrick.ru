@@ -22,8 +22,6 @@ window.BTUsers.UserModel = UserModel = Backbone.Model.extend({
         team     : '',
         photo    : '',
         admin    : '',
-        identity : '',
-        provider : '',
         email    : '',
         city     : '',
         icq      : '',
@@ -32,7 +30,8 @@ window.BTUsers.UserModel = UserModel = Backbone.Model.extend({
         bio      : '',
         rolls    : '',
         epxs     : '',
-        rating   : 0.0
+        rating   : 0.0,
+        banned   : false
     },
 
     validate: function (attrs) {
@@ -43,9 +42,18 @@ window.BTUsers.UserModel = UserModel = Backbone.Model.extend({
         if (attrs.nick.length >= 125) {
             return 'у вас нереально большой ник';
         }
+    },
+
+    get_profile_url: function () {
+        return '#!profile-' + this.id;
     }
 });
 
+
+window.BTUsers.UsersCollection = Backbone.Collection.extend({
+    url: '/users/',
+    model: window.BTUsers.UserModel
+});
 
 /*** Вьюхи ***/
 

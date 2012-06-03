@@ -23,6 +23,7 @@ var App = Backbone.Router.extend({
             userModel = args.user ? new UserModel(args.user) : false;
 
         this.default_page_title = window.document.title;
+        this.active_route = 'route:index';
 
         this.$el        = $('div.content');
         this.user       = userModel ? new UserView({model: userModel}) : false;
@@ -31,15 +32,16 @@ var App = Backbone.Router.extend({
         this.tricksView = new TricksView({tricks: args.tricks, tags: args.tags, user: userModel});
         this.trickFull  = new TrickFullView({user: userModel});
         this.feedback   = new FeedBack({user: userModel});
-    
+        
         // Общие действия при переходе по страницам
         this.bind('all', function (a, b, c) {
+            self.active_route = a;
             self.feedback.hide();
             remove_tooltips();
             $('div.content').attr('class', 'content'); // обнулим все навешаенные на главный див стили
-            
+
             // google analytics event push
-            _gaq.push(['_trackPageview', '/' + location.hash]);
+            if (/#!/.test(location.hash)) _gaq.push(['_trackPageview', '/' + location.hash]);
         });
 
         Backbone.history.start();

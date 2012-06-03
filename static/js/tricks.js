@@ -66,8 +66,6 @@ window.BTTricks.Trick = Trick = Backbone.Model.extend({
     },
 
     validate: function (attrs, a,b,c) {
-        if (this.url !== '/checktrick/') return;
-
         if (_.isNaN(attrs.cones) || attrs.cones <= 0) {
             return 'cones::введите положительное число';
         }
@@ -93,7 +91,7 @@ window.BTTricks.Trick = Trick = Backbone.Model.extend({
     }
 });
 
-TricksList = Backbone.Collection.extend({
+window.BTTricks.TricksList = TricksList = Backbone.Collection.extend({
     url: '/?json=tricks',
     model: Trick
 });
@@ -118,7 +116,7 @@ init_tooltips = function (el) {
 /*** Views ***/
 
 /*
- * TODO: переписать с использование backbone.view
+ * TODO: переписать с использование backbone.view (как в админке)
  * Форма загрузки видео на Ютуб.
  */
 UploadVideoForm = function () {
@@ -211,11 +209,12 @@ UploadVideoForm = function () {
                 callback(response.id[0]);
             }
         });
-
+        overflow.show();
         body.addClass('show_upload_form');
     }
 
     this.hide = function () {
+        overflow.hide();
         body.removeClass('show_upload_form').css('cursor', 'default');
     }
 

@@ -383,7 +383,7 @@ div.about a:hover {text-decoration:none;}
 
 
 /* admin */
-.admin_panel {position:fixed; width:60px; left:0; z-index:9999; background:#B55A5A; padding:0 5px;}
+.admin_panel {position:fixed; min-width:60px; left:0; z-index:9999; background:#B55A5A; padding:0 5px;}
 .admin_panel .toggle_panel {color:#fff; font-weight:bolder; font-size:18px; text-decoration:none; line-height:30px;}
 .admin_controls {display:none;}
 .admin_controls a {display:block;}
@@ -398,7 +398,7 @@ body.show_trick_add_form .trick_add_form_container {display:block;}
 
 .trick_add_form_container {
     position:absolute; display:none; top:50px; left:40%; width:300px;
-    background:white; border: 1px solid #AEAEAE; padding:10px;
+    background:white; border: 1px solid #AEAEAE; padding:10px; z-index:11;
 }
 
 .trick_add_form_container .bbf-field input, 
@@ -424,19 +424,26 @@ div.bbf-editorYouTube div input {width:190px !important; display:inline;}
 .bbf-editorYouTube a.show_thumbs {display:inline-block; background-color:red; width:10px; height:10px; text-decoration:none;}
 
 
-/* модльное окно с редактированием уведомлений */
-.notice_page_container {
-    position:absolute; top:50px; width:800px; z-index:9999;
-    background:white; border: 1px solid #AEAEAE; padding:10px;
+/* общие стили для модальных окошек со списком элементов */
+.base_page_container {
+    position:absolute; top:50px; width:800px; z-index:5;
+    background:white; border: 1px solid #AEAEAE; padding:10px
 }
+.base_page_container table {margin-bottom:10px;}
+.base_page_container table .odd {background-color:#ccc;}
+.base_page_container table .edd {background-color:#fff;}
+.base_page_container table td {padding:5px;}
+.base_page_container table td.controls {text-align:right;}
+.base_page_container button {margin:0; float:right;}
+.base_page_container a.button {margin:0;}
 
+/* модальное окно с редактированием уведомлений */
+.notice_page_container {}
 .notice_page_container .new {color:red;}
 .notice_page_container .approved {color:green;}
 .notice_page_container .not_approved {color:#aeaeae;}
-.notice_page_container button.notice__close {margin:0; float:right;}
 .notice_page_container .notice_ok {color:green;}
 .notice_page_container .notice_bad {color:red;}
-table.notices {margin-bottom:10px;}
-tr.notice_video td {padding:5px;}
-table.notices tr.odd {background-color:#ccc;}
-table.notices tr.edd {background-color:#fff;}
+
+
+.users_page_container tr.user_banned {background:#B55A5A;}

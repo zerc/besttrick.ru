@@ -1,0 +1,15 @@
+<% if (page_title) { %>
+    <h4><%= page_title %></h4>
+<% } %>
+
+<table width="100%" cellpadding="0" cellspacing="0">
+    <tr>
+        <td>нет уведомлений</td>
+    </tr>
+</table>
+
+<% if (add_item_url) { %>
+    <a href="<%= add_item_url %>" class="button">Добавить</a>
+<% } %>
+
+<button type="button">Закрыть</button>

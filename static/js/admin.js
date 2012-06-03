@@ -154,6 +154,34 @@ Backbone.Form.editors.Checkboxes = Backbone.Form.editors.Checkboxes.extend({
 
 
 /*** Models ***/
+window.BTAdmin.User = window.BTUsers.UserModel.extend({
+    url: function () {
+        return '/admin/user/' + this.get('id') + '/';
+    }
+});
+
+
+window.BTAdmin.UsersCollection = window.BTUsers.UsersCollection.extend({
+    model: window.BTAdmin.User
+});
+
+
+window.BTAdmin.Trick = window.BTTricks.Trick.extend({
+    url: '/admin/trick/',
+
+    get_url: function () {
+        return '#admin/edit_trick/trick' + this.get('id');
+    },
+
+    validate: function () {}
+});
+
+
+window.BTAdmin.TricksCollection = window.BTTricks.TricksList.extend({
+    model: window.BTAdmin.Trick
+});
+
+
 window.BTAdmin.VideoNoticeModel = Backbone.Model.extend({
     url: function () {
         return '/admin/notice/' + this.id + '/';
@@ -174,7 +202,6 @@ window.BTAdmin.VideoNoticeCollection = Backbone.Collection.extend({
 
 
 /*** Views ***/
-
 /*
  * Форма добавления или редактирования трюка.
  */
@@ -194,8 +221,7 @@ window.BTAdmin.trickForm = Backbone.View.extend({
         this.overflow = $('div.modal_form_overflow');
         this.body = $('body');
         this.doc = $(document);
-
-        this.overflow.height(this.doc.height());
+        this.overflow.css('z-index', '11');;
     },
 
     render: function (trick) {
@@ -207,9 +233,8 @@ window.BTAdmin.trickForm = Backbone.View.extend({
 
         this.$el.html(this.template.render({trick: trick}));
         this.$el.find('form').replaceWith(this.form.$el);
-        this.$el.insertAfter(this.overflow);
+        this.$el.insertAfter(this.overflow).show();
 
-        this.body.addClass('show_trick_add_form');
         this.doc.bind('keydown', function (e) {
             var key = e.keyCode || e.which;
             if (key === 27) {
@@ -222,9 +247,10 @@ window.BTAdmin.trickForm = Backbone.View.extend({
 
     close: function () {
         this.doc.unbind('keydown');
-        this.body.removeClass('show_trick_add_form');
+        this.overflow.css('z-index', '0');
         delete this.form;
         this.$el.remove();
+        app.navigate('admin/tricks/', {trigger: false});
     },
 
     save: function () {
@@ -235,7 +261,6 @@ window.BTAdmin.trickForm = Backbone.View.extend({
 
         this.form.model.save(null, {
             success: function (model, response) {self.close();},
-            url: '/admin/trick/'
         });
     }
 });
@@ -253,7 +278,6 @@ window.BTAdmin.VideoNoticeView = Backbone.View.extend({
 
     initialize: function (opts) {
         _.bindAll(this, 'render', 'notice_ok', 'notice_bad');
-        this.$el.addClass(opts.i % 2 === 0 ? 'odd' : 'edd');
         this.model.on('change', function () {
             this.model.save();
             this.render();
@@ -262,9 +286,10 @@ window.BTAdmin.VideoNoticeView = Backbone.View.extend({
     },
 
     render: function (i) {
+        this.$el.addClass(i % 2 === 0 ? 'odd' : 'edd');
+        
         this.$el.html(this.template.render({
-            notice  : this.model,
-            i       : i 
+            notice: this.model, i: i 
         }));
         return this;
     },
@@ -282,38 +307,95 @@ window.BTAdmin.VideoNoticeView = Backbone.View.extend({
 
 
 /*
- * Страница для списка уведомлений о видеоподтверждениях
+ * Базовая вью для отображения одного элемента в списке.
+ * Отображает ссылку на его редактирование и удаление.
  */
-window.BTAdmin.VideoNoticesView = Backbone.View.extend({
-    tagName     : 'div',
-    className   : 'notice_page_container',
-    template    : new EJS({url: '/static/templates/admin/notice_page_video.ejs'}),
+window.BTAdmin.baseItemView = Backbone.View.extend({
+    tagName   : 'tr',
+    className : 'base_item',
+    template  : new EJS({url: '/static/templates/admin/base_item.ejs'}),
 
     events: {
-        'click button.notice__close' : 'close'
+        'click a.delete_item': 'delete_item'
     },
+
+    initialize: function (opts) {
+        _.bindAll(this, 'render', 'delete_item');
+    },
+
+    render: function (i) {
+        this.$el.addClass(i % 2 === 0 ? 'odd' : 'edd');
+        this.$el.html(this.template.render({item: this.model, i: i }));
+        return this;
+    },
+
+    delete_item: function () {
+        var self = this;
+
+        if (confirm("Точно удалить?")) {
+            this.model.destroy({
+                data: JSON.stringify({id: this.model.get('id')}),
+                success: function () {
+                    self.remove();
+                }
+            });
+        }
+    }
+});
+
+/*
+ * Базовая страница списка объектов
+ * Нужно обязательно определить следующие поля:
+ * - collection
+ * - itemView (вью для рендера одно объекта)
+ */
+window.BTAdmin.baseItemsView = Backbone.View.extend({
+    tagName     : 'div',
+    template    : new EJS({url: '/static/templates/admin/base_items_page.ejs'}),
+    events      : {'click button' : 'close'},
+
+    page_title  : '',
+    collection  : false,
+    itemView    : window.BTAdmin.baseItemView,
 
     initialize: function (options) {
         _.bindAll(this, 'render', 'close');
-        this.collection = new window.BTAdmin.VideoNoticeCollection();
+        if (!this.collection) throw 'Setup collection items';
         
         this.body = $('body');
         this.doc  = $(document);
         
         this.overflow = $('div.modal_form_overflow');
         this.overflow.height(this.doc.height());
+        
+        // попробуем удалить ранее открытую страничку
+        $('div.base_page_container').remove();
+
+        this.$el.addClass('base_page_container');
     },
 
-    _render: function (collection) {
+    render: function () {
         var self = this, left, container; 
 
-        this.overflow.show();
-        this.$el.html(this.template.render());
+        if (!this.collection.fetched) {
+            this.collection.fetch({
+                success: function (collection, response) {
+                    self.collection.fetched = true;
+                    return self.render();
+                }
+            });
+        }
 
-        container = this.$el.find('table.notices');
-        collection.each(function (m, i) {
+        this.overflow.show();
+        this.$el.html(this.template.render({
+            page_title   : this.page_title,
+            add_item_url : this.add_item_url
+        }));
+
+        container = this.$el.find('table');
+        this.collection.each(function (m, i) {
             if (i === 0) container.html('');
-            container.append(new window.BTAdmin.VideoNoticeView({model: m, i: i}).render().$el);
+            container.append(new self.itemView({model: m}).render(i).$el);
         });
 
         this.$el.insertAfter(this.overflow);
@@ -331,44 +413,91 @@ window.BTAdmin.VideoNoticesView = Backbone.View.extend({
         return this;
     },
 
-    render: function () {
-        var self = this;
-
-        this.collection.fetch({
-            success: function (collection, response) {
-                return self._render(collection);
-            }
-        });
-
-        return this;
-    },
-
     close: function () {
         this.overflow.hide();
         this.doc.unbind('keydown');
         this.$el.remove();
-        app.navigate('', {trigger: true});
-    },
-
-    notice_ok: function (e) {
-        var el = $(e.target).closest('div.notice_video'),
-            self = this;
-
-        $.ajax({
-            url: '/admin/notices/' + this.notice_type + '/',
-            data: {'id': el.attr('id')},
-            method: 'GET',
-            dataType: 'json',
-            success: function (response) {
-                self.$el.html(self.template.render({notices: self.notices}));
-            }
-        });
-
-        return false;
-    },
-    notice_bad: function (e) {}
+        if (app.ref) location.href = app.ref;
+        else app.navigate('', {trigger: true});
+    }
 });
 
+
+/*
+ * Страница для списка уведомлений о видеоподтверждениях
+ */
+window.BTAdmin.VideoNoticesView = window.BTAdmin.baseItemsView.extend({
+    className   : 'notice_page_container',
+    page_title  : 'Уведомления о новых видеоподверждениях',
+    collection  : new window.BTAdmin.VideoNoticeCollection(),
+    itemView    : window.BTAdmin.VideoNoticeView,
+});
+
+
+/*
+ * Пользователь
+ */
+window.BTAdmin.userView = Backbone.View.extend({
+    tagName: 'tr',
+    className: 'a_user',
+    template: new EJS({url: '/static/templates/admin/user_row.ejs'}),
+
+    events: {
+        'click a.a_user__ban'    : 'ban',
+        'click a.a_user__unban'  : 'unban'
+    },
+
+    initialize: function (opts) {
+        var self = this;
+        _.bindAll(this, 'render', 'ban', 'unban');
+
+        this.model.on('sync', function () {
+            this.render();
+        }, this);
+    },
+
+    render: function (i) {
+        if (this.model.get('banned')) {
+            this.$el.removeClass('odd edd').addClass('user_banned');
+        } else {
+            this.$el.removeClass('user_banned').addClass(i % 2 === 0 ? 'odd' : 'edd');
+        }
+
+        this.$el.html(this.template.render({
+            user: this.model
+        }));
+        return this;
+    },
+
+    ban: function () {
+        this.model.save({'banned': true})
+        return false;
+    },
+
+    unban: function () {
+        this.model.save({'banned': false});
+        return false;
+    }
+});
+
+
+/*
+ * Список пользователей
+ */
+window.BTAdmin.usersListView = window.BTAdmin.baseItemsView.extend({
+    className   : 'users_page_container',
+    page_title  : 'Пользователи',
+    collection  : new window.BTAdmin.UsersCollection(),
+    itemView    : window.BTAdmin.userView,
+});
+
+
+window.BTAdmin.tricksListView = window.BTAdmin.baseItemsView.extend({
+    className    : 'tricks_page_container',
+    page_title   : 'Трюки',
+    add_item_url : '#admin/add_trick/',
+    collection   : new window.BTAdmin.TricksCollection()
+});
 
 
 /*
@@ -378,67 +507,22 @@ window.BTAdmin.panel = Backbone.View.extend({
     tagName     : 'div',
     className   : 'admin_panel',
     template    : new EJS({url: '/static/templates/admin/admin_panel.ejs'}),
-    
-    active_form: null,
+    events      : {'click a.toggle_panel': 'toggle'},
 
-    // HOOK: если указан - позволяем его отредактировать
-    current_trick : null,
-    trick_url     : '/admin/trick/',
-
-    events: {'click a': '_router'},
-
-    _router: function (e) {
-        var el = $(e.target).closest('a'),
-            bind = el.attr('bind');
-        
-        if (!bind) return true;
-        
-        this[bind]();
-        return false;
-    },
-
-    set_current_trick: function (trick) {
-        this.current_trick = _.extend({}, trick, {url: this.trick_url});
-    },
-
-    drop_current_trick: function () {
-        this.current_trick = null;
-    },
-
-    initialize: function (args) {
-        _.bindAll(this, 'render');
+    initialize  : function () {
         $('div.container').prepend(this.$el);
     },
 
     toggle: function () {
         this.$el.toggleClass('admin_panel_opened');
+        return false;
     },
 
-    add_trick: function () {
-        var trick = new Trick();
-        trick.url = this.trick_url;
-        if (this.active_form) this.active_form.close();
-        this.active_form = new window.BTAdmin.trickForm().render(trick);
-    },
-
-    edit_trick: function () {
-        if (this.active_form) this.active_form.close();
-        this.active_form = new window.BTAdmin.trickForm().render(this.current_trick);
-    },
-
-    delete_trick: function () {
-        if (confirm("Удалить трюк?")) {
-            this.current_trick.destroy({
-                data: JSON.stringify({id: this.current_trick.get('id')}),
-                success: function () {
-                    app.navigate('', {trigger: true});
-                }
-            });
-        }
-    },
-
-    videos_for_approve: function () {
-        return new window.BTAdmin.VideoNoticesView().render();
+    render: function () {
+        _.bindAll(this, 'render', 'get_notice_count');
+        this.$el.html(this.template.render({
+            'notice_count': this.get_notice_count()
+        }));
     },
 
     get_notice_count: function () {
@@ -454,37 +538,46 @@ window.BTAdmin.panel = Backbone.View.extend({
         });
 
         return counts_map;
-    },
-
-    render: function () {
-        this.$el.html(this.template.render({
-            current_trick : this.current_trick,
-            notice_count  : this.get_notice_count()
-        }));
     }
 });
 
-/*** Модифицируем главный роутер ***/
-var AdminApp =  App.extend({
-    initialize: function (args) {
-        this.route('admin/add_trick/', 'add_trick');
-        this.route('admin/videos/', 'videos_for_approve');
-        this.admin = new window.BTAdmin.panel();
 
+var AdminApp = App.extend({
+    routes      : (function () {
+        return _.extend({
+            'admin/users/'                  : 'users',
+            'admin/videos/'                 : 'videos',
+            'admin/tricks/'                 : 'tricks',
+            'admin/add_trick/'              : 'add_trick',
+            //'admin/delete/trick:trick'      : 'delete_trick',
+            'admin/edit_trick/trick:trick'  : 'edit_trick'
+        }, App.prototype.routes);
+    }()),
+
+    initialize  : function (args) {
         App.prototype.initialize.call(this, args);
-
-        this.admin.render();
-
-        this.bind('all', function (a, b, c) {
-            if (a !== 'route:trick' && this.admin.current_trick) {
-                this.admin.drop_current_trick();
-                this.admin.render();
-            } else if (a === 'route:trick') {
-                this.admin.render();
-            }
-        });
+        this.admin_panel = new window.BTAdmin.panel();
+        this.admin_panel.render();
     },
 
-    add_trick: function () { this.admin.add_trick(); },
-    videos_for_approve: function () { this.admin.videos_for_approve(); }
+    tricks: function () {
+        return new window.BTAdmin.tricksListView().render();
+    },
+
+    users : function () {
+        return new window.BTAdmin.usersListView().render();
+    },
+
+    videos : function () {
+        return new window.BTAdmin.VideoNoticesView().render();
+    },
+
+    add_trick : function () {
+        return new window.BTAdmin.trickForm().render(new window.BTAdmin.Trick());
+    },
+
+    edit_trick : function (trick_id) {
+        var trick = this.tricksView.collection.get(trick_id);
+        return new window.BTAdmin.trickForm().render(new window.BTAdmin.Trick(trick.toJSON()));
+    }
 });

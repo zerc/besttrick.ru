@@ -4,6 +4,7 @@ import urllib
 import simplejson as json
 from os.path import join as path_join
 from pytils.translit import slugify
+from functools import wraps
 
 from flask import request, session, jsonify
 from mongokit import ObjectId
@@ -16,7 +17,8 @@ def stuff_only(func):
     """
     Декоратор - "только для персонала"
     """
-    def wrap(*args, **kwargs):
+    @wraps(func)
+    def wrapper(*args, **kwargs):
         user_id = session.get('user_id', False)
         if user_id is False:
             return 'Access Deny', 403
@@ -28,7 +30,7 @@ def stuff_only(func):
 
         return func(*args, **kwargs)
 
-    return wrap
+    return wrapper
 
 
 def _download_thumbs(trick_id, videos_urls):
@@ -58,7 +60,6 @@ def _clean_video(url):
         return base_url % re.findall(r'watch\?v=([a-zA-Z0-9\?\/=\-]+)&', url).pop()
 
     raise TypeError('Cant parse youtube url')
-
 
 @app.route('/admin/trick/', methods=['POST', 'PUT', 'DELETE'])
 @stuff_only
@@ -120,8 +121,8 @@ def add_trick():
 
 
 ### Сообщения администрации
-@stuff_only
 @app.route('/admin/notice_count/', methods=['GET'])
+@stuff_only
 def get_notice_count():
     """
     Возвращает кол-во необработанных сообщений,
@@ -132,8 +133,8 @@ def get_notice_count():
     return json.dumps(dict((int(x['notice_type']), int(x['count'])) for x in counts))
 
 
-@stuff_only
 @app.route('/admin/notice/<notice_id>/', methods=['PUT'])
+@stuff_only
 def notice(notice_id):
     data = json.loads(unicode(request.data, 'utf-8'))
     notice = db.notice.find_and_modify({"_id": ObjectId(notice_id)}, {"$set": {"status": data["status"]}})
@@ -145,8 +146,8 @@ def notice(notice_id):
     return request.data
 
 
-@stuff_only
 @app.route('/admin/notices/<int:notice_type>/', methods=['GET'])
+@stuff_only
 def notices_for_type(notice_type):
     notices = db.notice.find({'notice_type': notice_type}).sort('time_added', -1)
 
@@ -164,3 +165,11 @@ def notices_for_type(notice_type):
         return notice
 
     return json.dumps(map(_, notices))
+
+
+@app.route('/admin/user/<int:user_id>/', methods=['PUT'])
+@stuff_only
+def manage_user(user_id):
+    data = json.loads(unicode(request.data, 'utf-8'))
+    db.user.find_and_modify({'_id': user_id}, data)
+    return '{"success":1}'
