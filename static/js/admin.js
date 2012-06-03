@@ -100,7 +100,7 @@ Backbone.Form.editors.YouTube = Backbone.Form.editors.Text.extend({
 
     getThumbNum: function () {
         var raw_data = this.getThumb().getValue() || '1';
-        return parseInt(/\d/.exec(raw_data).pop(), 10);
+        return parseInt(/\-(\d+)/.exec(raw_data).pop(), 10);
     },
 
     setThumbNum: function (num) {
@@ -168,6 +168,24 @@ window.BTAdmin.UsersCollection = window.BTUsers.UsersCollection.extend({
 
 window.BTAdmin.Trick = window.BTTricks.Trick.extend({
     url: '/admin/trick/',
+
+    schema: {
+        title: {type: 'Text', validators: ['required'], title: 'Название'},
+        direction: {type: 'Select', options: ['', 'forward', 'backward'], title: 'Направ.'},
+        videos: {type: 'YouTube', validators: ['required', 'url'], options: {'thumb_fieldname': 'thumb'}, title: 'Видео'},
+        thumb: {type: 'Hidden'},
+        score: {type: 'Text', validators: ['required'], title: 'Коэф. сложности'},
+        tags: {type: 'Checkboxes', validators: ['required'], title: 'Тэги',
+            // TODO: динамически их подгружать :D
+            options: [
+                {val: 'jumping',  label: 'прыжковый'},
+                {val: 'sitting',  label: 'сидячий'},
+                {val: 'spinning', label: 'вращательный'},
+                {val: 'wheeling', label: 'вилинговый'}
+            ]
+        },
+        descr: {type: 'TextArea', validators: ['required'], title: 'Описание'}
+    },
 
     get_url: function () {
         return '#admin/edit_trick/trick' + this.get('id');
@@ -549,7 +567,6 @@ var AdminApp = App.extend({
             'admin/videos/'                 : 'videos',
             'admin/tricks/'                 : 'tricks',
             'admin/add_trick/'              : 'add_trick',
-            //'admin/delete/trick:trick'      : 'delete_trick',
             'admin/edit_trick/trick:trick'  : 'edit_trick'
         }, App.prototype.routes);
     }()),

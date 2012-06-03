@@ -47,24 +47,6 @@ window.BTTricks.Trick = Trick = Backbone.Model.extend({
         users_full      : []
     },
 
-    schema: {
-        title: {type: 'Text', validators: ['required'], title: 'Название'},
-        direction: {type: 'Select', options: ['', 'forward', 'backward'], title: 'Направ.'},
-        videos: {type: 'YouTube', validators: ['required', 'url'], options: {'thumb_fieldname': 'thumb'}, title: 'Видео'},
-        thumb: {type: 'Hidden'},
-        score: {type: 'Text', validators: ['required'], title: 'Коэф. сложности'},
-        tags: {type: 'Checkboxes', validators: ['required'], title: 'Тэги',
-            // TODO: динамически их подгружать :D
-            options: [
-                {val: 'jumping',  label: 'прыжковый'},
-                {val: 'sitting',  label: 'сидячий'},
-                {val: 'spinning', label: 'вращательный'},
-                {val: 'wheeling', label: 'вилинговый'}
-            ]
-        },
-        descr: {type: 'TextArea', validators: ['required'], title: 'Описание'}
-    },
-
     validate: function (attrs, a,b,c) {
         if (_.isNaN(attrs.cones) || attrs.cones <= 0) {
             return 'cones::введите положительное число';
