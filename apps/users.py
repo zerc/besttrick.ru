@@ -35,7 +35,10 @@ def clean_fields(user_dict):
     Просто чтобы не палить их на клиенте.
     """
     for field in (u'identity', u'provider', u'email', u'banned', u'uid'):
-        user_dict.pop(field)
+        try:
+            user_dict.pop(field)
+        except KeyError:
+            continue
 
     return user_dict
 
