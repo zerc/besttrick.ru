@@ -2,8 +2,13 @@
 from datetime import datetime
 
 from mongokit import Document, DocumentMigration, ObjectId
-from project import db, app, connection, mail
-from flaskext.mail import Message
+from project import db, app, connection
+
+try:
+    from flaskext.mail import Message
+    from project import mail
+except ImportError:
+    Message, mail = None, None
 
 
 # Типы нотификации
@@ -46,6 +51,8 @@ def send_notify(notify_type, data):
     notice.update({'notice_type': notify_type, 'data': data})
     notice.save()
 
+    if not Message or not mail: return
+    
     msg = Message(u'Новое видео', recipients=app.config['ADMINS'])
     msg.html = u"""
     <p>Пользователь %(username)s добавил новое видео по трюку %(trickname)s:</p>

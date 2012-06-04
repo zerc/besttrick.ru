@@ -4,10 +4,15 @@ import re
 import simplejson as json
 
 from flask import g, Flask, render_template, request, redirect, session, make_response, jsonify
-from flaskext.mail import Message, email_dispatched
+try:
+    from flaskext.mail import Message, email_dispatched
+    from project import mail
+except ImportError:
+    # window hack
+    Message, email_dispatched = None, None
 from mongokit import Connection
 
-from project import app, connection, db, mail, markdown
+from project import app, connection, db, markdown
 from apps import tricks as tricks_view, users as users_view, utils, admin
 
 @app.route('/')
@@ -115,9 +120,12 @@ def index():
 @app.route('/feedback/', methods=['POST'])
 def feedback():
     body = u'\n'.join(['%s:%s' % (k,v) for k, v in request.form.items()])
-    msg = Message(u"Feedback", recipients=app.config['ADMINS'])
-    msg.body = body
-    mail.send(msg)
+    if Message:
+        msg = Message(u"Feedback", recipients=app.config['ADMINS'])
+        msg.body = body
+        mail.send(msg)
+    else:
+        print body
     return 'Ok'
 
 

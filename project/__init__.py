@@ -3,17 +3,21 @@
 from mongokit import Connection
 
 from flask import Flask
-from flaskext.mail import Mail, email_dispatched
 from flask.ext.assets import Environment, Bundle
 from flaskext.markdown import Markdown
-from flask_errormail import mail_on_500
+
+try:
+    from flaskext.mail import Mail, email_dispatched
+    from flask_errormail import mail_on_500
+except ImportError:
+    Mail, email_dispatched, mail_on_500 = None, None, None
 
 
 app = Flask(__name__)
 app.root_path = '/'.join(app.root_path.split('/')[:-1])
 app.config.from_object('project.settings')
 
-mail_on_500(app, app.config['ADMINS'])
+if mail_on_500: mail_on_500(app, app.config['ADMINS'])
 
 markdown = Markdown(app)
 
@@ -40,7 +44,9 @@ js = Bundle(*JS_LIBS, filters='jsmin', output='js/main.min.js')
 assets.register('js_all', js)
 
 
-mail = Mail(app)
 def log_message(message, app):
     app.logger.debug(u'\n'.join([message.subject, message.body]))
-email_dispatched.connect(log_message)
+
+if Mail:
+    email_dispatched.connect(log_message)
+    mail = Mail(app)
