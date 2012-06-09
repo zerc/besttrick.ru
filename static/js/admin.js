@@ -99,7 +99,7 @@ Backbone.Form.editors.YouTube = Backbone.Form.editors.Text.extend({
     },
 
     getThumbNum: function () {
-        var raw_data = this.getThumb().getValue() || '1';
+        var raw_data = this.getThumb().getValue() || '-1';
         return parseInt(/\-(\d+)/.exec(raw_data).pop(), 10);
     },
 
