@@ -56,6 +56,10 @@ window.BTTricks.Trick = Trick = Backbone.Model.extend({
             return 'cones::не верим :)';
         }
 
+        if (attrs.cones < this.previous('cones')) {
+            return 'cones::вы можете лучше, тренируйтесь!';
+        }
+
         if (attrs.video_url && !/^(http|https):\/\/(www\.youtube\.com|youtu.be)\/[a-zA-Z0-9\?&\/=\-]+$/gmi.test(attrs.video_url)) {
             return 'video_url::укажите ссылку на видео с YouTube';
         }
@@ -290,6 +294,8 @@ CheckTrickView = Backbone.View.extend({
                 // в заивисимости от типа формы триггерем нужное событие
                 model.trigger('sync::' + self.view_type);
                 self.user.fetch(); // обновим рейтинг пользователя
+            }, error: function (model, response) {
+                alert(response.responseText);
             }});
         } else if (this.model.hasChanged()) {
             this.show_error(this.model.validate(this.model.changedAttributes()));

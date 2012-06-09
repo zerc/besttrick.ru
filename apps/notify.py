@@ -4,6 +4,7 @@ from datetime import datetime
 from mongokit import Document, DocumentMigration, ObjectId
 from project import db, app, connection
 
+### HACK: for windows 
 try:
     from flaskext.mail import Message
     from project import mail
@@ -37,21 +38,23 @@ class Notice(Document):
 connection.register([Notice])
 
 
-def send_notify(notify_type, data):
+# TODO: задумывалась как общая функция рассылки
+# но сейчас она тупо отсылает уведомления на почту о новых видосах
+def send_notify(notify_type, data, status=NOT_PROCESSES):
     """
     Отсылает администации уведомления о каких-либо событиях.
-    Как в админку так и на почту.
+    В админку всегда, а на почту.
     """
 
     # пока поддреживаем только один тип нотификаций (о новых видосах)
     if notify_type != 0:
         raise NotImplemented(u'%s notify does not support yet')
 
-    notice = connection.Notice()
-    notice.update({'notice_type': notify_type, 'data': data})
-    notice.save()
+    # notice = connection.Notice()
+    # notice.update({'notice_type': notify_type, 'data': data, 'status': status})
+    # notice.save()
 
-    if not Message or not mail: return
+    if not Message or not mail or status != NOT_PROCESSES: return
     
     msg = Message(u'Новое видео', recipients=app.config['ADMINS'])
     msg.html = u"""
@@ -59,7 +62,7 @@ def send_notify(notify_type, data):
     <a href="%(video_url)s" target="_blank">%(video_url)s</a>
     <p>Отмодерировать это дело можно в админке: <a href="%(admin_url)s" target="_blank">%(admin_url)s</a></a>
     """ % {
-        'username'  : db.user.find_one({"_id": notice["data"]["user"]})['nick'],
+        'username'  : db.user.find_one({"_id": data["user"]})['nick'],
         'trickname' : data['trickname'],
         'video_url' : data['video_url'],
         'admin_url' : app.config['HOST'] + '/#admin/videos/'

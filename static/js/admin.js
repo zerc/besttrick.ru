@@ -200,22 +200,26 @@ window.BTAdmin.TricksCollection = window.BTTricks.TricksList.extend({
 });
 
 
-window.BTAdmin.VideoNoticeModel = Backbone.Model.extend({
+window.BTAdmin.CheckinModel = Backbone.Model.extend({
     url: function () {
-        return '/admin/notice/' + this.id + '/';
+        return '/admin/checkin/' + this.id + '/';
     },
 
     defaults: {
-        notice_type : 0,
-        data        : {},
-        status      : 0
-    },
+        user        : 0,
+        username    : '',
+        trick       : 0,
+        trick_title : '',
+        cones       : 0,
+        approved    : 0,
+        video_url   : ''
+    }
 });
 
 
-window.BTAdmin.VideoNoticeCollection = Backbone.Collection.extend({
-    url    : '/admin/notices/0/',
-    model  : window.BTAdmin.VideoNoticeModel
+window.BTAdmin.CheckinCollection = Backbone.Collection.extend({
+    url    : '/admin/checkins/',
+    model  : window.BTAdmin.CheckinModel
 });
 
 
@@ -284,10 +288,10 @@ window.BTAdmin.trickForm = Backbone.View.extend({
 });
 
 
-window.BTAdmin.VideoNoticeView = Backbone.View.extend({
+window.BTAdmin.CheckinView = Backbone.View.extend({
     tagName: 'tr',
     className: 'notice_video',
-    template: new EJS({url: '/static/templates/admin/notice_video.ejs'}),
+    template: new EJS({url: '/static/templates/admin/checkin.ejs'}),
 
     events: {
         'click a.notice_ok'          : 'notice_ok',
@@ -305,20 +309,17 @@ window.BTAdmin.VideoNoticeView = Backbone.View.extend({
 
     render: function (i) {
         this.$el.addClass(i % 2 === 0 ? 'odd' : 'edd');
-        
-        this.$el.html(this.template.render({
-            notice: this.model, i: i 
-        }));
+        this.$el.html(this.template.render({checkin: this.model}));
         return this;
     },
 
     notice_ok: function () {
-        this.model.set({'status': 1});
+        this.model.set({'approved': 1});
         return false;
     },
 
     notice_bad: function () {
-        this.model.set({'status': 2});
+        this.model.set({'approved': 2});
         return false;
     }
 });
@@ -444,11 +445,11 @@ window.BTAdmin.baseItemsView = Backbone.View.extend({
 /*
  * Страница для списка уведомлений о видеоподтверждениях
  */
-window.BTAdmin.VideoNoticesView = window.BTAdmin.baseItemsView.extend({
+window.BTAdmin.CheckinsView = window.BTAdmin.baseItemsView.extend({
     className   : 'notice_page_container',
     page_title  : 'Уведомления о новых видеоподверждениях',
-    collection  : new window.BTAdmin.VideoNoticeCollection(),
-    itemView    : window.BTAdmin.VideoNoticeView,
+    collection  : new window.BTAdmin.CheckinCollection(),
+    itemView    : window.BTAdmin.CheckinView,
 });
 
 
@@ -537,25 +538,25 @@ window.BTAdmin.panel = Backbone.View.extend({
     },
 
     render: function () {
-        _.bindAll(this, 'render', 'get_notice_count');
+        _.bindAll(this, 'render', 'get_checkins_count');
         this.$el.html(this.template.render({
-            'notice_count': this.get_notice_count()
+            'checkins_count': this.get_checkins_count()
         }));
     },
 
-    get_notice_count: function () {
-        var counts_map;
+    get_checkins_count: function () {
+        var checkins_count;
 
         $.ajax({
-            url: '/admin/notice_count/',
+            url: '/admin/checkins_count/',
             dataType: 'json',
             async: false,
             success: function (response) {
-                counts_map = response;
+                checkins_count = response.count;
             }
         });
 
-        return counts_map;
+        return checkins_count;
     }
 });
 
@@ -586,7 +587,7 @@ var AdminApp = App.extend({
     },
 
     videos : function () {
-        return new window.BTAdmin.VideoNoticesView().render();
+        return new window.BTAdmin.CheckinsView().render();
     },
 
     add_trick : function () {

@@ -11,7 +11,8 @@ from mongokit.schema_document import ValidationError
 
 from project import app, connection, db
 from .utils import grouped_stats
-from .notify import send_notify, CHECKTRICK_WITH_VIDEO
+from .notify import send_notify, CHECKTRICK_WITH_VIDEO, NOT_PROCESSES, GOOD, BAD
+from .users import user_only
 
 from gdata.youtube import service
 from gdata import media, youtube
@@ -29,6 +30,45 @@ try:
 except socket.gaierror, e:
     # нет коннекта до YouTube
     yt_service = None
+
+
+### Utils
+def get_best_results(trick_id=None, user_id=None):
+    """
+    Возвращает словарь лучших результатов по этому трюку, если указан трюк, иначе
+    спсок словарей по всем трюкам.
+    """
+    reduce_func = u"""
+    function(obj, prev) {
+        if (prev.best_user_cones < obj.cones) {
+            prev.best_user_cones = obj.cones;
+            prev.best_user_id = obj.user;
+        }
+
+        prev.users.push(obj.user);
+
+        %s
+
+    }""" % (("if (obj.user === %s) { prev.user_do_this = true; }" % user_id) if user_id else '')
+    defaults = {'best_user_cones': 0, 'best_user_id': '', 'users': [], 'user_do_this': False}
+    _filter = {'trick': trick_id} if trick_id else None
+    best_result = db.trick_user.group(['trick'], _filter, defaults, reduce_func)
+    
+    for result in best_result:
+        result.update({
+            'users'        : len(set(result['users'])),
+            'best_user'    : db.user.find_one({'_id': result['best_user_id']}),
+        })
+
+    return result if trick_id >= 0 else best_result
+
+
+def checkin_user(update_data):
+    trick_user = connection.TrickUser()
+    trick_user.update(update_data)
+    trick_user.save()
+
+    return get_best_results(update_data['trick'], update_data['user'])
 
 
 ### Validators
@@ -65,14 +105,6 @@ connection.register([Trick])
 db.seqs.insert({'_id': 'tricks_seq',  'val': 0})
 
 
-class TrickUserMigration(DocumentMigration):
-    def migration01__add_video_url(self):
-        self.target = {'video_url':{'$exists':False}}
-        self.update = {'$set':{'video_url': unicode}}
-    def migration02__change_id(self):
-        self.target = {'trick':{'$exists':True}}
-        self.update = {'$set':{'trick': int}}
-
 class TrickUser(Document):
     __database__   = app.config['MONGODB_DB']
     __collection__ = "trick_user"
@@ -81,21 +113,19 @@ class TrickUser(Document):
         'user'       : int,
         'trick'      : int,
         'cones'      : int,
-        'approved'   : bool,
+        'approved'   : int,
         'video_url'  : unicode,
         'time_added' : datetime,
     }
 
-    indexes = [{'fields':['user', 'trick']}]
-    default_values  = {'cones': 0, 'approved': False, 'time_added': datetime.now}
+    indexes = [{'fields':['user', 'trick', 'cones']}]
+    default_values  = {'cones': 0, 'approved': 0, 'time_added': datetime.now}
     required_fields = ['user', 'trick']
-    migration_handler = TrickUserMigration
 
     validators = {
-        'cones': positive_integer,
-        'video_url': is_youtube_link,
+        'cones'     : positive_integer,
+        'video_url' : is_youtube_link,
     }
-
 connection.register([TrickUser])
 
 
@@ -110,6 +140,17 @@ class Tag(Document):
     default_values  = {'major': False}
     required_fields = ['title']
 connection.register([Tag])
+
+
+def need_new_video(old_cones, new_cones, score):
+    """
+    Нужно ли пользователю с обновлением своего результата
+    также обновить и видео?
+    """
+    diff = new_cones - old_cones # разница
+    diff_limit = (1 - score) * 100 # порог в процентах выше которого требуем обновления
+
+    return (diff * 100 / old_cones) > diff_limit
 
 
 ### Views
@@ -170,71 +211,69 @@ def trick_full(trick_id):
         'trick': db.trick.find_one({'_id': int(trick_id)})
     }
 
-
+#http://www.youtube.com/watch?v=jac5l-yx0L8&feature=g-all-u
 @app.route('/checktrick/', methods=['PUT'])
-def trick():
-    user_id = session.get('user_id', False)
-
-    if user_id is False:
-        return 'Access Deny', 403
-
-    try:
-        user_id = int(user_id)
-    except ValueError:
-        return 'Invalid user_id', 4000
+@user_only
+def checktrick():
+    user_id = int(session.get('user_id', False))
 
     trick_data = json.loads(unicode(request.data, 'utf-8'))
-    trick_data['_id'] = trick_data.pop('id')
+    trick_data['_id'] = trick_id = trick_data.pop('id')
 
     try:
         trick_data['cones'] = int(trick_data['cones'])
     except TypeError:
         return 'Number of cones must be are integer', 400
+    
+    trick = db.trick.find_one({'_id': trick_id})
 
-    trick_user = db.trick_user.find_one({'user': user_id, 'trick': trick_data['_id']})
+    if not trick:
+        return u'Unknow trick with id = %s' % trick_id, 400
+    
     update_data = {
-        'cones': int(trick_data['cones']),
+        'cones'     : int(trick_data['cones']), 
+        'video_url' : unicode(trick_data['video_url']) if trick_data.get('video_url') else None,
+        'approved'  : 0,
     }
     
-    if trick_data.get('video_url'):
-        update_data['approved'] = False
-        update_data['video_url'] = unicode(trick_data['video_url'])
+    def send_notice_about_video():
+        if update_data.get('video_url'):
+            notify_data = dict(**trick_data)
+            notify_data.update({
+                'user'      : user_id,
+                'trick'     : notify_data.pop('_id'),
+                'trickname' : notify_data.pop('title')
+            })
+            send_notify(notify_type=CHECKTRICK_WITH_VIDEO, data=notify_data)
 
-    if trick_user:
-        db.trick_user.update({'user': user_id, 'trick': trick_data['_id']}, {'$set': update_data})
-    else:
-        trick_user = connection.TrickUser()
-        trick_user['user'] = user_id
-        trick_user['trick'] = trick_data['_id']
-        trick_user.update(update_data)
-        trick_user.save()
+    # выбираем последний лучший результат
+    try:
+        prev_checkin = db.trick_user.find({'user': user_id, 'trick': trick_id}).sort('cones', -1).next()
+    except StopIteration:
+        prev_checkin = None
 
-    # отсылаем уведомления, если был запощен видос
-    if trick_data.get('video_url'):
-        notify_data = dict(**trick_data)
-        notify_data.update({
-            'user'      : user_id,
-            'trick'     : notify_data.pop('_id'),
-            'trickname' : notify_data.pop('title')
-        })
-        send_notify(notify_type=CHECKTRICK_WITH_VIDEO, data=notify_data)
+    # поддерживаем только положительную динамику
+    if prev_checkin and prev_checkin['cones'] > update_data['cones']:
+        return u'Ни шагу назад!', 400
 
-    # TODO: срефакторить это в универсальную функциюю, так как
-    # нечто подобное используется на главной
-    # Проверим не изменился ли король этого трюка
-    # лучшие результаты по трюкам + общее число делающих пользователей
-    reduce_func = u"""
-    function(obj, prev) {
-        if (prev.best_user_cones < obj.cones) {
-            prev.best_user_cones = obj.cones;
-            prev.best_user_id = obj.user;
-        }
-        prev.users += 1;
-    }"""
-    best_result = db.trick_user.group(['trick'], {'trick': trick_data['_id']}, {'best_user_cones': 0, 'best_user_id': '', 'users': 0, 'can_mark': not not user_id}, reduce_func)[0]
-    trick_data.update(best_result)
-    trick_data['best_user'] = db.user.find_one({'_id': best_result['best_user_id']})
-    trick_data['user_do_this'] = True
+    # скорее всего пользоавтель добавил видос - припишем его к старому чекину
+    if prev_checkin and prev_checkin['cones'] == update_data['cones']:
+        db.trick_user.update({'user': user_id, 'trick': trick_id}, {'$set': update_data})
+        send_notice_about_video()
+        return json.dumps(trick_data)
+
+    # пользователь улучшил свой результат, нужно ли ему обновлять видео?
+    if prev_checkin and prev_checkin['video_url'] == update_data['video_url']:
+        if need_new_video(prev_checkin['cones'], update_data['cones'], trick['score']):
+            del update_data['video_url']
+            del update_data['approved']
+        else:
+            # оставим старый видос и сохраним его статус
+            update_data['approved'] = prev_checkin['approved']
+
+    update_data.update({'user': user_id, 'trick': trick_id})
+    trick_data.update(checkin_user(update_data))
+    send_notice_about_video()
 
     return json.dumps(trick_data)
 

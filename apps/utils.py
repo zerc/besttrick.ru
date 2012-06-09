@@ -28,7 +28,8 @@ def grouped_stats(key, _filter):
     }""" % {'key': key}
 
     rows = []
-    for x in db.trick_user.group([key], _filter, {key: '', 'cones': 0, 'video_url': '', 'approved': False}, reduce_func):
+    defaults = {key: '', 'cones': 0, 'video_url': '', 'approved': 0}
+    for x in db.trick_user.group([key], _filter, defaults, reduce_func):
         # HACK для потдтягивания данных по id
         x[key] = db[key].find_one({'_id': x[key]})
         rows.append(x)
@@ -57,7 +58,7 @@ def get_valid_cones_per_trick(user_id):
     grouped_data = {}
 
     for trick_user in db.trick_user.find({"user": user_id}):
-        if trick_user.get(u'video_url') and trick_user.get(u'approved'):
+        if trick_user.get(u'video_url') and trick_user.get(u'approved') == 1:
             grouped_data[trick_user['trick']] = trick_user['cones'] * (1 if trick_user['cones'] > 3 else 1.2)
         else:
             grouped_data[trick_user['trick']] = min(trick_user['cones'], 3)

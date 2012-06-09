@@ -4,16 +4,18 @@ import re
 import simplejson as json
 
 from flask import g, Flask, render_template, request, redirect, session, make_response, jsonify
+from mongokit import Connection
+
+# window hack
 try:
     from flaskext.mail import Message, email_dispatched
     from project import mail
 except ImportError:
-    # window hack
     Message, email_dispatched = None, None
-from mongokit import Connection
 
 from project import app, connection, db, markdown
 from apps import tricks as tricks_view, users as users_view, utils, admin
+
 
 @app.route('/')
 def index():
@@ -35,26 +37,10 @@ def index():
 
     tricks = list(db.trick.find().sort("_id", 1))
 
-    # лучшие результаты по трюкам + общее число делающих пользователей
-    reduce_func = u"""
-    function(obj, prev) {
-        if (prev.best_user_cones < obj.cones) {
-            prev.best_user_cones = obj.cones;
-            prev.best_user_id = obj.user;
-        }
-        prev.users += 1;
-
-        %s
-
-    }""" % (("if (obj.user === %s) { prev.user_do_this = true; }" % user_id) if user_id is not False else '')
-    best_users_qs = db.trick_user.group(['trick'], None, {'best_user_cones': 0, 'best_user_id': '', 'users': 0, 'user_do_this': False}, reduce_func)
+    # лучшие результаты по каждому трюку
     best_users = {}
-    default = {'user_do_this': False}
-    for x in best_users_qs:
-        k = x.pop(u'trick')
-        best_users[k] = dict(default, **x)
-        best_users[k]['best_user'] = db.user.find_one({'_id': best_users[k]['best_user_id']})
-
+    for r in tricks_view.get_best_results(None, user_id):
+        best_users[int(r.pop(u'trick'))] = r
 
     # результат пользователя
     user_stats = {}

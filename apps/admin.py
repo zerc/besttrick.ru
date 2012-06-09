@@ -120,51 +120,48 @@ def add_trick():
     return json.dumps(trick_data)
 
 
-### Сообщения администрации
-@app.route('/admin/notice_count/', methods=['GET'])
+### Чекины пользователей
+@app.route('/admin/checkins_count/', methods=['GET'])
 @stuff_only
-def get_notice_count():
+def get_checkins_count():
     """
-    Возвращает кол-во необработанных сообщений,
-    сгруппированных по типу.
+    Возвращает кол-во чекинов с неотмодерированным видео.
     """
-    reduce_func = u"""function(obj, prev) {prev.count += 1;}"""
-    counts = db.notice.group(['notice_type'], {'status': 0}, {'count': 0}, reduce_func)
-    return json.dumps(dict((int(x['notice_type']), int(x['count'])) for x in counts))
+    cond = {"$where": "this.video_url && this.approved === 0"}
+    return '{"success": 1, "count": %s}' % db.trick_user.find(cond).count()
 
 
-@app.route('/admin/notice/<notice_id>/', methods=['PUT'])
+@app.route('/admin/checkin/<checkin_id>/', methods=['PUT'])
 @stuff_only
-def notice(notice_id):
+def checkin(checkin_id):
+    """
+    Модификация чекина.
+    """
     data = json.loads(unicode(request.data, 'utf-8'))
-    notice = db.notice.find_and_modify({"_id": ObjectId(notice_id)}, {"$set": {"status": data["status"]}})
-
-    status = True if int(data['status']) == 1 else False
-    cond   = {"user" : int(data['data']['user']), "trick" : int(data['data']['trick'])}
-    db.trick_user.find_and_modify(cond, {"$set": {"approved": status}})
-
+    update = {"$set": {'approved': data['approved']}}
+    db.trick_user.update({"_id": ObjectId(checkin_id)}, update)
     return request.data
 
 
-@app.route('/admin/notices/<int:notice_type>/', methods=['GET'])
+@app.route('/admin/checkins/', methods=['GET'])
 @stuff_only
-def notices_for_type(notice_type):
-    notices = db.notice.find({'notice_type': notice_type}).sort('time_added', -1)
+def checkins():
+    """
+    Список чекинов на модерацию.
+    """
+    checkins = db.trick_user.find({"$where": "this.video_url"}).sort('time_added', -1)
 
-    def _(notice):
-        notice['id'] = '%s' % notice.pop('_id')
-        notice['time_added'] = '%s' % notice['time_added']
-
-        try:
-            notice[u'data'][u'time_added'] = repr(notice[u'data'].pop(u'time_added'))
-        except KeyError:
-            pass
+    def _(checkin):
+        checkin['id'] = '%s' % checkin.pop('_id')
+        checkin['time_added'] = '%s' % checkin['time_added']
 
         # подсасываем кое-какие данные
-        notice['data']['username'] = db.user.find_one({'_id': notice['data']['user']})['nick']
-        return notice
+        checkin['username'] = db.user.find_one({'_id': checkin['user']})['nick']
+        checkin['trick_title'] = db.trick.find_one({'_id': checkin['trick']})['title']
 
-    return json.dumps(map(_, notices))
+        return checkin
+
+    return json.dumps(map(_, checkins))
 
 
 @app.route('/admin/user/<int:user_id>/', methods=['PUT'])
