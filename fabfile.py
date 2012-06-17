@@ -52,4 +52,3 @@ def pulldb():
         unzip -o images.zip && 
         mongorestore --drop dump
     """)
-    ##
