@@ -50,5 +50,6 @@ def pulldb():
     local("""
         unzip -o dump.zip && 
         unzip -o images.zip && 
-        mongorestore --drop dump
+        mongorestore --drop dump && 
+        rm dump.zip images.zip
     """)
