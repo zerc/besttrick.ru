@@ -17,6 +17,7 @@ def roll():
     """)
     sudo("/etc/init.d/nginx reload")
 
+
 def update_tricks():
     run("""
         cd www/ &&
@@ -25,5 +26,29 @@ def update_tricks():
         /etc/init.d/bt-uwsgi reload
     """)
 
+
 def pull():
     local('git pull origin master')
+
+
+def pulldb():
+    """
+    Клонирует базу и статику с сервера на локальную машину.
+    Перед этим все дропает.
+    """
+    with cd('www/'):
+        run("""
+            mongodump -d besttrick && 
+            zip -r dump.zip dump && 
+            zip -r images.zip static/images/
+        """)
+
+
+        get('dump.zip', 'dump.zip')
+        get('images.zip', 'images.zip')
+
+    local("""
+        unzip -o dump.zip && 
+        unzip -o images.zip && 
+        mongorestore --drop dump
+    """)
