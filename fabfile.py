@@ -31,6 +31,12 @@ def pull():
     local('git pull origin master')
 
 
+def push():
+    local('git push origin master')
+    with cd('www/'):
+        run("""git reset HEAD --hard""")
+
+
 def pulldb():
     """
     Клонирует базу и статику с сервера на локальную машину.
