@@ -57,7 +57,7 @@ def _clean_video(url):
         return base_url % url.split('/').pop()
 
     if '/watch?v=' in url:
-        return base_url % re.findall(r'watch\?v=([a-zA-Z0-9\?\/=\-]+)&', url).pop()
+        return base_url % re.findall(r'\?v=([^&]+)', url).pop()
 
     raise TypeError('Cant parse youtube url')
 

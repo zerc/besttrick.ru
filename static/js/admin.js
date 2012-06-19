@@ -93,7 +93,7 @@ Backbone.Form.editors.YouTube = Backbone.Form.editors.Text.extend({
         var raw_data = this.getValue();
 
         if (/embed|youtu\.be/.test(raw_data)) return raw_data.split('/').pop();
-        if (/\/watch\?v=/.test(raw_data)) return /\?v=([a-zA-Z0-9\?\/=\-]+)&/.exec(raw_data).pop();
+        if (/\/watch\?v=/.test(raw_data)) return /\?v=([^&]+)/.exec(raw_data).pop();
 
         return false;
     },
