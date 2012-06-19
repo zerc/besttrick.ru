@@ -75,7 +75,7 @@ def index():
         except KeyError:
             trick.update({'cones': 0})
 
-        trick['descr'] = markdown(trick['descr'])
+        trick['descr_html'] = markdown(trick['descr'])
 
         for t in trick['tags']:
             try:

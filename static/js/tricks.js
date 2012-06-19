@@ -31,6 +31,7 @@ window.BTTricks.Trick = Trick = Backbone.Model.extend({
         thumb       : '',
         videos      : [],
         descr       : '',
+        descr_html  : '',
         direction   : '',
         score       : 0,
         wssa_score  : 0,

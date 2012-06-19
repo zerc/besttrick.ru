@@ -6,7 +6,7 @@ from os.path import join as path_join
 from pytils.translit import slugify
 from functools import wraps
 
-from flask import request, session, jsonify
+from flask import request, session, jsonify, escape, Markup
 from mongokit import ObjectId
 
 from project import app, db, connection
@@ -100,6 +100,11 @@ def add_trick():
 
     # Приведем ссылки на видео к одному виду (который потом можно ембедить безопасно)
     trick_data['videos'] = map(_clean_video, trick_data['videos'])
+
+    # экскейпим возможные неприятности
+    for field in ('descr', 'title'):
+        trick_data[field] = Markup(trick_data[field]).unescape()
+        trick_data[field] = escape(trick_data[field])
 
     new_trick = connection.Trick()
     new_trick.update(trick_data)

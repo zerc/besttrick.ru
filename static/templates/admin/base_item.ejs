@@ -1,6 +1,9 @@
 <td>
     <a href="<%= item.get_url() %>"><%= item.get_title() %></a>
 </td>
+<% _.map(extraFields, function (f) { %>
+    <td><%= item.get(f) %></td>
+<% }) %>
 <td class="controls">
     <a href="#" class="delete_item">удалить</a>
 </td>

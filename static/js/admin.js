@@ -330,9 +330,10 @@ window.BTAdmin.CheckinView = Backbone.View.extend({
  * Отображает ссылку на его редактирование и удаление.
  */
 window.BTAdmin.baseItemView = Backbone.View.extend({
-    tagName   : 'tr',
-    className : 'base_item',
-    template  : new EJS({url: '/static/templates/admin/base_item.ejs'}),
+    tagName     : 'tr',
+    className   : 'base_item',
+    template    : new EJS({url: '/static/templates/admin/base_item.ejs'}),
+    extraFields : [], // какие дополнительные поля объекта выводить
 
     events: {
         'click a.delete_item': 'delete_item'
@@ -340,11 +341,12 @@ window.BTAdmin.baseItemView = Backbone.View.extend({
 
     initialize: function (opts) {
         _.bindAll(this, 'render', 'delete_item');
+        this.def
     },
 
     render: function (i) {
         this.$el.addClass(i % 2 === 0 ? 'odd' : 'edd');
-        this.$el.html(this.template.render({item: this.model, i: i }));
+        this.$el.html(this.template.render({item: this.model, i: i, extraFields: this.extraFields}));
         return this;
     },
 
@@ -507,15 +509,27 @@ window.BTAdmin.usersListView = window.BTAdmin.baseItemsView.extend({
     className   : 'users_page_container',
     page_title  : 'Пользователи',
     collection  : new window.BTAdmin.UsersCollection(),
-    itemView    : window.BTAdmin.userView,
+    itemView    : window.BTAdmin.userView
 });
 
 
+/*
+ * Отображение трюка в админке
+ */
+window.BTAdmin.trickView = window.BTAdmin.baseItemView.extend({
+    extraFields: ['score']
+});
+
+
+/*
+ * Cписок трюков
+ */
 window.BTAdmin.tricksListView = window.BTAdmin.baseItemsView.extend({
     className    : 'tricks_page_container',
     page_title   : 'Трюки',
     add_item_url : '#admin/add_trick/',
-    collection   : new window.BTAdmin.TricksCollection()
+    collection   : new window.BTAdmin.TricksCollection(),
+    itemView     : window.BTAdmin.trickView
 });
 
 
