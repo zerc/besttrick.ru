@@ -33,10 +33,10 @@ except socket.gaierror, e:
 
 
 ### Utils
-def get_best_results(trick_id=None, user_id=None):
+def get_best_results(trick_id=None, user_id=False):
     """
-    Возвращает словарь лучших результатов по этому трюку, если указан трюк, иначе
-    спсок словарей по всем трюкам.
+    Возвращает словарь лучших результатов (структура как у trick_user) 
+    по указанному трюку или список словарей по всем трюкам.
     """
     reduce_func = u"""
     function(obj, prev) {
@@ -49,11 +49,12 @@ def get_best_results(trick_id=None, user_id=None):
 
         %s
 
-    }""" % (("if (obj.user === %s) { prev.user_do_this = true; }" % user_id) if user_id else '')
+    }""" % (("if (obj.user === %s) { prev.user_do_this = true; }" % user_id) if user_id is not False else '')
+
     defaults = {'best_user_cones': 0, 'best_user_id': '', 'users': [], 'user_do_this': False}
     _filter = {'trick': trick_id} if trick_id else None
     best_result = db.trick_user.group(['trick'], _filter, defaults, reduce_func)
-    
+
     for result in best_result:
         result.update({
             'users'        : len(set(result['users'])),
