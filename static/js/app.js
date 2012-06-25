@@ -13,7 +13,7 @@ var App = Backbone.Router.extend({
         '!trick:trick'               : 'trick',
         '!trick/:trick'              : 'old_trick', // старый урл
         '!profile-:user_id'          : 'profile',
-        '!filter=:tags_selected'     : 'filter',
+        'filter=:tags_selected'      : 'filter', // no index for search engines
         '!about'                     : 'about',
         '!top'                       : 'top_users'
     },

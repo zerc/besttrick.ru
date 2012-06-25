@@ -181,7 +181,8 @@ window.BTAdmin.Trick = window.BTTricks.Trick.extend({
                 {val: 'jumping',  label: 'прыжковый'},
                 {val: 'sitting',  label: 'сидячий'},
                 {val: 'spinning', label: 'вращательный'},
-                {val: 'wheeling', label: 'вилинговый'}
+                {val: 'wheeling', label: 'вилинговый'},
+                {val: 'other',    label: 'другие'}
             ]
         },
         descr: {type: 'TextArea', validators: ['required'], title: 'Описание'}
