@@ -1,21 +1,36 @@
 {% extends 'base.html' %}
 
+{% set trick_title = ('%s %s' % (trick.title, trick.direction or ''))|trim %}
+
+{% block title %}Besttrick - {{ trick_title }} - видео трюка на роликах{% endblock %}
+
 {% block body %}
-    <h1>{{ trick.title }} {{ trick.direction or '' }}</h1>
-    <p><img src="/static/images/trick{{ trick._id }}-0.jpg" /></p>
-    <p>{{ trick.descr|safe }}</p>
+    <h1>Трюк на роликах - {{ trick_title }}</h1>
+    <p><img src="/static/images/trick{{ trick._id }}-0.jpg" alt="Трюк на роликовых коньках: {{ trick_title }}" title="{{ trick_title }}" /></p>
+    <p><b>Описание трюка</b></p>
+    <p class="description">{{ trick.descr|safe }}</p>
 
     {% if trick_users %}
-        <h2>{{ trick_users[0].user.nick }} делает этот трюк лучше всех!</h2>
+        <h2>Роллер &laquo;{{ trick_users[0].user.nick }}&raquo; делает трюк &laquo;{{ trick_title }}&raquo; лучше всех на сайте!</h2>
 
-        <p>Его рекорд {{ trick_users[0].cones|plural(['банкa', 'банки', 'банок']) }}</p>
+        <p>Рекорд {{ trick_users[0].cones|plural(['банкa', 'банки', 'банок']) }}!</p>
 
-        <h3>Пользователи, освоившие этот трюк:</h3>
+        {% if trick_users[0].video_url %}
+            <p>
+                <a href="{{ trick_users[0].video_url }}" title="Trick: {{ trick_title }}, raider: {{ trick_users[0].user.nick }}" target="_blank">Видео трюка</a> {{ trick_title }} в исполнении роллера {{ trick_users[0].user.nick }}.
+            </p>
+        {% endif %}
 
-        {% for row in trick_users %}
-            <p>{{ row.user.nick }} делает {{ trick.title }} {{ trick.direction }} на {{ row.cones|plural(['банку', 'банки', 'банок']) }}</p>
-        {% endfor %}
+        {% set other_users = trick_users[1:] %}
+
+        {% if other_users %}
+            <h3>Роллеры, также освоившие этот трюк:</h3>
+            {% for row in other_users %}
+                <p>{{ row.user.nick }} делает трюк {{ trick_title }} на {{ row.cones|plural(['банку', 'банки', 'банок']) }}.</p>
+            {% endfor %}
+        {% endif %}
+
     {% else %}
-        <p>Еще никто не отметился, что делает этот трюк.</p>
+        <p>Еще никто не отметился, что делает этот трюк. Станьте первым и лучшим!</p>
     {% endif %}
 {% endblock %}

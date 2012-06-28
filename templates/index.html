@@ -1,9 +1,9 @@
 {% extends 'base.html' %}
 
+ {% block title %}Besttrick - покажи свой лучший трюк! Трюки на роликах, фристайл слалом, видео трюков, рейтинг роллеров{% endblock %}
+
 {% block extra_head %}
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-
-    <title>Besttrick - покажи свой лучший трюк!</title>
 
     {% if user_admin_lvl > 0 %}
         <link href="{{ url_for('static', filename='css/backbone-forms.css') }}" rel="stylesheet" type="text/css" />
