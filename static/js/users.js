@@ -157,6 +157,7 @@ FeedBack = Backbone.View.extend({
 /*
  * TODO: так как функционал частично пересекается с вью Профиля, возможно срефакторить через наследование
  * Личный кабинет пользователя: редактирование данных, отображение списка трюков.
+ * TODO: также нам незачем запрашивать всю инфу по трюкам - она у нас уже есть, нам нужны только id.
  */
 UserView = Backbone.View.extend({
     el: 'div.content',
@@ -179,6 +180,9 @@ UserView = Backbone.View.extend({
             url: '/my/tricks/',
             dataType: 'json',
             success: function (response) {
+                _.each(response, function (row) {
+                    row.trick = new window.BTTricks.Trick(row.trick);
+                });
                 context['tricks'] = response;
                 self.$el.html(self.template.render(context));
             },
@@ -235,8 +239,14 @@ UserProfile = Backbone.View.extend({
             url: '/profile/'+user_id+'/',
             dataType: 'json',
             success: function (response) {
+                console.log(response);
                 response.user = new UserModel(response.user);
                 response.profile = true;
+
+                _.each(response.tricks, function (row) {
+                    row.trick = new window.BTTricks.Trick(row.trick);
+                });
+
                 el.html(template.render(response));
             }
         });
