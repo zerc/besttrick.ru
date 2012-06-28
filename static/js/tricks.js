@@ -109,7 +109,7 @@ init_tooltips = function (el) {
 UploadVideoForm = function () {
     var body = $('body'),
         doc  = $(document),
-        overflow = $('div.modal_form_overflow'),
+        overflow = $('div.global_overflow'),
         container = $('<div class="upload_video_form_container"></div>'),
         template = new EJS({url: '/static/templates/upload_video_form.ejs'});
 

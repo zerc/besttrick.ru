@@ -1,8 +1,12 @@
 # -*- coding: utf-8 -*-
 from pytils.utils import takes, one_of
 from pytils.numeral import get_plural
+import simplejson as json
+from functools import wraps
 
 from project import app, db
+
+from flask import render_template, request
 
 
 @app.template_filter('plural')
@@ -64,3 +68,28 @@ def get_valid_cones_per_trick(user_id):
             grouped_data[trick_user['trick']] = min(trick_user['cones'], 3)
 
     return grouped_data
+
+
+def is_robot():
+    return request.args.get('robot') > 0
+
+
+def allow_for_robot(func):
+    """
+    Вовзвращает html для отдачи поисковому роботу.
+    """
+    @wraps(func)
+    def wrapper(*args, **kwargs):
+        context = func(*args, **kwargs)
+
+        if is_robot():
+            template_name = 'crawler_%s.html' % func.__name__
+
+            if isinstance(context, basestring):
+                context = json.loads(context)
+
+            return render_template(template_name, **context)
+
+        return context
+
+    return wrapper

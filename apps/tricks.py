@@ -10,7 +10,7 @@ from mongokit import Document, DocumentMigration
 from mongokit.schema_document import ValidationError
 
 from project import app, connection, db
-from .utils import grouped_stats
+from .utils import grouped_stats, allow_for_robot, is_robot
 from .notify import send_notify, CHECKTRICK_WITH_VIDEO, NOT_PROCESSES, GOOD, BAD
 from .users import user_only
 
@@ -198,19 +198,20 @@ def prepare_youtube_upload():
 
 
 @app.route('/trick<trick_id>/', methods=['GET'])
+@allow_for_robot
 def trick_full(trick_id):
     """ Лучшие пользователи по этому трюку """
     rows = grouped_stats('user', {'trick': int(trick_id)})
     rows = sorted(rows, key=lambda x: x['cones'], reverse=True)
+    
+    if is_robot():
+        return {
+            'trick_users': rows,
+            'trick': db.trick.find_one({'_id': int(trick_id)})
+        }
 
-    if request.args.get('_escaped_fragment_', False) is False:    
-        return json.dumps(rows)
+    return json.dumps(rows)
 
-    # контент для робота
-    return {
-        'trick_users': rows,
-        'trick': db.trick.find_one({'_id': int(trick_id)})
-    }
 
 #http://www.youtube.com/watch?v=jac5l-yx0L8&feature=g-all-u
 @app.route('/checktrick/', methods=['PUT'])

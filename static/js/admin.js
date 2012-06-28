@@ -241,7 +241,7 @@ window.BTAdmin.trickForm = Backbone.View.extend({
 
     initialize: function (args) {
         _.bindAll(this, 'render', 'save', 'close');
-        this.overflow = $('div.modal_form_overflow');
+        this.overflow = $('div.global_overflow');
         this.body = $('body');
         this.doc = $(document);
         this.overflow.css('z-index', '11');;
@@ -387,7 +387,7 @@ window.BTAdmin.baseItemsView = Backbone.View.extend({
         this.body = $('body');
         this.doc  = $(document);
         
-        this.overflow = $('div.modal_form_overflow');
+        this.overflow = $('div.global_overflow');
         this.overflow.height(this.doc.height());
         
         // попробуем удалить ранее открытую страничку
