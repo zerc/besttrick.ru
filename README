@@ -5,3 +5,10 @@ sudo pip install virtualenv
 virtualenv venv --distribute
 . venv/bin/activate
 pip install -r stuff/pip.req
+
+
+== SERVER INSTALL ==
+sudo apt-get install nginx
+sudo pip install uwsgi
+
+# скопировать и поправить при необходимости конфиги из папки stuff
