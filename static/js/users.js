@@ -11,6 +11,23 @@ var UserModel, UserView, UserProfile,
     Login, FeedBack;
 
 
+window.BTUsers.Loginza = {
+    href: "https://loginza.ru/api/widget?token_url=http://"
+        + location.host 
+        + "/login/&providers_set=vkontakte,twitter,facebook",
+
+    // Просто обертка метода библиотеки
+    show_login_form: function () {
+        if (!LOGINZA || !LOGINZA.show) {
+            return alert('Cant find LOGINZA widget :/');
+        }
+
+        LOGINZA.show.call(this);
+    }
+};
+    
+
+
 /*** Модельки ***/
 window.BTUsers.UserModel = UserModel = Backbone.Model.extend({
     url: '/user/',

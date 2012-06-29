@@ -21,15 +21,20 @@ var App = Backbone.Router.extend({
     initialize: function (args) {
         var self = this,
             userModel = args.user ? new UserModel(args.user) : false;
+            tricks = new TricksList(args.tricks);
 
         this.default_page_title = window.document.title;
         this.active_route = 'route:index';
+
+        if (userModel && $.cookie(window.BTTricks.trick_cookie_name)) {
+            $.cookie(window.BTTricks.trick_cookie_name, null);
+        }
 
         this.$el        = $('div.content');
         this.user       = userModel ? new UserView({model: userModel}) : false;
         this.profile    = new UserProfile();
         this.loginView  = new Login({user: userModel});
-        this.tricksView = new TricksView({tricks: args.tricks, tags: args.tags, user: userModel});
+        this.tricksView = new TricksView({tricks: tricks, tags: args.tags, user: userModel});
         this.trickFull  = new TrickFullView({user: userModel});
         this.feedback   = new FeedBack({user: userModel});
         

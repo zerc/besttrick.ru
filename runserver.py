@@ -32,6 +32,15 @@ def index():
     if user_id is not False:
         user = db.user.find_one({'_id': user_id})
         user['id'] = user.pop('_id')
+
+        # проверим есть ли чекины от пользователя, когда он был неавторизован?
+        if request.cookies.get('trick'):
+            try:
+                tricks_view.update_checktrick_from_cookie(user_id)
+            except BaseException:
+                """ pokemon exception handler - im bad black ass :p """
+                #raise
+
         user['rating'] = utils.get_user_rating(user['id'])
         context = {'user': _dumps(user), 'user_admin_lvl': user['admin']}
 
