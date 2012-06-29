@@ -232,7 +232,7 @@ def prepare_youtube_upload():
     return jsonify({'post_url': post_url, 'token': token})
 
 
-@app.route('/trick<trick_id>/', methods=['GET'])
+@app.route('/trick<int:trick_id>/', methods=['GET'])
 @allow_for_robot
 def trick_full(trick_id):
     """ Лучшие пользователи по этому трюку """
