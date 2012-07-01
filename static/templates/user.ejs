@@ -3,8 +3,8 @@
     <% if (tricks.length > 0) { %>
         <% _.map(tricks, function (trick) {%>
             <div class="user__trick">
-                <img src="/static/images/<%= trick.trick.thumb %>" class="user__trick__thumb">
-                <a href="#!trick<%= trick.trick._id %>"><%= trick.trick.title %></a>
+                <img src="/static/images/<%= trick.trick.get('thumb') %>" class="user__trick__thumb">
+                <a href="#!trick<%= trick.trick.get('_id') %>"><%= trick.trick.get_title() %></a>
                 <span><%= trick.cones %></span>
             </div>
         <%}) %>

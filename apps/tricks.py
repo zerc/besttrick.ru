@@ -4,13 +4,14 @@ import simplejson as json
 from datetime import datetime
 from pytils.utils import takes, one_of
 from httplib import socket
+from urllib import unquote
 
 from flask import render_template, request, jsonify, session, redirect, url_for
 from mongokit import Document, DocumentMigration
 from mongokit.schema_document import ValidationError
 
 from project import app, connection, db
-from .utils import grouped_stats
+from .utils import grouped_stats, allow_for_robot, is_robot
 from .notify import send_notify, CHECKTRICK_WITH_VIDEO, NOT_PROCESSES, GOOD, BAD
 from .users import user_only
 
@@ -70,6 +71,40 @@ def checkin_user(update_data):
     trick_user.save()
 
     return get_best_results(update_data['trick'], update_data['user'])
+
+
+def update_checktrick_from_cookie(user_id):
+    """
+    Функция используется для сохранения чекина, который пользователь
+    произвел до авторизации.
+
+    TODO: как-то объеденить с глобальной опцией чекина, а то получается копипаст кусков
+    """
+    cookie_data = json.loads(unquote(request.cookies.get('trick')))
+    cookie_data['user'] = user_id
+    cookie_data['trick'] = cookie_data.pop('id')
+
+    trick_user = connection.TrickUser()
+
+    for k in cookie_data.keys():
+        if k not in trick_user.structure: del cookie_data[k]
+
+    if db.trick_user.find_one(cookie_data):
+        return
+
+    # выбираем последний лучший результат
+    try:
+        prev_checkin = db.trick_user.find({
+                'user': cookie_data['user'], 'trick': cookie_data['trick']
+            }).sort('cones', -1).next()
+    except StopIteration:
+        prev_checkin = None
+
+    # поддерживаем только положительную динамику
+    if prev_checkin and prev_checkin['cones'] > cookie_data['cones']: return 
+
+    trick_user.update(cookie_data)
+    trick_user.save()
 
 
 ### Validators
@@ -197,22 +232,22 @@ def prepare_youtube_upload():
     return jsonify({'post_url': post_url, 'token': token})
 
 
-@app.route('/trick<trick_id>/', methods=['GET'])
+@app.route('/trick<int:trick_id>/', methods=['GET'])
+@allow_for_robot
 def trick_full(trick_id):
     """ Лучшие пользователи по этому трюку """
     rows = grouped_stats('user', {'trick': int(trick_id)})
     rows = sorted(rows, key=lambda x: x['cones'], reverse=True)
+    
+    if is_robot():
+        return {
+            'trick_users': rows,
+            'trick': db.trick.find_one({'_id': int(trick_id)})
+        }
 
-    if request.args.get('_escaped_fragment_', False) is False:    
-        return json.dumps(rows)
+    return json.dumps(rows)
 
-    # контент для робота
-    return {
-        'trick_users': rows,
-        'trick': db.trick.find_one({'_id': int(trick_id)})
-    }
 
-#http://www.youtube.com/watch?v=jac5l-yx0L8&feature=g-all-u
 @app.route('/checktrick/', methods=['PUT'])
 @user_only
 def checktrick():

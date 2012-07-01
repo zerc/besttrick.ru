@@ -20,6 +20,8 @@ ya_share_params = {
     }
 };
 
+// имя куки для сохранения данных чекина навторизованного пользователя
+window.BTTricks.trick_cookie_name = 'trick';
 
 /*** Модели и коллекции ***/
 window.BTTricks.Trick = Trick = Backbone.Model.extend({
@@ -75,8 +77,14 @@ window.BTTricks.Trick = Trick = Backbone.Model.extend({
 
         return  full ? 'http://' + location.host + ':' + location.port + relative_path
                      : relative_path;
+    },
+
+    save_changes_to_cookie: function () {
+        var cookie_value = JSON.stringify(_.extend({id: this.id}, this.changedAttributes()));
+        $.cookie(window.BTTricks.trick_cookie_name, cookie_value);
     }
 });
+
 
 window.BTTricks.TricksList = TricksList = Backbone.Collection.extend({
     url: '/?json=tricks',
@@ -109,7 +117,7 @@ init_tooltips = function (el) {
 UploadVideoForm = function () {
     var body = $('body'),
         doc  = $(document),
-        overflow = $('div.modal_form_overflow'),
+        overflow = $('div.global_overflow'),
         container = $('<div class="upload_video_form_container"></div>'),
         template = new EJS({url: '/static/templates/upload_video_form.ejs'});
 
@@ -277,23 +285,31 @@ CheckTrickView = Backbone.View.extend({
             });
     },
 
-    save: function () {
+    save: function (data) {
         var self = this,
-            cones = parseInt(this.$el.find('#dialog__cones').val(), 10) || -1,
-            video_url = this.$el.find('#dialog__video_url').val();
+            cones = parseInt(this.$el.find('#dialog__cones').val(), 10) || data.cones || -1,
+            video_url = this.$el.find('#dialog__video_url').val() || data.video_url;
 
         if (cones) this.model.set('cones', cones, {silent: true});
         if (video_url) this.model.set('video_url', video_url, {silent: true});
 
-        if (!this.model.get('user_do_this')) {
-            this.model.set('users', this.model.get('users')+1, {silent: true});
-        }
-
         if (this.model.hasChanged() && this.model.isValid()) {
+
+            if (!this.model.get('user_do_this')) {
+                this.model.set('user_do_this', true, {silent: true})
+                this.model.set('users', this.model.get('users')+1, {silent: true});
+            }
+
+            if (!this.user) {
+                this.model.save_changes_to_cookie();
+                window.BTUsers.Loginza.show_login_form();
+                return false;
+            }
+
             this.model.save(null, {success: function (model, response) {
                 self.toggle_dialog();
-                // в заивисимости от типа формы триггерем нужное событие
-                model.trigger('sync::' + self.view_type);
+                // в зависимости от типа формы триггерем нужное событие
+                self.model.trigger('sync::' + self.view_type);
                 self.user.fetch(); // обновим рейтинг пользователя
             }, error: function (model, response) {
                 alert(response.responseText);
@@ -435,7 +451,7 @@ TricksView = Backbone.View.extend({
 
     initialize: function (args) {
         _.bindAll(this, 'render');
-        this.collection         = new TricksList(args.tricks);
+        this.collection         = args.tricks;
         this.tags               = args.tags;
         this.selected_tags      = [];
         this.activated_tricks   = [];

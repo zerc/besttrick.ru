@@ -33,6 +33,7 @@ JS_LIBS = (
     'js/jquery.form.js',
     'js/bootstrap-tooltip.js',
     'js/jquery.reject.js',
+    'js/jquery.cookie.js',
 
     'js/common.js',
     'js/tricks.js',

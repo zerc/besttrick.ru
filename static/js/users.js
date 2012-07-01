@@ -11,6 +11,23 @@ var UserModel, UserView, UserProfile,
     Login, FeedBack;
 
 
+window.BTUsers.Loginza = {
+    href: "https://loginza.ru/api/widget?token_url=http://"
+        + location.host 
+        + "/login/&providers_set=vkontakte,twitter,facebook",
+
+    // Просто обертка метода библиотеки
+    show_login_form: function () {
+        if (!LOGINZA || !LOGINZA.show) {
+            return alert('Cant find LOGINZA widget :/');
+        }
+
+        LOGINZA.show.call(this);
+    }
+};
+    
+
+
 /*** Модельки ***/
 window.BTUsers.UserModel = UserModel = Backbone.Model.extend({
     url: '/user/',
@@ -157,6 +174,7 @@ FeedBack = Backbone.View.extend({
 /*
  * TODO: так как функционал частично пересекается с вью Профиля, возможно срефакторить через наследование
  * Личный кабинет пользователя: редактирование данных, отображение списка трюков.
+ * TODO: также нам незачем запрашивать всю инфу по трюкам - она у нас уже есть, нам нужны только id.
  */
 UserView = Backbone.View.extend({
     el: 'div.content',
@@ -179,6 +197,9 @@ UserView = Backbone.View.extend({
             url: '/my/tricks/',
             dataType: 'json',
             success: function (response) {
+                _.each(response, function (row) {
+                    row.trick = new window.BTTricks.Trick(row.trick);
+                });
                 context['tricks'] = response;
                 self.$el.html(self.template.render(context));
             },
@@ -235,8 +256,14 @@ UserProfile = Backbone.View.extend({
             url: '/profile/'+user_id+'/',
             dataType: 'json',
             success: function (response) {
+                console.log(response);
                 response.user = new UserModel(response.user);
                 response.profile = true;
+
+                _.each(response.tricks, function (row) {
+                    row.trick = new window.BTTricks.Trick(row.trick);
+                });
+
                 el.html(template.render(response));
             }
         });

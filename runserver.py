@@ -32,6 +32,15 @@ def index():
     if user_id is not False:
         user = db.user.find_one({'_id': user_id})
         user['id'] = user.pop('_id')
+
+        # проверим есть ли чекины от пользователя, когда он был неавторизован?
+        if request.cookies.get('trick'):
+            try:
+                tricks_view.update_checktrick_from_cookie(user_id)
+            except BaseException:
+                """ pokemon exception handler - im bad black ass :p """
+                #raise
+
         user['rating'] = utils.get_user_rating(user['id'])
         context = {'user': _dumps(user), 'user_admin_lvl': user['admin']}
 
@@ -89,11 +98,6 @@ def index():
 
     if json_field:
         r = json.dumps(context[json_field])
-    elif crawler is not False:
-        try:
-            r = get_content_for_crawler(crawler, context)
-        except AttributeError, e:
-            return redirect('/?_escaped_fragment_=%s' % e, code=301)
     else:
         r = render_template('index.html', **context)
 
@@ -113,59 +117,6 @@ def feedback():
     else:
         print body
     return 'Ok'
-
-
-def get_content_for_crawler(crawler_path, context):
-    """
-    Рендерит контент запрошенной пауком страницы
-    """
-    if crawler_path == '':
-        return render_template('crawler.html', **context)
-
-    # вероятно переход по старому урлу - нужно редиректнуть
-    if not re.findall(r'trick\d+', crawler_path):
-        OLD_IDS_MAP = {
-            # old url       # new
-            'trick/kazachok-f'    : 'trick0',
-            'trick/korean-spin'   : 'trick1',
-            'trick/russian-spin'  : 'trick2',
-            'trick/chicken-leg-b' : 'trick3',
-            'trick/toe-machine'   : 'trick4',
-            'trick/day-night'     : 'trick5',
-            'trick/footgun-toe-f' : 'trick6',
-            'trick/onewheel-f'    : 'trick7',
-            'trick/confraglide'   : 'trick8',
-            'trick/cobra-b'       : 'trick9',
-            'trick/seven-f'       : 'trick10',
-            'trick/no-wiper'      : 'trick11',
-            'trick/foot-spin'     : 'trick12',
-        }
-
-        if OLD_IDS_MAP.get(crawler_path):
-            raise AttributeError(OLD_IDS_MAP.get(crawler_path))
-
-    c = app.url_map.bind('')
-
-    if not crawler_path.startswith('/'):
-        crawler_path = '/' + crawler_path
-
-    if not crawler_path.endswith('/'):
-        crawler_path += '/'
-
-    view_function_name, view_params = c.match(crawler_path)
-    view_function = app.view_functions[view_function_name]
-    result = view_function(**view_params)
-
-    if isinstance(result, basestring):
-        # TODO: перехват ошибки распаковки
-        result = json.loads(result)
-
-    result.update({
-        'view_name'   : view_function_name,
-        'global_data' : context
-    })
-
-    return render_template('crawler.html', **result)
 
 
 @app.route('/youtube_reciver/')
