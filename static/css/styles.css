@@ -454,7 +454,6 @@ div.bbf-editorYouTube div input {width:190px !important; display:inline;}
 }
 
 .global_overflow {
-    display:none;
     position:absolute; width:100%; opacity:0.9; -moz-opacity:0.9; filter:alpha(opacity=9);
-    top:0; background-color: #F2F2F2; overflow:hidden;
+    top:0; background-color: #F2F2F2; overflow:hidden; height:1200px;
 }

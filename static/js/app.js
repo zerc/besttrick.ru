@@ -2,6 +2,29 @@
 /*jslint nomen: true, maxerr: 50, indent: 4 */
 
 /*
+ * Глобальный лоадер. Используется для показа "занятости"
+ * приложения. Например, если при переходе по страницам будет
+ * затуп - покажется лоадер - чтобы пользователь не паниковал.
+ */
+var Loader = function() {
+    var overflow_div = $('div.global_overflow'),
+        loader_div = $('div.global_loader'),
+        win = $(window);
+
+    overflow_div.height(win.height());
+    
+    this.show = function() {
+        overflow_div.show(); 
+        loader_div.show(); 
+    }
+
+    this.hide = function() {
+        overflow_div.hide(); 
+        loader_div.hide (); 
+    }
+}
+
+/*
  * Роутер, осуществляющий инициализацию и руление приложением.
  */
 
@@ -37,7 +60,8 @@ var App = Backbone.Router.extend({
         this.tricksView = new TricksView({tricks: tricks, tags: args.tags, user: userModel});
         this.trickFull  = new TrickFullView({user: userModel});
         this.feedback   = new FeedBack({user: userModel});
-        
+        this.loader     = new Loader();
+
         // Общие действия при переходе по страницам
         this.bind('all', function (a, b, c) {
             self.active_route = a;
@@ -55,22 +79,30 @@ var App = Backbone.Router.extend({
     top_users: function () {
         var self = this,
             template = new EJS({url: '/static/templates/top_users.ejs'});
-            
+        
+        self.loader.show();
+
         $.ajax({
             url: '/rating/',
             dataType: 'json',
             success: function (response) {
                 self.$el.html(template.render({'users': response}));
+                self.loader.hide();
             },
             error: function () {
                 alert('Network error');
+                self.loader.hide();
             }
         });
     },
 
     about: function () {
+        this.loader.show();
+
         var template = new EJS({url: '/static/templates/about.ejs'});
         this.$el.html(template.render());
+
+        this.loader.hide();
     },
 
     filter: function (tags_selected) {
@@ -79,12 +111,20 @@ var App = Backbone.Router.extend({
     },
 
     my: function () {
-        if (this.user) this.user.render();
+        if (this.user) {
+            this.loader.show();
+            this.user.render();
+            this.loader.hide();
+        }
     },
 
     index: function (tags_selected) {
+        this.loader.show();
+
         window.document.title = this.default_page_title;
         this.tricksView.render();
+
+        this.loader.hide();
     },
 
     fresh_index: function () {
@@ -92,16 +132,20 @@ var App = Backbone.Router.extend({
         this.tricksView.reset_filter();
         this.tricksView.collection.fetch({success: function () {
             self.index();
+            self.loader.hide();
         }});
     },
 
     profile: function (user_id) {
+        this.loader.show();
         this.profile.render(user_id);
+        this.loader.hide();
     },
 
     trick: function (trick_id) {
+        this.loader.show();
         var trick = this.tricksView.collection.get(trick_id);
-        if (this.admin) this.admin.set_current_trick(trick);
+        this.loader.hide();
         return this.trickFull.render({model: trick});
     },
 

@@ -77,7 +77,6 @@
     </div>
 
     <div class="global_loader"></div>
-    
     <div class="global_overflow"></div>
     
     <script type="text/javascript">
@@ -114,25 +113,4 @@
             {% endif %}
         }());
     </script>
-
-    <script type="text/javascript">
-        var loader = new function() {
-            var overflow_div = $('div.global_overflow');
-            var loader_div = $('div.global_loader');
-            var doc = $(document); 
-            
-            this.show = function() { 
-                overflow_div.height(doc.height()); 
-                overflow_div.show(); 
-                loader_div.show(); 
-            }
-
-            this.hide = function() {
-                overflow_div.hide(); 
-                loader_div.hide (); 
-            }
-        }
-    </script>
-
-
 {% endblock %}
