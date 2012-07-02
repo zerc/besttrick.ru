@@ -4,8 +4,16 @@
 /*
  * Файл содержит общие для всего приложения элементы
  */
-window.BTCommon = {};
+window.BTCommon = {
+    vars: {
+        // кука в которую сохраняется url страницы с которой логинились 
+        // (туда будет выполнен редирект после логина)
+        next_url_cookie_name: 'next',
 
+        // имя куки для сохранения данных чекина навторизованного пользователя
+        tmp_trick_cookie_name: 'trick'
+    }
+};
 
 if (typeof String.prototype.trim !== 'function') {
     String.prototype.trim = function() {

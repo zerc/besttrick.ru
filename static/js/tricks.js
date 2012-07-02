@@ -20,8 +20,6 @@ ya_share_params = {
     }
 };
 
-// имя куки для сохранения данных чекина навторизованного пользователя
-window.BTTricks.trick_cookie_name = 'trick';
 
 /*** Модели и коллекции ***/
 window.BTTricks.Trick = Trick = Backbone.Model.extend({
@@ -81,7 +79,7 @@ window.BTTricks.Trick = Trick = Backbone.Model.extend({
 
     save_changes_to_cookie: function () {
         var cookie_value = JSON.stringify(_.extend({id: this.id}, this.changedAttributes()));
-        $.cookie(window.BTTricks.trick_cookie_name, cookie_value);
+        $.cookie(window.BTCommon.vars.tmp_trick_cookie_name, cookie_value);
     }
 });
 
@@ -238,6 +236,11 @@ CheckTrickView = Backbone.View.extend({
 
     show_upload_form: function () {
         var self = this;
+
+        if (!this.user) {
+            window.BTUsers.Loginza.show_login_form();
+            return false;
+        }
 
         video_form.show(this.model.get('id'), function (video_id) {
             var url = 'http://youtu.be/' + video_id

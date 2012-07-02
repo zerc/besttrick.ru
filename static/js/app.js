@@ -44,13 +44,27 @@ var App = Backbone.Router.extend({
     initialize: function (args) {
         var self = this,
             userModel = args.user ? new UserModel(args.user) : false;
-            tricks = new TricksList(args.tricks);
+            tricks = new TricksList(args.tricks),
+            
+            tmp_trick_cookie_name = window.BTCommon.vars.tmp_trick_cookie_name,
+            next_name = window.BTCommon.vars.next_url_cookie_name;
 
         this.default_page_title = window.document.title;
         this.active_route = 'route:index';
 
-        if (userModel && $.cookie(window.BTTricks.trick_cookie_name)) {
-            $.cookie(window.BTTricks.trick_cookie_name, null);
+        /*
+         * Работаем с сессиоными куками 
+         * чекиним пользователя, редиректим на страницу откуда логинился и пр.
+         * хоть куки и сессионные - удалим их руками для подстраховки:
+         * Chrome 19 у меня сохранял сессионныю куку после перезапуска
+         */
+        if (userModel && $.cookie(tmp_trick_cookie_name)) {
+            $.cookie(tmp_trick_cookie_name, null);
+        }
+
+        if ($.cookie(next_name)) {
+            location.hash = decodeURIComponent($.cookie(next_name));
+            $.cookie(next_name, null);
         }
 
         this.$el        = $('div.content');

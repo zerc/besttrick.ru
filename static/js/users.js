@@ -78,6 +78,18 @@ window.BTUsers.UsersCollection = Backbone.Collection.extend({
 Login = Backbone.View.extend({
     el: 'div.user_container',
 
+    events: {
+        'click a.loginza': 'save_path',
+        'click a.logout' : 'save_path'
+    },
+
+    save_path: function (e) {
+        var path = location.hash;
+        if (!path) return;
+        $.cookie(window.BTCommon.vars.next_url_cookie_name, encodeURIComponent(path));
+    },
+
+
     initialize: function (args) {
         _.bindAll(this, 'render');
         this.user = args.user;
