@@ -24,7 +24,6 @@ def index():
 
     # TODO: завернуть в декоратор
     json_field = request.args.get('json', False)
-    crawler = request.args.get('_escaped_fragment_', False)
 
     def _dumps(d):
         return d if json_field else json.dumps(d)
