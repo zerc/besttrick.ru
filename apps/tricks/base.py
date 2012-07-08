@@ -134,8 +134,6 @@ def get_best_results(trick_id=None, user_id=False):
             'best_user'    : get_user(result['best_user_id']),
         })
 
-    print best_result
-
     return result if trick_id >= 0 else best_result
 
 

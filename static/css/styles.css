@@ -255,6 +255,7 @@ a.video_approved {background:green;}
 }
 .user__trick__thumb {width:50px; float:left; margin-right:10px;}
 .user__trick a {vertical-align: middle;}
+.user__trick a.has_video {float:right;}
 .user__trick span {
     display:block; float:right; background:#AEAEAE; text-align:center;
     width:30px; height:31px; padding:3px 10px; color:white; margin-left:10px;

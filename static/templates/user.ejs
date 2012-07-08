@@ -6,6 +6,9 @@
                 <img src="/static/images/<%= trick.trick.get('thumb') %>" class="user__trick__thumb">
                 <a href="#!trick<%= trick.trick.get('_id') %>"><%= trick.trick.get_title() %></a>
                 <span><%= trick.cones %></span>
+                <% if (trick.video_url && trick.approved == 1) { %>
+                    <a class="has_video video_approved" href="<%= trick.video_url %>" target="_blank" title="есть видео подтверждение"></a>
+                <% } %>
             </div>
         <%}) %>
     <% } else { %>
