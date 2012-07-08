@@ -108,9 +108,12 @@ def get_best_results(trick_id=None, user_id=False):
     Возвращает словарь лучших результатов (структура как у trick_user) 
     по указанному трюку или список словарей по всем трюкам.
     """
+    ## Кто последний зачекинился, тот и в дамках при возникновении спорной ситуации.
+    ## TODO: разруливать чекины на одинаковое кол-во банок, например придавать вес
+    ## тем чекинам, которые с видосом.
     reduce_func = u"""
     function(obj, prev) {
-        if (prev.best_user_cones < obj.cones) {
+        if (prev.best_user_cones <= obj.cones) {
             prev.best_user_cones = obj.cones;
             prev.best_user_id = obj.user;
         }
@@ -130,6 +133,8 @@ def get_best_results(trick_id=None, user_id=False):
             'users'        : len(set(result['users'])),
             'best_user'    : get_user(result['best_user_id']),
         })
+
+    print best_result
 
     return result if trick_id >= 0 else best_result
 
