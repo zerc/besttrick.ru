@@ -18,7 +18,7 @@
         <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
     <![endif]-->
     
-    {% if user == False %}
+    {% if user == 'false' %}
         <script src="http://loginza.ru/js/widget.js" type="text/javascript"></script>
     {% endif %}
     
@@ -37,7 +37,7 @@
     {% include 'counters.j2' %}
 {% endblock %}
 
-{% block body %}
+{% block body %}    
     <div class="container">
         <div class="user_container"></div>
         <div class="feedback">

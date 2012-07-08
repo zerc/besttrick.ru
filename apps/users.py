@@ -9,6 +9,21 @@ from project import app, connection, db
 from .utils import grouped_stats, get_user_rating, get_valid_cones_per_trick
 
 
+def adding_user(func):
+    """
+    Подсовывает в kwargs функции объект пользователя,
+    если тот авторизован, иначе - это просто False.
+    """
+    @wraps(func)
+    def wrapper(*args, **kwargs):
+        user_id = session.get('user_id')
+        kwargs['user'] = get_user(user_id)
+
+        return func(*args, **kwargs)
+
+    return wrapper
+
+
 def user_only(func):
     """
     Декоратор - "только для пользователя"
@@ -27,6 +42,7 @@ def user_only(func):
         return func(*args, **kwargs)
 
     return wrapper
+
 
 
 def clean_fields(user_dict):
@@ -148,6 +164,19 @@ def register(user_data):
     new_user['_id'] = db.seqs.find_and_modify({"_id": "user_seq"}, {"$inc": {"val": 1}})['val']
     new_user.save()
     return new_user
+
+
+def get_user(user_id, full=False):
+    """
+    Хэлпер возвращает пропатченый объект юзера.
+    """
+    user = db.user.find_one({'_id': user_id}) or False
+    if user is False: return False
+
+    user['id'] = int(user.pop('_id'))
+    user['rating'] = get_user_rating(user['id'])
+
+    return user if full else clean_fields(user)
 
 
 ### Views
