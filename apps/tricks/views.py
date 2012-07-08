@@ -37,7 +37,7 @@ def prepare_youtube_upload(*args, **kwargs):
 
     # create media group as usual
     my_media_group = media.Group(
-        title=media.Title(text = u'Besttick video: %s' %  trick['title']),
+        title=media.Title(text = u'Besttrick video: %s' %  trick['title']),
         description=media.Description(description_type = 'plain', text = u'Raider: %s' % user['nick']),
         keywords=media.Keywords(text=u", ".join(trick['tags'])),
         category=[media.Category(text='Sports', scheme='http://gdata.youtube.com/schemas/2007/categories.cat', label=u'Спорт')],
