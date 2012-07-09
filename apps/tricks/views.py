@@ -7,7 +7,7 @@ from project import app, connection, db, markdown
 
 from apps.utils import grouped_stats, allow_for_robot, is_robot
 from apps.notify import send_notify, CHECKTRICK_WITH_VIDEO, NOT_PROCESSES, GOOD, BAD
-from apps.users import user_only, adding_user
+from apps.users import user_only, adding_user, get_user
 
 from .base import yt_service, checkin_user, checkin_user, get_tricks, get_best_results
 
@@ -94,6 +94,10 @@ def trick_full(trick_id):
     """ Лучшие пользователи по этому трюку """
     trick_id = int(trick_id)
     rows = grouped_stats('user', {'trick': trick_id})
+    
+    for row in rows:
+        row['user'] = get_user(user_dict=row['user'])
+
     rows = sorted(rows, key=lambda x: x['cones'], reverse=True)
     
     if is_robot():
