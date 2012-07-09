@@ -68,7 +68,6 @@ def get_tricks(*args, **kwargs):
     best_users = {}
     for r in get_best_results(None, user_id):
         best_users[int(r.pop(u'trick'))] = r
-        print r
 
     # результат пользователя
     user_stats = {}

@@ -166,12 +166,17 @@ def register(user_data):
     return new_user
 
 
-def get_user(user_id, full=False):
+def get_user(user_id=None, full=False, user_dict=None):
     """
     Хэлпер возвращает пропатченый объект юзера.
+    Если указан user_dict - то не делает выборку из монги,
+    а использует эти данные.
     """
-    user = db.user.find_one({'_id': user_id}) or False
-    if user is False: return False
+    if user_dict is None:
+        user = db.user.find_one({'_id': user_id}) or False
+        if user is False: return False
+    else:
+        user = user_dict
 
     user['id'] = int(user.pop('_id'))
     user['rating'] = get_user_rating(user['id'])
@@ -272,17 +277,7 @@ def top_users():
         tricks_scores[trick['_id']] = trick['score']
 
     def _(user):
-        cones_per_trick = get_valid_cones_per_trick(user['_id'])
-        user['rating'] = 0
-
-        for k, v in cones_per_trick.items():
-            user['rating'] += tricks_scores[k] * v
-
-        user['rating'] = float('%.2f' % user['rating'])
-
-        clean_fields(user)
-
-        return user
+        return get_user(user_dict=user)
 
     users = map(_, db.user.find({'banned': False}))
     return json.dumps(sorted(users, key=lambda user: user['rating'], reverse=True))
