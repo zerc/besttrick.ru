@@ -8,6 +8,12 @@ from project import app, db
 
 from flask import render_template, request
 
+def is_mobile():
+    """
+    Testing request for mobile subdomain
+    """
+    return request.url_root.startswith('http://m.')
+
 
 @app.template_filter('plural')
 def plural(s, amount):

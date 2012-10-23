@@ -28,6 +28,9 @@ def index(*args, **kwargs):
     которые были сохранены в куки, пока пользователь 
     был неавторизован. (Например чекин неавторизованного пользователя)
     """
+    _is_mobile = utils.is_mobile()
+    _tmpl_name = 'mobile/index.html' if _is_mobile else 'index.html'
+    
     if kwargs['user'] is not False:
         # проверим есть ли чекины от пользователя, когда он был неавторизован?
         if request.cookies.get('trick'):
@@ -44,15 +47,16 @@ def index(*args, **kwargs):
         'user_admin_lvl': kwargs['user']['admin'] if kwargs['user'] else 0,
     }
 
-    tricks = tricks_view.get_tricks(*args, **kwargs)
-    tags   = tricks_view.get_tags(*args, tricks=tricks)
+    if not _is_mobile:
+        tricks = tricks_view.get_tricks(*args, **kwargs)
+        tags   = tricks_view.get_tags(*args, tricks=tricks)
 
-    context.update({
-        'tricks' : json.dumps(tricks),
-        'tags'   : json.dumps(tags)
-    })
+        context.update({
+            'tricks' : json.dumps(tricks),
+            'tags'   : json.dumps(tags)
+        })
 
-    r = render_template('index.html', **context)
+    r = render_template(_tmpl_name, **context)
 
     response = make_response(r)
     response.headers['X-Frame-Options'] = 'SAMEORIGIN'
