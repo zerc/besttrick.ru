@@ -60,27 +60,31 @@ def get_tricks(*args, **kwargs):
         * результат пользователя (если тот авторизован)
         * сколько пользователей делает этот трюк
     Трюк в данном случае - это просто словарь с данными.
+    Если передан аргумент simple - просто список трюков возвращает.
     """
+    #TODO: вероятно разделить эту функцию на 3 либо использовать ООП
     tricks = db.trick.find().sort("_id", 1)
     user_id = kwargs['user']['id'] if kwargs.get('user') else False
 
-    # собираем лучшие чекины для каждого трюяка
+
     best_users = {}
-    for r in get_best_results(None, user_id):
-        best_users[int(r.pop(u'trick'))] = r
-
-    # результат пользователя
     user_stats = {}
-    if user_id is not False:
-        reduce_func = u"""function(obj, prev) { 
-            prev.cones = obj.cones;
-            prev.video_url = obj.video_url;
-        }"""
-        user_stats_qs = db.trick_user.group(['trick'], {'user': user_id}, {'cones': 0, 'video_url': ''}, reduce_func)
+    if not kwargs.get('simple'):
+        # собираем лучшие чекины для каждого трюяка
+        for r in get_best_results(None, user_id):
+            best_users[int(r.pop(u'trick'))] = r
 
-        for x in user_stats_qs:
-            k = x.pop(u'trick')
-            user_stats[k] = x
+        # результат пользователя
+        if user_id is not False:
+            reduce_func = u"""function(obj, prev) { 
+                prev.cones = obj.cones;
+                prev.video_url = obj.video_url;
+            }"""
+            user_stats_qs = db.trick_user.group(['trick'], {'user': user_id}, {'cones': 0, 'video_url': ''}, reduce_func)
+
+            for x in user_stats_qs:
+                k = x.pop(u'trick')
+                user_stats[k] = x
 
     def _patch(trick):
         trick[u'id'] = trick.pop(u'_id')
@@ -160,6 +164,17 @@ def checkin_user(trick_id, user_id, update_data):
 
     Или же возвращает кортеж (u'Текст ошибки', http_код_ошибки)
     """
+    #TODO: валидацию данных реализовать лучше
+    try:
+        trick_id = int(trick_id)
+    except ValueError:
+        return u'Incorrect trick_id = %s' % trick_id, 400
+
+    try:
+        update_data['cones'] = int(update_data['cones'])
+    except ValueError:
+        return 'Number of cones must be are integer', 400
+
     trick = db.trick.find_one({'_id': trick_id})
     if not trick:
         return u'Unknow trick with id = %s' % trick_id, 400

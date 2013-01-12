@@ -2,7 +2,7 @@
 import simplejson as json
 from gdata import media, youtube
 
-from flask import render_template, request, jsonify, session, redirect, url_for
+from flask import render_template, request, jsonify, session, redirect, url_for, make_response, flash
 from project import app, connection, db, markdown
 
 from apps.utils import grouped_stats, allow_for_robot, is_robot
@@ -119,3 +119,46 @@ def tricks_list(*args, **kwargs):
     """
     tricks = get_tricks(*args, **kwargs)
     return json.dumps(tricks)
+
+
+@app.route('/ido/', methods=['GET'])
+@adding_user
+def mobile_checkin_page(*args, **context):
+    """
+    Мобильная страничка чекина.
+    """
+    if not context['user']:
+        return 'Must login', 403
+
+    context.update({
+        'tricks': get_tricks(simple=True),
+    })
+
+    r = render_template('mobile/checkin_page.html', **context)
+
+    return make_response(r)
+
+
+@app.route('/ido/check/', methods=['POST'])
+@adding_user
+@user_only
+def mobile_checkin(*args, **context):
+    """
+    Чекинит пользователя
+    """
+    #TODO объеденить в функцией checktrick
+    form_data = request.form.to_dict()
+    user_id = context['user']['id']
+    trick_id = form_data.pop('trick_id')
+    
+    checkin_result = checkin_user(trick_id, user_id, form_data)
+
+    if isinstance(checkin_result, tuple):
+        flash(checkin_result[0], 'error')
+    else:
+        flash(u'Вы успешно зачекинились', 'success')
+
+    return redirect(url_for('mobile_checkin_page')) 
+
+
+

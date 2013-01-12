@@ -1,40 +1,12 @@
-<html>
-<head>
-    <meta charset="utf-8"></meta>
-    <title>Besttrick Mobile</title>
-    <style type="text/css">
-    html, body {margin:0; padding:0; font-family:Arial; font-size:0.9em;}
-    a {text-decoration:none;}
+{% extends 'mobile/base.html' %}
 
-    #content {}
-
-    .header {font-size:16px; font-weight:bolder; padding:5px 0 0 5px}
-    .menu {list-style:none; padding:0; margin:10px 0 0 0;border-top:1px solid #aeaeae;}
-    .menu li {padding:2px 0 2px 4px; border-bottom:1px solid #aeaeae;}
-    .menu .checktrick {background-color:#ccc; padding:5px 0 5px 4px;}
-    .menu .checktrick a {font-size:1.2em;}
-    .menu a {}
-
-    .copyright {text-align:center; font-size:10px; color:#aeaeae;}
-    </style>
-</head>
-<body>
-    <div id="content">
-        <div class="header">
-            Besttrick
-        </div>
-        <ul class="menu">
-            <li class="checktrick">
-                <a href="#">Делаю трюк</a>
-            </li>
-            <li><a href="#">Топ пользователей</a></li> 
-            <li><a href="#">Профиль</a></li>
-            <li><a href="#">Каталог трюков</a></li>
-        </ul>
-        <div class="copyright">
-            <a href="http://zerc.ru">zerc.ru</a> @ 2012-2013
-        </div>
-    </div>
-</body>
-</html>
-
+{% block content %}
+<ul class="menu">
+    <li class="checktrick">
+        <a href="{{ url_for('mobile_checkin_page') }}">Делаю трюк</a>
+    </li>
+    <li><a href="#">Топ пользователей</a></li> 
+    <li><a href="#">Профиль</a></li>
+    <li><a href="#">Каталог трюков</a></li>
+</ul>
+{% endblock %}

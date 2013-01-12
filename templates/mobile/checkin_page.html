@@ -1,0 +1,38 @@
+{% extends 'mobile/base.html' %}
+
+
+{% block extra_head %}
+    <style>
+        .form_holder {
+            border:1px solid #aeaeae; margin:5px; padding:5px;
+        }
+
+        .form_holder form {
+            text-align:center;
+        }
+    </style>
+{% endblock %}
+
+{% block content %}
+    {% set msgs = get_flashed_messages(with_categories=true) %}
+
+    <ul class="messages">
+        {% for category, message in msgs %}
+          <li class="{{ category }}">{{ message }}</li>
+        {% endfor %}
+    </ul>
+
+    <div class="form_holder">
+        <form action="{{ url_for('mobile_checkin') }}" method="POST">
+            <select name="trick_id">
+                {% for trick in tricks %}
+                    <option value="{{ trick.id }}">{{ trick.title }}</option>
+                {% endfor %}
+            </select>
+
+            <input type="text" name="cones" />
+
+            <button type="submit">Я Делаю!</button>
+        </form>
+    </div>
+{% endblock %}

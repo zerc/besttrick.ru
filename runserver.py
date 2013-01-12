@@ -41,7 +41,7 @@ def index(*args, **kwargs):
                 #raise
 
     context = {
-        'user': json.dumps(kwargs['user']),
+        'user': kwargs['user'],
 
         # просто шоткат, типа :)
         'user_admin_lvl': kwargs['user']['admin'] if kwargs['user'] else 0,
@@ -52,6 +52,7 @@ def index(*args, **kwargs):
         tags   = tricks_view.get_tags(*args, tricks=tricks)
 
         context.update({
+            'user'   : json.dumps(kwargs['user']),
             'tricks' : json.dumps(tricks),
             'tags'   : json.dumps(tags)
         })
