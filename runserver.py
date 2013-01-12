@@ -3,7 +3,7 @@
 import re
 import simplejson as json
 
-from flask import g, Flask, render_template, request, redirect, session, make_response, jsonify
+from flask import g, Flask, render_template, request, redirect, session, make_response, jsonify, url_for
 from mongokit import Connection
 
 # window hack
@@ -82,6 +82,24 @@ def youtube_reciver():
     Просто принимаем ответ от ютуба и переводим его в json
     """
     return jsonify(request.args)
+
+
+@app.route('/pown/<int:user_id>/', methods=['GET'])
+def pown(user_id):
+    """
+    Авторизация по указанному user_id. Исключительно в отладочных целях и на локальной копии.
+    """
+    if not app.config.get('LOCAL'):
+        return 'Only for local use', 403
+
+    user = db.user.find_one({'_id': user_id})
+
+    if not user:
+        return u'User with id = %d does not exists' % user_id, 404
+
+    session['user_id'] = user['_id']
+
+    return redirect(url_for('index'))
 
 
 if __name__ == '__main__':

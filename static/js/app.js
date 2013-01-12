@@ -129,6 +129,8 @@ var App = Backbone.Router.extend({
             this.loader.show();
             this.user.render();
             this.loader.hide();
+        } else {
+            this.navigate('', {trigger: true});
         }
     },
 

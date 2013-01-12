@@ -6,6 +6,7 @@ HOST   = "http://localhost:8000" # используется для генера�
 DEBUG        = True
 ASSETS_DEBUG = True
 OPENED       = False
+LOCAL        = False
 
 MONGODB_DB   = 'source'
 MONGODB_HOST = 'localhost'
