@@ -4,9 +4,9 @@ import simplejson as json
 from functools import wraps
 from mongokit import Document, DocumentMigration
 
-from flask import render_template, request, jsonify, session, redirect, url_for
+from flask import render_template, request, jsonify, session, url_for
 from project import app, connection, db
-from .utils import grouped_stats, get_user_rating, get_valid_cones_per_trick
+from .utils import grouped_stats, get_user_rating, get_valid_cones_per_trick, redirect
 
 
 def adding_user(func):
@@ -17,7 +17,10 @@ def adding_user(func):
     @wraps(func)
     def wrapper(*args, **kwargs):
         user_id = session.get('user_id')
+
         kwargs['user'] = get_user(user_id)
+        #TODO: инкапсулировать в пользователя
+        kwargs['user_admin_lvl'] = kwargs['user']['admin'] if kwargs['user'] else 0
 
         return func(*args, **kwargs)
 
@@ -32,7 +35,7 @@ def user_only(func):
     def wrapper(*args, **kwargs):
         user_id = session.get('user_id', False)
         if user_id is False:
-            return redirect(url_for('index'))
+            return redirect('index')
 
         user = db.user.find_one({'_id': user_id})
 
@@ -190,8 +193,8 @@ def banned():
     return render_template('banned.html')
 
 
-@app.route('/login/', methods=['POST'])
-def login():
+@app.route('/login/', methods=['POST'], subdomain="<domain>")
+def login(domain):
     url = "http://loginza.ru/api/authinfo?%s"
     params = urllib.urlencode({'token': request.form['token'], 'id': '', 'sig': ''})
     f = urllib.urlopen(url % params)
@@ -202,16 +205,17 @@ def login():
     user_data = json.loads(unicode(f.read(), 'utf-8'))
     user = db.user.find_one({'identity': user_data['identity']}) or register(user_data)
 
-    if user['banned']: return redirect(url_for('banned'))
+    if user['banned']: return redirect('banned')
     
     session['user_id'] = user['_id']
-    return redirect(url_for('index'))
+    return redirect('index', domain)
 
 
-@app.route('/logout/', methods=['GET'])
-def logout():
+
+@app.route('/logout/', methods=['GET'], subdomain="<domain>")
+def logout(domain):
     session.pop('user_id', None)
-    return redirect(url_for('index'))
+    return redirect('index')
 
 
 @app.route('/my/tricks/', methods=['GET'])

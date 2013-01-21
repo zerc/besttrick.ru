@@ -6,7 +6,33 @@ from functools import wraps
 
 from project import app, db
 
-from flask import render_template, request
+from flask import render_template, request, make_response, url_for, redirect as flask_redirect
+
+
+def redirect(path, subdomain=""):
+    #TODO: doit more complex
+    full_path = url_for(path, _external=True)
+    
+    if subdomain:
+        full_path = full_path.replace('//', '//%s.' % subdomain)
+
+    return flask_redirect(full_path)
+
+def render_to(func, template=None):
+    """
+    Simple render_to decorator
+    """
+    @wraps(func)
+    def wrapper(*args, **kwargs):
+        tmpl_name = '%s.html' % template or func.__name__
+
+        context = func(*args, **kwargs)
+
+        r = render_template(tmpl_name, **context)
+        return make_response(r)
+
+    return wrapper
+
 
 def is_mobile():
     """

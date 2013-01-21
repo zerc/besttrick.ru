@@ -3,7 +3,7 @@
 import re
 import simplejson as json
 
-from flask import g, Flask, render_template, request, redirect, session, make_response, jsonify, url_for
+from flask import g, Flask, render_template, request, session, make_response, jsonify, url_for
 from mongokit import Connection
 
 # window hack
@@ -14,12 +14,20 @@ except ImportError:
     Message, email_dispatched = None, None
 
 from project import app, connection, db, markdown
-from apps import tricks as tricks_view, users as users_view, utils, admin
+from apps import tricks as tricks_view, users as users_view, utils, admin, mobile
 
+
+@app.route('/b/')
+def a1():
+    return 'main'
+
+@app.route('/a/', subdomain="www")
+def a():
+    return 'www'
 
 @app.route('/')
 @users_view.adding_user
-def index(*args, **kwargs):
+def index(*args, **context):
     """
     Главная страница.
     Собирает context для рендера в шаблон страницы (index.html)
@@ -28,37 +36,24 @@ def index(*args, **kwargs):
     которые были сохранены в куки, пока пользователь 
     был неавторизован. (Например чекин неавторизованного пользователя)
     """
-    _is_mobile = utils.is_mobile()
-    _tmpl_name = 'mobile/index.html' if _is_mobile else 'index.html'
-    
-    if kwargs['user'] is not False:
-        # проверим есть ли чекины от пользователя, когда он был неавторизован?
-        if request.cookies.get('trick'):
-            try:
-                tricks_view.update_checktrick_from_cookie(kwargs['user']['id'])
-            except BaseException:
-                """ pokemon exception handler - im bad black ass :p """
-                #raise
+    # проверим есть ли чекины от пользователя, когда он был неавторизован?
+    if context['user'] and request.cookies.get('trick'):
+        try:
+            tricks_view.update_checktrick_from_cookie(context['user']['id'])
+        except BaseException:
+            """ pokemon exception handler - im bad black ass :p """
+            #raise
 
-    context = {
-        'user': kwargs['user'],
+    tricks = tricks_view.get_tricks(*args, **context)
+    tags   = tricks_view.get_tags(*args, tricks=tricks)
 
-        # просто шоткат, типа :)
-        'user_admin_lvl': kwargs['user']['admin'] if kwargs['user'] else 0,
-    }
+    context.update({
+        'user'   : json.dumps(context['user']),
+        'tricks' : json.dumps(tricks),
+        'tags'   : json.dumps(tags)
+    })
 
-    if not _is_mobile:
-        tricks = tricks_view.get_tricks(*args, **kwargs)
-        tags   = tricks_view.get_tags(*args, tricks=tricks)
-
-        context.update({
-            'user'   : json.dumps(kwargs['user']),
-            'tricks' : json.dumps(tricks),
-            'tags'   : json.dumps(tags)
-        })
-
-    r = render_template(_tmpl_name, **context)
-
+    r = render_template('index.html', **context)
     response = make_response(r)
     response.headers['X-Frame-Options'] = 'SAMEORIGIN'
     
@@ -98,9 +93,9 @@ def pown(user_id):
     if not user:
         return u'User with id = %d does not exists' % user_id, 404
 
-    session['user_id'] = user['_id']
+    session['user_id'] = user[u'_id']
 
-    return redirect(url_for('index'))
+    return utils.redirect('index')
 
 
 if __name__ == '__main__':

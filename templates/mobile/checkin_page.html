@@ -1,4 +1,5 @@
 {% extends 'mobile/base.html' %}
+{% from 'mobile/base.html' import trick_title %}
 
 
 {% block extra_head %}
@@ -7,9 +8,8 @@
             border:1px solid #aeaeae; margin:5px; padding:5px;
         }
 
-        .form_holder form {
-            text-align:center;
-        }
+        .form_holder form {margin:0;}
+        .form_holder form button {margin:0;}
     </style>
 {% endblock %}
 
@@ -24,13 +24,15 @@
 
     <div class="form_holder">
         <form action="{{ url_for('mobile_checkin') }}" method="POST">
-            <select name="trick_id">
+            <label for="trick_id">Трюк:</label>
+            <select name="trick_id" id="trick_id">
                 {% for trick in tricks %}
-                    <option value="{{ trick.id }}">{{ trick.title }}</option>
+                    <option value="{{ trick.id }}" {% if trick.id == request.args.get('trick')|int %}selected="selected"{% endif %}>{{ trick_title(trick) }}</option>
                 {% endfor %}
             </select>
 
-            <input type="text" name="cones" />
+            <label for="cones">Сколько конусов:</label>
+            <input type="text" name="cones" id="cones" />
 
             <button type="submit">Я Делаю!</button>
         </form>

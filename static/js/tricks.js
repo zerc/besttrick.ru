@@ -85,7 +85,7 @@ window.BTTricks.Trick = Trick = Backbone.Model.extend({
 
 
 window.BTTricks.TricksList = TricksList = Backbone.Collection.extend({
-    url: '/api/tricks/',
+    url: '/tricks/',
     model: Trick
 });
 

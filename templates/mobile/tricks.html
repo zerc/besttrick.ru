@@ -1,0 +1,43 @@
+{% extends 'mobile/base.html' %}
+
+
+{% block extra_head %}
+    <style>
+        ul.trick_list {margin:0 5px;}
+        ul.trick_list .trick {
+            border:1px solid #aeaeae; line-height:30px; height:30px;
+        }
+
+        ul.trick_list .trick img {float:left; margin-right:5px;}
+
+        ul.trick_list .user_do_this {background-color:#fdecdd;}
+
+        ul.trick_list .trick a.checkin_link {
+            float:right; background:red; width:30px; text-align:center;
+            color:#fff; font-size:18;
+        }
+
+        ul.trick_list .trick a.checkin_link:hover {color:#000;}
+    </style>
+
+{% endblock %}
+
+
+{% macro trick_preview(trick) %}
+<li class="trick{{ ' user_do_this' if trick.user_do_this }}">
+    <img src="/static/images/{{ trick.thumb }}" alt="" height="30">
+    <a href="{{ trick_url(trick) }}">{{ trick_title(trick) }}</a>
+    <a href="{{ url_for('mobile_checkin_page') }}?trick={{ trick.id }}" class="checkin_link">+</a>
+</li>
+{% endmacro %}
+
+
+
+{% block content %}
+<ul class="trick_list">
+    {% for trick in tricks %}
+        {{ trick_preview(trick) }}
+    {% endfor %}
+</ul>
+
+{% endblock %}
