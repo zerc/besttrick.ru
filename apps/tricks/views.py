@@ -88,25 +88,34 @@ def checktrick(*args, **kwargs):
     return json.dumps(get_best_results(trick_id))
 
 
+def get_trick(trick_id, simple=True):
+    trick_id = int(trick_id)
+    rows = []
+
+    if simple is False:
+        rows = grouped_stats('user', {'trick': trick_id})
+    
+        for row in rows:
+            row['user'] = get_user(user_dict=row['user'])
+
+        rows = sorted(rows, key=lambda x: x['cones'], reverse=True)
+
+    return db.trick.find_one({'_id': trick_id}), rows
+
+    
 @app.route('/trick<int:trick_id>/', methods=['GET'])
 @allow_for_robot
-def trick_full(trick_id):
+def trick_full(trick_id, domain=None):
     """ Лучшие пользователи по этому трюку """
-    trick_id = int(trick_id)
-    rows = grouped_stats('user', {'trick': trick_id})
-    
-    for row in rows:
-        row['user'] = get_user(user_dict=row['user'])
+    trick, trick_users = get_trick(trick_id, False)
 
-    rows = sorted(rows, key=lambda x: x['cones'], reverse=True)
-    
     if is_robot():
         return {
-            'trick_users': rows,
+            'trick_users': trick_users,
             'trick': db.trick.find_one({'_id': trick_id})
         }
 
-    return json.dumps(rows)
+    return json.dumps(trick_users)
 
 
 @app.route('/tricks/', methods=['GET'])

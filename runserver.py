@@ -80,8 +80,8 @@ def youtube_reciver():
     return jsonify(request.args)
 
 
-@app.route('/pown/<int:user_id>/', methods=['GET'])
-def pown(user_id):
+@app.route('/pown/<int:user_id>/', methods=['GET'], subdomain="<domain>")
+def pown(user_id, domain=None):
     """
     Авторизация по указанному user_id. Исключительно в отладочных целях и на локальной копии.
     """
@@ -95,7 +95,7 @@ def pown(user_id):
 
     session['user_id'] = user[u'_id']
 
-    return utils.redirect('index')
+    return utils.redirect('index', domain)
 
 
 if __name__ == '__main__':

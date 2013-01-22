@@ -25,7 +25,7 @@
 
 {% macro trick_preview(trick) %}
 <li class="trick{{ ' user_do_this' if trick.user_do_this }}">
-    <img src="/static/images/{{ trick.thumb }}" alt="" height="30">
+    <img src="{{ config.HOST }}/static/images/{{ trick.thumb }}" alt="" height="30">
     <a href="{{ trick_url(trick) }}">{{ trick_title(trick) }}</a>
     <a href="{{ url_for('mobile_checkin_page') }}?trick={{ trick.id }}" class="checkin_link">+</a>
 </li>

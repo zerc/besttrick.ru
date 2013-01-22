@@ -18,20 +18,23 @@ def redirect(path, subdomain=""):
 
     return flask_redirect(full_path)
 
-def render_to(func, template=None):
-    """
-    Simple render_to decorator
-    """
-    @wraps(func)
-    def wrapper(*args, **kwargs):
-        tmpl_name = '%s.html' % template or func.__name__
 
-        context = func(*args, **kwargs)
-
-        r = render_template(tmpl_name, **context)
-        return make_response(r)
-
-    return wrapper
+def render_to(template=None):
+    def decorator(f):
+        @wraps(f)
+        def decorated_function(*args, **kwargs):
+            template_name = template
+            if template_name is None:
+                template_name = request.endpoint \
+                    .replace('.', '/') + '.html'
+            ctx = f(*args, **kwargs)
+            if ctx is None:
+                ctx = {}
+            elif not isinstance(ctx, dict):
+                return ctx
+            return render_template(template_name, **ctx)
+        return decorated_function
+    return decorator
 
 
 def is_mobile():

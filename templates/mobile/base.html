@@ -4,7 +4,7 @@
 {% endmacro %}
 
 {% macro trick_url(trick) %}
-    {{ '/trick/%s/' % trick.id }}
+    http://{{ request.host }}{{ '/trick%s/' % trick.id }}
 {% endmacro %}
 
 <html>

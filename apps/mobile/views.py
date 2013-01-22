@@ -3,34 +3,43 @@ from flask import render_template, request, jsonify, session, url_for, make_resp
 
 from project import app, connection, db, markdown
 from apps.users import user_only, adding_user, get_user
-from apps.tricks import get_tricks
+from apps.tricks import get_tricks, get_trick
 from apps.utils import render_to, redirect
 
 
 @app.route('/', subdomain="m")
-#@render_to(template='mobile/index.html')
+@render_to(template='mobile/index.html')
 @adding_user
 def mobile_index(*args, **context):
     """
     Мобильная стартовая страничка
     """
-    r = render_template('mobile/index.html', **context)
-    return make_response(r)
+    return context
 
 
 @app.route('/tricks/', methods=['GET'], subdomain="m")
+@render_to(template='mobile/tricks.html')
 @adding_user
 def mobile_tricks(*args, **context):
     """
     Список трюков в мобильной версии.
     """
     context['tricks'] = get_tricks(*args, **context)
-    
-    r = render_template('mobile/tricks.html', **context)
-    return make_response(r)
+    return context
 
+
+@app.route('/trick<int:trick_id>/', methods=['GET'], subdomain="m")
+@render_to(template='mobile/trick.html')
+@adding_user
+def trick_page(trick_id, *args, **context):
+    """
+    Мобильная страница трюка
+    """
+    context['trick'], _ = get_trick(trick_id)
+    return context
 
 @app.route('/ido/', methods=['GET'], subdomain="m")
+@render_to(template='mobile/checkin_page.html')
 @adding_user
 @user_only
 def mobile_checkin_page(*args, **context):
@@ -44,11 +53,7 @@ def mobile_checkin_page(*args, **context):
         'tricks': get_tricks(simple=True),
     })
 
-    r = render_template('mobile/checkin_page.html', **context)
-
-    return make_response(r)
-
-
+    return context
 
 
 @app.route('/ido/check/', methods=['POST'], subdomain="m")
