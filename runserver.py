@@ -3,7 +3,7 @@
 import re
 import simplejson as json
 
-from flask import g, Flask, render_template, request, session, make_response, jsonify, url_for
+from flask import g, Flask, render_template, request, session, make_response, jsonify, url_for, redirect
 from mongokit import Connection
 
 # window hack
@@ -16,14 +16,6 @@ except ImportError:
 from project import app, connection, db, markdown
 from apps import tricks as tricks_view, users as users_view, utils, admin, mobile
 
-
-@app.route('/b/')
-def a1():
-    return 'main'
-
-@app.route('/a/', subdomain="www")
-def a():
-    return 'www'
 
 @app.route('/')
 @users_view.adding_user
@@ -80,7 +72,8 @@ def youtube_reciver():
     return jsonify(request.args)
 
 
-@app.route('/pown/<int:user_id>/', methods=['GET'], subdomain="<domain>")
+@app.route('/pown/<int:user_id>/', methods=['GET'])
+@app.route('/pown/<int:user_id>/', methods=['GET'], subdomain="m")
 def pown(user_id, domain=None):
     """
     Авторизация по указанному user_id. Исключительно в отладочных целях и на локальной копии.
@@ -95,7 +88,7 @@ def pown(user_id, domain=None):
 
     session['user_id'] = user[u'_id']
 
-    return utils.redirect('index', domain)
+    return redirect('http://%s' % request.host)
 
 
 if __name__ == '__main__':

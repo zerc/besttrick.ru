@@ -212,8 +212,9 @@ def login(domain):
 
 
 
-@app.route('/logout/', methods=['GET'], subdomain="<domain>")
-def logout(domain):
+@app.route('/logout/', methods=['GET'])
+@app.route('/logout/', methods=['GET'], subdomain="m")
+def logout():
     session.pop('user_id', None)
     return redirect('index')
 

@@ -66,9 +66,8 @@ def get_tricks(*args, **kwargs):
     tricks = db.trick.find().sort("_id", 1)
     user_id = kwargs['user']['id'] if kwargs.get('user') else False
 
+    best_users, user_stats = {}, {}
 
-    best_users = {}
-    user_stats = {}
     if not kwargs.get('simple'):
         # собираем лучшие чекины для каждого трюяка
         for r in get_best_results(None, user_id):

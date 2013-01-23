@@ -123,8 +123,7 @@ def trick_full(trick_id, domain=None):
 def tricks_list(*args, **kwargs):
     """
     Возврващет список трюков в формате json.
-    Используюется в качеству url для коллескции трюков
-    со стороны js.
+    Используюется в качеству url для коллекции трюков со стороны js.
     """
     tricks = get_tricks(*args, **kwargs)
     return json.dumps(tricks)
