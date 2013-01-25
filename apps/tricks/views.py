@@ -3,10 +3,10 @@ import simplejson as json
 from gdata import media, youtube
 
 from flask import render_template, request, jsonify, session, redirect, url_for, make_response, flash
+from flask.views import View
 from project import app, connection, db, markdown
 
-from apps.utils import grouped_stats, allow_for_robot, is_robot
-from apps.notify import send_notify, CHECKTRICK_WITH_VIDEO, NOT_PROCESSES, GOOD, BAD
+from apps.utils import grouped_stats, allow_for_robot, is_robot, render_to
 from apps.users import user_only, adding_user, get_user
 
 from .base import yt_service, checkin_user, checkin_user, get_tricks, get_best_results
@@ -103,19 +103,17 @@ def get_trick(trick_id, simple=True):
     return db.trick.find_one({'_id': trick_id}), rows
 
     
-@app.route('/trick<int:trick_id>/', methods=['GET'])
+@app.route('/tricks/trick<int:trick_id>/', methods=['GET'])
+@app.route('/tricks/trick<int:trick_id>/', methods=['GET'], subdomain="m")
+@render_to()
 @allow_for_robot
-def trick_full(trick_id, domain=None):
+def trick_page(trick_id):
     """ Лучшие пользователи по этому трюку """
     trick, trick_users = get_trick(trick_id, False)
-
-    if is_robot():
-        return {
-            'trick_users': trick_users,
-            'trick': db.trick.find_one({'_id': trick_id})
-        }
-
-    return json.dumps(trick_users)
+    return {
+        'trick_users': trick_users,
+        'trick': trick
+    }
 
 
 @app.route('/tricks/', methods=['GET'])

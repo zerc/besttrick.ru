@@ -367,7 +367,7 @@ TrickFullView = Backbone.View.extend({
         'click .trick_video_preview': 'load_video'
     },
 
-    template: new EJS({url: '/static/templates/trick_full.ejs'}),
+    template: new EJS({url: '/static/templates/trick_page.ejs'}),
 
     initialize: function (args) {
         _.bindAll(this, 'render', 'load_video');
@@ -390,13 +390,13 @@ TrickFullView = Backbone.View.extend({
         this.model.on('sync::full', this.render, this);
 
         $.ajax({
-            url: '/trick' + self.model.get('id') + '/',
+            url: '/tricks/trick' + self.model.get('id') + '/',
             dataType: 'json',
             success: function (response) {
                 var share_params = {};
 
                 self.$el.html(self.template.render({
-                    'users': response,
+                    'users': response.trick_users,
                     'trick': self.model,
                     'checktrick': self.checktrick
                 }));

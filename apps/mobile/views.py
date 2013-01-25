@@ -28,16 +28,6 @@ def mobile_tricks(*args, **context):
     return context
 
 
-@app.route('/trick<int:trick_id>/', methods=['GET'], subdomain="m")
-@render_to(template='mobile/trick.html')
-@adding_user
-def trick_page(trick_id, *args, **context):
-    """
-    Мобильная страница трюка
-    """
-    context['trick'], _ = get_trick(trick_id)
-    return context
-
 @app.route('/ido/', methods=['GET'], subdomain="m")
 @render_to(template='mobile/checkin_page.html')
 @adding_user

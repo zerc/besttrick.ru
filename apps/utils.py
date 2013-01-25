@@ -23,18 +23,26 @@ def render_to(template=None):
     def decorator(f):
         @wraps(f)
         def decorated_function(*args, **kwargs):
+            subdomain = subdomain_or_none(request.host)
+            ctx = f(*args, **kwargs) or {}
+            subdomain_to_folder = {'m': 'mobile/'}
+
+            if subdomain is None:
+                return json.dumps(ctx)
+
             template_name = template
             if template_name is None:
-                template_name = request.endpoint \
+                template_name = subdomain_to_folder.get(subdomain, '') + request.endpoint \
                     .replace('.', '/') + '.html'
-            ctx = f(*args, **kwargs)
-            if ctx is None:
-                ctx = {}
-            elif not isinstance(ctx, dict):
-                return ctx
+
             return render_template(template_name, **ctx)
         return decorated_function
     return decorator
+
+
+def subdomain_or_none(host):
+    parts = host.split('.')
+    return None if len(parts) <= 2 else parts[0]
 
 
 def is_mobile():

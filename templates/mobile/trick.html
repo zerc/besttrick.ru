@@ -1,7 +1,0 @@
-{% extends 'mobile/base.html' %}
-
-{% block content %}
-    <h2>{{ trick_title(trick) }}</h2>
-    <img src="{{ config.HOST }}/static/images/trick{{ trick._id }}-0.jpg">
-    <p>{{ trick.descr }}</p>
-{% endblock %}
