@@ -4,27 +4,35 @@ import simplejson as json
 from functools import wraps
 from mongokit import Document, DocumentMigration
 
-from flask import render_template, request, jsonify, session, url_for
+from flask import render_template, request, jsonify, session, url_for, g
 from project import app, connection, db
 from .utils import grouped_stats, get_user_rating, get_valid_cones_per_trick, redirect
 
 
-def adding_user(func):
-    """
-    Подсовывает в kwargs функции объект пользователя,
-    если тот авторизован, иначе - это просто False.
-    """
-    @wraps(func)
-    def wrapper(*args, **kwargs):
-        user_id = session.get('user_id')
+def get_user(user_id):
+    if user_id is None: return 
 
-        kwargs['user'] = get_user(user_id)
-        #TODO: инкапсулировать в пользователя
-        kwargs['user_admin_lvl'] = kwargs['user']['admin'] if kwargs['user'] else 0
+    user = db.user.find_one({'_id': int(user_id)})
 
-        return func(*args, **kwargs)
+    if not user:
+        return u'User with id = %d does not exists' % user_id, 404
 
-    return wrapper
+    user['id'] = user.pop('_id')
+
+    return user
+
+
+@app.before_request
+def before_request():
+    g.user = get_user(session.get('user_id', None))
+
+
+@app.context_processor
+def add_user():
+    return {
+        'user'          : g.user,
+        'user_json'     : json.dumps(g.user)
+    }
 
 
 def user_only(func):
@@ -193,8 +201,7 @@ def banned():
     return render_template('banned.html')
 
 
-@app.route('/login/', methods=['POST'], subdomain="<domain>")
-def login(domain):
+def login():
     url = "http://loginza.ru/api/authinfo?%s"
     params = urllib.urlencode({'token': request.form['token'], 'id': '', 'sig': ''})
     f = urllib.urlopen(url % params)
@@ -208,32 +215,25 @@ def login(domain):
     if user['banned']: return redirect('banned')
     
     session['user_id'] = user['_id']
-    return redirect('index', domain)
+
+    return redirect('index')
 
 
-
-@app.route('/logout/', methods=['GET'])
-@app.route('/logout/', methods=['GET'], subdomain="m")
 def logout():
     session.pop('user_id', None)
     return redirect('index')
 
 
 @app.route('/my/tricks/', methods=['GET'])
-@user_only
 def my_tricks():
-    user_id = session.get('user_id', False)
-    if user_id is False:
-        return 
-
-    rows = grouped_stats('trick', {'user': user_id})
+    rows = grouped_stats('trick', {'user': g.user['id']})
     return json.dumps(sorted(rows, key=lambda x: x['cones'], reverse=True))
 
 
 @app.route('/user/', methods=['PUT', 'GET'])
 @user_only
 def my():
-    user_id = session['user_id'] 
+    user = g.user
 
     if request.method == 'PUT':
         params = json.loads(unicode(request.data, 'utf-8'))
@@ -247,26 +247,21 @@ def my():
             except KeyError:
                 del params[p]
 
-        db.user.update({'_id': user_id}, {'$set': params})
+        db.user.update({'_id': user.id}, {'$set': params})
         
         return '{"success":1}'
 
-    user = db.user.find_one({'_id': user_id})
-    user['rating'] = get_user_rating(user_id)
+    user = db.user.find_one({'_id': user.id})
+    user['rating'] = get_user_rating(user.id)
     return json.dumps(user)
 
 
-@app.route('/profile/<user_id>/')
+@app.route('/profile/<int:user_id>/')
 def user_profile(user_id):
     context = {}
 
-    try:
-        user = db.user.find_one({'_id': int(user_id)})
-        if not user: raise TypeError
-    except TypeError:
-        return 'Unknow user', 403
-
-    user['rating'] = get_user_rating(user['_id'])
+    user = get_user(user_id)
+    user['rating'] = get_user_rating(user_id)
     context['user'] = clean_fields(user)
 
     user_tricks = grouped_stats('trick', {'user': int(user_id)})

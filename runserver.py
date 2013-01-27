@@ -1,94 +1,33 @@
 #!venv/bin/python
 # -*- coding: utf-8 -*-
-import re
-import simplejson as json
-
-from flask import g, Flask, render_template, request, session, make_response, jsonify, url_for, redirect
-from mongokit import Connection
-
-# window hack
-try:
-    from flaskext.mail import Message, email_dispatched
-    from project import mail
-except ImportError:
-    Message, email_dispatched = None, None
-
 from project import app, connection, db, markdown
-from apps import tricks as tricks_view, users as users_view, utils, admin, mobile
+from apps import tricks, users, utils, admin, bt
+
+url = app.add_url_rule
 
 
-@app.route('/')
-@users_view.adding_user
-def index(*args, **context):
-    """
-    Главная страница.
-    Собирает context для рендера в шаблон страницы (index.html)
-    
-    Выполняет отложенные действия, т.е. те действия,
-    которые были сохранены в куки, пока пользователь 
-    был неавторизован. (Например чекин неавторизованного пользователя)
-    """
-    # проверим есть ли чекины от пользователя, когда он был неавторизован?
-    if context['user'] and request.cookies.get('trick'):
-        try:
-            tricks_view.update_checktrick_from_cookie(context['user']['id'])
-        except BaseException:
-            """ pokemon exception handler - im bad black ass :p """
-            #raise
+url('/',                        'index',            bt.index)
+url('/',                        'mobile_index',     bt.m_index,         subdomain='m')
+url('/pown/<int:user_id>/',     'pown',             bt.pown,            methods=['GET'])
+url('/pown/<int:user_id>/',     'pown',             bt.pown,            subdomain='m', methods=['GET'])
+url('/feedback/',               'feedback',         bt.feedback,        methods=['POST'])
+url('/youtube_reciver/',        'youtube_reciver',  bt.youtube_reciver, methods=['POST'])
 
-    tricks = tricks_view.get_tricks(*args, **context)
-    tags   = tricks_view.get_tags(*args, tricks=tricks)
+url('/login/',                  'login',            users.login,        methods=['POST'])
+url('/login/',                  'login',            users.login,        methods=['POST'], subdomain="m")
 
-    context.update({
-        'user'   : json.dumps(context['user']),
-        'tricks' : json.dumps(tricks),
-        'tags'   : json.dumps(tags)
-    })
-
-    r = render_template('index.html', **context)
-    response = make_response(r)
-    response.headers['X-Frame-Options'] = 'SAMEORIGIN'
-    
-    return response
+url('/logout/',                  'logout',          users.logout,        methods=['GET'])
+url('/logout/',                  'logout',          users.logout,        methods=['GET'], subdomain="m")
 
 
-@app.route('/feedback/', methods=['POST'])
-def feedback():
-    body = u'\n'.join(['%s:%s' % (k,v) for k, v in request.form.items()])
-    if Message:
-        msg = Message(u"Feedback", recipients=app.config['ADMINS'])
-        msg.body = body
-        mail.send(msg)
-    else:
-        print body
-    return 'Ok'
-
-
-@app.route('/youtube_reciver/')
-def youtube_reciver():
-    """
-    Просто принимаем ответ от ютуба и переводим его в json
-    """
-    return jsonify(request.args)
-
-
-@app.route('/pown/<int:user_id>/', methods=['GET'])
-@app.route('/pown/<int:user_id>/', methods=['GET'], subdomain="m")
-def pown(user_id, domain=None):
-    """
-    Авторизация по указанному user_id. Исключительно в отладочных целях и на локальной копии.
-    """
-    if not app.config.get('LOCAL'):
-        return 'Only for local use', 403
-
-    user = db.user.find_one({'_id': user_id})
-
-    if not user:
-        return u'User with id = %d does not exists' % user_id, 404
-
-    session['user_id'] = user[u'_id']
-
-    return redirect('http://%s' % request.host)
+### Trick urls
+url('/tricks/',                             'tricks',                   tricks.tricks_list)
+url('/tricks/',                             'mobile_tricks',            tricks.tricks_list, subdomain='m')
+url('/tricks/trick<int:trick_id>/',         'tricks_trick',             tricks.trick_page, methods=['GET'])
+url('/tricks/trick<int:trick_id>/',         'mobile_tricks_trick',      tricks.trick_page, methods=['GET'], subdomain='m')
+url('/tricks/trick<int:trick_id>/check/',   'tricks_check',             tricks.check, methods=['PUT'])
+url('/check/',                              'mobile_checkin_page',      tricks.checkin_page, methods=['GET', 'POST'], subdomain='m')
+url('/prepare_youtube_upload/',             'prepare_youtube_upload',   tricks.prepare_youtube_upload, methods=['GET'])
 
 
 if __name__ == '__main__':

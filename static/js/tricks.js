@@ -23,8 +23,6 @@ ya_share_params = {
 
 /*** Модели и коллекции ***/
 window.BTTricks.Trick = Trick = Backbone.Model.extend({
-    url: '/checktrick/',
-
     defaults: {
         _id         : '',
         title       : '',
@@ -46,6 +44,10 @@ window.BTTricks.Trick = Trick = Backbone.Model.extend({
         best_user       : '',
         best_user_cones : 0,
         users_full      : []
+    },
+
+    url: function () {
+        return '/tricks/trick' + this.get('id') + '/check/';
     },
 
     validate: function (attrs, a,b,c) {
@@ -86,7 +88,11 @@ window.BTTricks.Trick = Trick = Backbone.Model.extend({
 
 window.BTTricks.TricksList = TricksList = Backbone.Collection.extend({
     url: '/tricks/',
-    model: Trick
+    model: Trick,
+
+    parse: function(resp, xhr) {
+      return resp.tricks_list;
+    },
 });
 
 

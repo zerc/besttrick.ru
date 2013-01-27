@@ -7,7 +7,7 @@ from functools import wraps
 from project import app, db
 
 from flask import render_template, request, make_response, url_for, redirect as flask_redirect
-
+from werkzeug.wrappers import BaseResponse
 
 def redirect(path, subdomain=""):
     #TODO: doit more complex
@@ -25,6 +25,10 @@ def render_to(template=None):
         def decorated_function(*args, **kwargs):
             subdomain = subdomain_or_none(request.host)
             ctx = f(*args, **kwargs) or {}
+
+            if isinstance(ctx, BaseResponse):
+                return ctx
+
             subdomain_to_folder = {'m': 'mobile/'}
 
             if subdomain is None:
@@ -32,8 +36,7 @@ def render_to(template=None):
 
             template_name = template
             if template_name is None:
-                template_name = subdomain_to_folder.get(subdomain, '') + request.endpoint \
-                    .replace('.', '/') + '.html'
+                template_name = subdomain_to_folder.get(subdomain, '') + f.__name__ + '.html'
 
             return render_template(template_name, **ctx)
         return decorated_function

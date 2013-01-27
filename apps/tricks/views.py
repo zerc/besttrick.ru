@@ -2,29 +2,24 @@
 import simplejson as json
 from gdata import media, youtube
 
-from flask import render_template, request, jsonify, session, redirect, url_for, make_response, flash
+from flask import render_template, request, jsonify, session, redirect, url_for, make_response, flash, g
 from flask.views import View
 from project import app, connection, db, markdown
 
 from apps.utils import grouped_stats, allow_for_robot, is_robot, render_to
-from apps.users import user_only, adding_user, get_user
+from apps.users import user_only, get_user
 
 from .base import yt_service, checkin_user, checkin_user, get_tricks, get_best_results
 
 
-@app.route('/prepare_youtube_upload/', methods=['GET'])
-@adding_user
 @user_only
 def prepare_youtube_upload(*args, **kwargs):
     """
     Обращается к YouTube чтобы получить url загрузки видео,
     который будет использоваться в форме на сайте.
     """
-
     if yt_service is None:
         return 'YouTube is unavilible now', 403
-
-    user = kwargs['user']
 
     try:
         trick_id = int(request.args['trick_id'])
@@ -38,7 +33,7 @@ def prepare_youtube_upload(*args, **kwargs):
     # create media group as usual
     my_media_group = media.Group(
         title=media.Title(text = u'Besttrick video: %s' %  trick['title']),
-        description=media.Description(description_type = 'plain', text = u'Raider: %s' % user['nick']),
+        description=media.Description(description_type = 'plain', text = u'Raider: %s' % g.user['nick']),
         keywords=media.Keywords(text=u", ".join(trick['tags'])),
         category=[media.Category(text='Sports', scheme='http://gdata.youtube.com/schemas/2007/categories.cat', label=u'Спорт')],
         player=None
@@ -56,18 +51,13 @@ def prepare_youtube_upload(*args, **kwargs):
     return jsonify({'post_url': post_url, 'token': token})
 
 
-@app.route('/checktrick/', methods=['PUT'])
-@adding_user
 @user_only
-def checktrick(*args, **kwargs):
+def check(trick_id, *args, **kwargs):
     """
     Вью выполняет чекин пользователя.
     TODO: разбить функцию на более мелкие и прояснить логику.
     """
-    user_id = kwargs['user']['id']
-
     trick_data = json.loads(unicode(request.data, 'utf-8'))
-    trick_data['_id'] = trick_id = int(trick_data.pop('id'))
 
     try:
         trick_data['cones'] = int(trick_data['cones'])
@@ -80,12 +70,40 @@ def checktrick(*args, **kwargs):
         'approved'  : 0,
     }
 
-    checkin_result = checkin_user(trick_id, user_id, update_data)
+    checkin_result = checkin_user(trick_id, g.user.id, update_data)
 
     if isinstance(checkin_result, tuple):
         return checkin_result
 
     return json.dumps(get_best_results(trick_id))
+
+
+@render_to()
+@user_only
+def checkin_page(*args, **context):
+    """
+    Мобильная страничка чекина.
+    """
+    if request.method == 'GET':
+        context.update({
+            'tricks': get_tricks(simple=True),
+        })
+
+        return context
+
+    #TODO объеденить в функцией checktrick
+    form_data = request.form.to_dict()
+    trick_id = form_data.pop('trick_id')
+    
+    checkin_result = checkin_user(trick_id, g.user['id'], form_data)
+
+    if isinstance(checkin_result, tuple):
+        flash(checkin_result[0], 'error')
+    else:
+        flash(u'Вы успешно зачекинились', 'success')
+
+    return redirect(url_for('mobile_checkin_page'))
+
 
 
 def get_trick(trick_id, simple=True):
@@ -103,25 +121,22 @@ def get_trick(trick_id, simple=True):
     return db.trick.find_one({'_id': trick_id}), rows
 
     
-@app.route('/tricks/trick<int:trick_id>/', methods=['GET'])
-@app.route('/tricks/trick<int:trick_id>/', methods=['GET'], subdomain="m")
 @render_to()
 @allow_for_robot
 def trick_page(trick_id):
     """ Лучшие пользователи по этому трюку """
     trick, trick_users = get_trick(trick_id, False)
+    
     return {
-        'trick_users': trick_users,
-        'trick': trick
+        'trick'       : trick,
+        'trick_users' : trick_users
     }
 
 
-@app.route('/tricks/', methods=['GET'])
-@adding_user
+@render_to()
 def tricks_list(*args, **kwargs):
     """
     Возврващет список трюков в формате json.
     Используюется в качеству url для коллекции трюков со стороны js.
     """
-    tricks = get_tricks(*args, **kwargs)
-    return json.dumps(tricks)
+    return {'tricks_list': get_tricks(*args, **kwargs)}
