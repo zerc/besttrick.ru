@@ -70,7 +70,7 @@ def check(trick_id, *args, **kwargs):
         'approved'  : 0,
     }
 
-    checkin_result = checkin_user(trick_id, g.user.id, update_data)
+    checkin_result = checkin_user(trick_id, g.user['id'], update_data)
 
     if isinstance(checkin_result, tuple):
         return checkin_result
