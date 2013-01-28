@@ -201,7 +201,6 @@ def import_tricks(options):
         _id, trick = args
         old_id = "-".join(filter(None, (slugify(trick['title']), trick.get('direction', '')[:1])))
         trick['thumb'] = u'trick%s-%s.jpg' % (_id, trick.get('thumb', '3'))
-        print db.seqs.find_and_modify({"_id": "tricks_seq"}, {"$inc": {"val": 1}}), old_id
 
         if db.trick.find_one({'_id': _id}):
             db.trick.update({'_id': _id}, {'$set': trick})

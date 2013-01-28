@@ -8,7 +8,7 @@ from urllib import unquote
 from httplib import socket
 from gdata.youtube import service
 
-from flask import request
+from flask import request, g
 
 from project import app, connection, db, markdown
 from apps.notify import send_notify, CHECKTRICK_WITH_VIDEO
@@ -64,7 +64,7 @@ def get_tricks(*args, **kwargs):
     """
     #TODO: вероятно разделить эту функцию на 3 либо использовать ООП
     tricks = db.trick.find().sort("_id", 1)
-    user_id = kwargs['user']['id'] if kwargs.get('user') else False
+    user_id = g.user['id'] if g.user else False # по идее функция не должна знать про это!
 
     best_users, user_stats = {}, {}
 
