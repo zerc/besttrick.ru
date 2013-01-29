@@ -2,12 +2,13 @@
 # -*- coding: utf-8 -*-
 from project import app, connection, db, markdown
 from apps import tricks, users, utils, admin, bt
+from flask import render_template
 
 url = app.add_url_rule
 
 
 url('/',                        'index',            bt.index)
-url('/',                        'mobile_index',     bt.m_index,         subdomain='m')
+url('/',                        'mobile_index',     lambda: render_template('mobile/index.html'),         subdomain='m')
 url('/pown/<int:user_id>/',     'pown',             bt.pown,            methods=['GET'])
 url('/pown/<int:user_id>/',     'pown',             bt.pown,            subdomain='m', methods=['GET'])
 url('/feedback/',               'feedback',         bt.feedback,        methods=['POST'])

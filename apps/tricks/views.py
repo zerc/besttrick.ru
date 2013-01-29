@@ -9,7 +9,7 @@ from project import app, connection, db, markdown
 from apps.utils import grouped_stats, allow_for_robot, is_robot, render_to
 from apps.users import user_only, get_user
 
-from .base import yt_service, checkin_user, checkin_user, get_tricks, get_best_results
+from .base import yt_service, checkin_user, checkin_user, get_tricks, get_trick, get_best_results
 
 
 @user_only
@@ -104,23 +104,7 @@ def checkin_page(*args, **context):
 
     return redirect(url_for('mobile_checkin_page'))
 
-
-
-def get_trick(trick_id, simple=True):
-    trick_id = int(trick_id)
-    rows = []
-
-    if simple is False:
-        rows = grouped_stats('user', {'trick': trick_id})
-    
-        for row in rows:
-            row['user'] = get_user(user_dict=row['user'])
-
-        rows = sorted(rows, key=lambda x: x['cones'], reverse=True)
-
-    return db.trick.find_one({'_id': trick_id}), rows
-
-    
+  
 @render_to()
 @allow_for_robot
 def trick_page(trick_id):

@@ -6,17 +6,8 @@ from functools import wraps
 
 from project import app, db
 
-from flask import render_template, request, make_response, url_for, redirect as flask_redirect
+from flask import render_template, request, make_response, url_for
 from werkzeug.wrappers import BaseResponse
-
-def redirect(path, subdomain=""):
-    #TODO: doit more complex
-    full_path = url_for(path, _external=True)
-    
-    if subdomain:
-        full_path = full_path.replace('//', '//%s.' % subdomain)
-
-    return flask_redirect(full_path)
 
 
 def render_to(template=None):

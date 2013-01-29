@@ -13,6 +13,7 @@ from flask import request, g
 from project import app, connection, db, markdown
 from apps.notify import send_notify, CHECKTRICK_WITH_VIDEO
 from apps.users import get_user
+from apps.utils import grouped_stats
 
 ### авторизуемся на ютубе, чтобы заливать видосы
 try:
@@ -50,6 +51,21 @@ def get_tags(*args, **kwargs):
                 continue # тэг отключен
 
     return tags
+
+
+def get_trick(trick_id, simple=True):
+    trick_id = int(trick_id)
+    rows = []
+
+    if simple is False:
+        rows = grouped_stats('user', {'trick': trick_id})
+    
+        for row in rows:
+            row['user'] = get_user(user_dict=row['user'])
+
+        rows = sorted(rows, key=lambda x: x['cones'], reverse=True)
+
+    return db.trick.find_one({'_id': trick_id}), rows
 
 
 def get_tricks(*args, **kwargs):

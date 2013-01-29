@@ -21,12 +21,6 @@ import tricks as tricks_view
 import users as users_view
 import utils, admin
 
-@utils.render_to(template='mobile/index.html')
-def m_index(*args, **context):
-    """
-    Мобильная стартовая страничка
-    """
-    return context
 
 def index(*args, **context):
     """
@@ -38,7 +32,8 @@ def index(*args, **context):
     был неавторизован. (Например чекин неавторизованного пользователя)
     """
     # проверим есть ли чекины от пользователя, когда он был неавторизован?
-    user = users_view.get_user()
+    user = g.user
+
     if user and request.cookies.get('trick'):
         try:
             tricks_view.update_checktrick_from_cookie(user['_id'])
