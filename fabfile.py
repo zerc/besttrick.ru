@@ -1,8 +1,12 @@
 #!venv/bin/python
 # -*- coding: utf-8 -*-
+import unittest as ut
 from fabric.api import *
-from project import app
+
 from os.path import join as path_join
+
+from runserver import app
+from apps.tricks import tests as tricks_tests
 
 
 env.hosts = _app.config['FLASK_HOSTS']
@@ -59,3 +63,15 @@ def pulldb():
         mongorestore --drop dump && 
         rm dump.zip images.zip
     """)
+
+
+def run_tests():
+    """
+    Запускает тесты для каждого модуля
+    """
+    tricks_tests.TricksTestCase.app = app
+
+    suite = ut.TestLoader().loadTestsFromTestCase(tricks_tests.TricksTestCase)
+    ut.TextTestRunner(verbosity=1).run(suite)
+
+
