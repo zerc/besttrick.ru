@@ -2,7 +2,7 @@
 from datetime import datetime
 
 from mongokit import Document, DocumentMigration, ObjectId
-from project import db, app, connection
+from project import app
 
 ### HACK: for windows 
 try:
@@ -35,7 +35,7 @@ class Notice(Document):
     }
     default_values  = {'status': NOT_PROCESSES, 'time_added': datetime.now}
     required_fields = ['notice_type', 'data']
-connection.register([Notice])
+app.connection.register([Notice])
 
 
 # TODO: задумывалась как общая функция рассылки
@@ -50,7 +50,7 @@ def send_notify(notify_type, data, status=NOT_PROCESSES):
     if notify_type != 0:
         raise NotImplemented(u'%s notify does not support yet')
 
-    # notice = connection.Notice()
+    # notice = app.connection.Notice()
     # notice.update({'notice_type': notify_type, 'data': data, 'status': status})
     # notice.save()
 
@@ -62,7 +62,7 @@ def send_notify(notify_type, data, status=NOT_PROCESSES):
     <a href="%(video_url)s" target="_blank">%(video_url)s</a>
     <p>Отмодерировать это дело можно в админке: <a href="%(admin_url)s" target="_blank">%(admin_url)s</a></a>
     """ % {
-        'username'  : db.user.find_one({"_id": data["user"]})['nick'],
+        'username'  : app.db.user.find_one({"_id": data["user"]})['nick'],
         'trickname' : data['trickname'],
         'video_url' : data['video_url'],
         'admin_url' : app.config['HOST'] + '/#admin/videos/'

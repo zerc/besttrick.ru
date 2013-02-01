@@ -11,7 +11,7 @@ import urllib
 import simplejson as json
 
 from flask import render_template, request, session, url_for, g, redirect
-from project import app, db
+from project import app
 from apps.utils import grouped_stats, get_user_rating
 from .base import *
 
@@ -43,7 +43,7 @@ def login():
         raise TypeError(u'Loginza response code = %s' % f.getcode())
 
     user_data = json.loads(unicode(f.read(), 'utf-8'))
-    user = db.user.find_one({'identity': user_data['identity']}) or register(user_data)
+    user = app.db.user.find_one({'identity': user_data['identity']}) or register(user_data)
 
     if user['banned']: return redirect(url_for('banned'))
     
@@ -81,11 +81,11 @@ def my():
             except KeyError:
                 del params[p]
 
-        db.user.update({'_id': user.id}, {'$set': params})
+        app.db.user.update({'_id': user.id}, {'$set': params})
         
         return '{"success":1}'
 
-    user = db.user.find_one({'_id': user.id})
+    user = app.db.user.find_one({'_id': user.id})
     user['rating'] = get_user_rating(user.id)
     return json.dumps(user)
 
@@ -107,23 +107,23 @@ def user_profile(user_id):
 @app.route('/rating/', methods=['GET'])
 def top_users():
     tricks_scores = {}
-    for trick in db.trick.find():
+    for trick in app.db.trick.find():
         tricks_scores[trick['_id']] = trick['score']
 
     def _(user):
         return get_user(user_dict=user)
 
-    users = map(_, db.user.find({'banned': False}))
+    users = map(_, app.db.user.find({'banned': False}))
     return json.dumps(sorted(users, key=lambda user: user['rating'], reverse=True))
 
 
 @app.route('/users/', methods=['GET'])
 @user_only
 def list_of_users():
-    is_admin = not not db.user.find_one({'_id': session['user_id']})['admin']
+    is_admin = not not app.db.user.find_one({'_id': session['user_id']})['admin']
 
     def _(user):
         user['id'] = user.pop('_id')
         return user if is_admin else clean_fields(user)
 
-    return json.dumps([_(dict(user)) for user in db.user.find().sort("_id", -1)])
+    return json.dumps([_(dict(user)) for user in app.db.user.find().sort("_id", -1)])

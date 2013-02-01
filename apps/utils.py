@@ -4,7 +4,7 @@ from pytils.numeral import get_plural
 import simplejson as json
 from functools import wraps
 
-from project import app, db
+from project import app
 
 from flask import render_template, request, make_response, url_for
 from werkzeug.wrappers import BaseResponse
@@ -70,9 +70,9 @@ def grouped_stats(key, _filter):
 
     rows = []
     defaults = {key: '', 'cones': 0, 'video_url': '', 'approved': 0}
-    for x in db.trick_user.group([key], _filter, defaults, reduce_func):
+    for x in app.db.trick_user.group([key], _filter, defaults, reduce_func):
         # HACK для потдтягивания данных по id
-        x[key] = db[key].find_one({'_id': x[key]})
+        x[key] = app.db[key].find_one({'_id': x[key]})
         rows.append(x)
 
     return rows
@@ -85,7 +85,7 @@ def get_user_rating(user_id):
     """
     cones_per_trick = get_valid_cones_per_trick(user_id)
 
-    for trick in db.trick.find({'_id': {'$in': cones_per_trick.keys()}}):
+    for trick in app.db.trick.find({'_id': {'$in': cones_per_trick.keys()}}):
         cones_per_trick[trick['_id']] *= trick['score']
 
     return float('%.2f' % sum(cones_per_trick.values()))
@@ -98,7 +98,7 @@ def get_valid_cones_per_trick(user_id):
     """
     grouped_data = {}
 
-    for trick_user in db.trick_user.find({"user": user_id}):
+    for trick_user in app.db.trick_user.find({"user": user_id}):
         if trick_user.get(u'video_url') and trick_user.get(u'approved') == 1:
             grouped_data[trick_user['trick']] = trick_user['cones'] * (1 if trick_user['cones'] > 3 else 1.2)
         else:

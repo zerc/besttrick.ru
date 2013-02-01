@@ -13,16 +13,31 @@ except ImportError:
     Mail, email_dispatched, mail_on_500 = None, None, None
 
 
-app = Flask(__name__)
+class MyFlask(Flask):
+    def __init__(self, *args, **kwargs):
+        super(MyFlask, self).__init__(*args, **kwargs)
+        self._db, self._connection = None, None
+
+    @property # TODO: cached proprty decorator
+    def connection(self):
+        if not self._connection:
+            self._connection = Connection(self.config['MONGODB_HOST'], self.config['MONGODB_PORT'])
+        return self._connection
+
+    @property
+    def db(self):
+        if not self._db:
+            self._db = getattr(self.connection, self.config['MONGODB_DB'])
+        return self._db
+
+
+app = MyFlask(__name__)
 app.root_path = '/'.join(app.root_path.split('/')[:-1])
 app.config.from_object('project.settings')
 
 if mail_on_500: mail_on_500(app, app.config['ADMINS'])
 
 markdown = Markdown(app)
-
-connection = Connection(app.config['MONGODB_HOST'], app.config['MONGODB_PORT'])
-db = connection.besttrick
 
 assets = Environment(app)
 JS_LIBS = (

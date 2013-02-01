@@ -7,7 +7,6 @@ import re
 import simplejson as json
 
 from flask import g, Flask, render_template, request, session, make_response, jsonify, url_for, redirect
-from mongokit import Connection
 
 # window hack
 try:
@@ -16,7 +15,7 @@ try:
 except ImportError:
     Message, email_dispatched = None, None
 
-from project import app, connection, db, markdown
+from project import app, markdown
 import tricks as tricks_view
 import users as users_view
 import utils, admin

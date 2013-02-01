@@ -8,7 +8,7 @@ from optparse import OptionParser
 
 from apps.users import User
 from apps.tricks import Trick
-from project import connection, db, app
+from project import db, app
 
 # Kazachok        0.6
 # Korean Spin     0.6
@@ -59,7 +59,7 @@ def tags(options):
     ]
 
     for t in data:
-        tag = connection.Tag()
+        tag = app.connection.Tag()
         tag.update(t)
         tag.save()
 
@@ -208,7 +208,7 @@ def import_tricks(options):
                 _download_thumbs(_id, trick['videos'])
             return
 
-        t = connection.Trick()
+        t = app.connection.Trick()
         t.update(trick)
         t['_id'] = _id
         t.save()

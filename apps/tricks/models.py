@@ -5,7 +5,7 @@ from datetime import datetime
 from mongokit import Document, DocumentMigration
 from mongokit.schema_document import ValidationError
 
-from project import app, connection, db
+from project import app
 
 
 ### Validators
@@ -38,8 +38,8 @@ class Trick(Document):
     default_values  = {'thumb': u'3', 'score': 1.0, 'wssa_score': 0.0}
     required_fields = ['title']
     indexes = [{'fields': ['tags']}]
-connection.register([Trick])
-db.seqs.insert({'_id': 'tricks_seq',  'val': 0})
+app.connection.register([Trick])
+app.db.seqs.insert({'_id': 'tricks_seq',  'val': 0})
 
 
 class TrickUser(Document):
@@ -63,7 +63,7 @@ class TrickUser(Document):
         'cones'     : positive_integer,
         'video_url' : is_youtube_link,
     }
-connection.register([TrickUser])
+app.connection.register([TrickUser])
 
 
 class Tag(Document):
@@ -76,4 +76,4 @@ class Tag(Document):
     }
     default_values  = {'major': False}
     required_fields = ['title']
-connection.register([Tag])
+app.connection.register([Tag])

@@ -10,7 +10,7 @@
 from functools import wraps
 
 from flask import g, redirect
-from project import app, connection, db
+from project import app
 from apps.utils import get_user_rating
 
 
@@ -64,7 +64,7 @@ def register(user_data):
     if not user_data.get(u'nickname'):
         user_data[u'nickname'] = u' '.join([user_data['name'].get('first_name', ''), user_data['name'].get('last_name')])
 
-    new_user = connection.User()
+    new_user = app.connection.User()
     for k, t in User.structure.items():
         if k == 'admin':
             continue
@@ -74,7 +74,7 @@ def register(user_data):
         except KeyError:
             continue
 
-    new_user['_id'] = db.seqs.find_and_modify({"_id": "user_seq"}, {"$inc": {"val": 1}})['val']
+    new_user['_id'] = app.db.seqs.find_and_modify({"_id": "user_seq"}, {"$inc": {"val": 1}})['val']
     new_user.save()
     return new_user
 
@@ -86,7 +86,7 @@ def get_user(user_id=None, full=False, user_dict=None):
     а использует эти данные.
     """
     if user_dict is None:
-        user = db.user.find_one({'_id': user_id}) or False
+        user = app.db.user.find_one({'_id': user_id}) or False
         if user is False: return False
     else:
         user = user_dict

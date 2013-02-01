@@ -9,7 +9,7 @@
 """
 from mongokit import Document, DocumentMigration
 
-from project import app, connection, db
+from project import app
 from apps.utils import grouped_stats, get_user_rating
 
 
@@ -79,5 +79,5 @@ class User(Document):
     default_values  = {'admin': 0, 'banned': False}
     required_fields = ['identity', 'provider', 'nick']
     migration_handler = UserMigration
-connection.register([User])
-db.seqs.insert({'_id': 'user_seq',  'val': 0})
+app.connection.register([User])
+app.db.seqs.insert({'_id': 'user_seq',  'val': 0})

@@ -4,7 +4,7 @@ from gdata import media, youtube
 
 from flask import render_template, request, jsonify, session, redirect, url_for, make_response, flash, g
 from flask.views import View
-from project import app, connection, db, markdown
+from project import app, markdown
 
 from apps.utils import grouped_stats, allow_for_robot, is_robot, render_to
 from apps.users import user_only, get_user
@@ -26,7 +26,7 @@ def prepare_youtube_upload(*args, **kwargs):
     except (KeyError, TypeError, ValueError):
         return 'Bad trick_id', 403
 
-    trick = db.trick.find_one({'_id': trick_id})
+    trick = app.db.trick.find_one({'_id': trick_id})
     if not trick:
         return 'Unknow trick with id = %s' % trick_id, 403
 
@@ -123,4 +123,5 @@ def tricks_list(*args, **kwargs):
     Возврващет список трюков в формате json.
     Используюется в качеству url для коллекции трюков со стороны js.
     """
+    print getattr(app, 'test_a', 'False')
     return {'tricks_list': get_tricks(*args, **kwargs)}

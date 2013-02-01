@@ -10,7 +10,7 @@ from gdata.youtube import service
 
 from flask import request, g
 
-from project import app, connection, db, markdown
+from project import app, markdown
 from apps.notify import send_notify, CHECKTRICK_WITH_VIDEO
 from apps.users import get_user
 from apps.utils import grouped_stats
@@ -36,7 +36,7 @@ def get_tags(*args, **kwargs):
     tags = {}
     tricks = kwargs.get('tricks', [])
 
-    for tag in db.tag.find({'major': {'$ne': True}}):
+    for tag in app.db.tag.find({'major': {'$ne': True}}):
         tag[u'tricks'] = []
         tags[tag.pop(u'_id')] = tag
 
@@ -65,7 +65,7 @@ def get_trick(trick_id, simple=True):
 
         rows = sorted(rows, key=lambda x: x['cones'], reverse=True)
 
-    return db.trick.find_one({'_id': trick_id}), rows
+    return app.db.trick.find_one({'_id': trick_id}), rows
 
 
 def get_tricks(*args, **kwargs):
@@ -79,7 +79,7 @@ def get_tricks(*args, **kwargs):
     Если передан аргумент simple - просто список трюков возвращает.
     """
     #TODO: вероятно разделить эту функцию на 3 либо использовать ООП
-    tricks = db.trick.find().sort("_id", 1)
+    tricks = app.db.trick.find().sort("_id", 1)
     user_id = g.user['id'] if g.user else False # по идее функция не должна знать про это!
 
     best_users, user_stats = {}, {}
@@ -95,7 +95,7 @@ def get_tricks(*args, **kwargs):
                 prev.cones = obj.cones;
                 prev.video_url = obj.video_url;
             }"""
-            user_stats_qs = db.trick_user.group(['trick'], {'user': user_id}, {'cones': 0, 'video_url': ''}, reduce_func)
+            user_stats_qs = app.db.trick_user.group(['trick'], {'user': user_id}, {'cones': 0, 'video_url': ''}, reduce_func)
 
             for x in user_stats_qs:
                 k = x.pop(u'trick')
@@ -144,7 +144,7 @@ def get_best_results(trick_id=None, user_id=False):
 
     defaults = {'best_user_cones': 0, 'best_user_id': '', 'users': [], 'user_do_this': False}
     _filter = {'trick': trick_id} if trick_id else None
-    best_result = db.trick_user.group(['trick'], _filter, defaults, reduce_func)
+    best_result = app.db.trick_user.group(['trick'], _filter, defaults, reduce_func)
 
     for result in best_result:
         result.update({
@@ -190,13 +190,13 @@ def checkin_user(trick_id, user_id, update_data):
     except ValueError:
         return 'Number of cones must be are integer', 400
 
-    trick = db.trick.find_one({'_id': trick_id})
+    trick = app.db.trick.find_one({'_id': trick_id})
     if not trick:
         return u'Unknow trick with id = %s' % trick_id, 400
 
     def _checkin(update_data):
         update_data.update({'user': user_id, 'trick': trick_id})
-        trick_user = connection.TrickUser()
+        trick_user = app.connection.TrickUser()
         trick_user.update(update_data)
         trick_user.save()
         send_notice_about_video(trick, user_id, update_data)
@@ -204,7 +204,7 @@ def checkin_user(trick_id, user_id, update_data):
 
     # выбираем последний лучший результат
     try:
-        prev_checkin = db.trick_user.find({'user': user_id, 'trick': trick_id}).sort('cones', -1).next()
+        prev_checkin = app.db.trick_user.find({'user': user_id, 'trick': trick_id}).sort('cones', -1).next()
     except StopIteration:
         return _checkin(update_data)
 
@@ -214,7 +214,7 @@ def checkin_user(trick_id, user_id, update_data):
 
     # пользоавтель добавил видос - припишем его к старому чекину
     if prev_checkin['cones'] == update_data['cones']:
-        db.trick_user.update({'user': user_id, 'trick': trick_id}, {'$set': update_data})
+        app.db.trick_user.update({'user': user_id, 'trick': trick_id}, {'$set': update_data})
         send_notice_about_video(trick, user_id, update_data)
         return update_data
 

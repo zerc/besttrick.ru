@@ -9,7 +9,7 @@ from functools import wraps
 from flask import request, session, jsonify, escape, Markup
 from mongokit import ObjectId
 
-from project import app, db, connection
+from project import app
 from .tricks import Trick as TrickModel
 
 
@@ -23,7 +23,7 @@ def stuff_only(func):
         if user_id is False:
             return 'Access Deny', 403
 
-        user = db.user.find_one({'_id': user_id})
+        user = app.db.user.find_one({'_id': user_id})
 
         if not user or user.get('admin', 0) <= 0:
             return 'Access Deny', 403
@@ -88,10 +88,10 @@ def add_trick():
         except ValueError:
             return 'Invalid trick id', 400
     elif request.method == 'POST':
-        trick_data['_id'] = db.seqs.find_and_modify({"_id": "tricks_seq"}, {"$inc": {"val": 1}})['val']
+        trick_data['_id'] = app.db.seqs.find_and_modify({"_id": "tricks_seq"}, {"$inc": {"val": 1}})['val']
     
     if request.method == 'DELETE':
-        db.trick.remove({'_id': trick_data['_id']})
+        app.db.trick.remove({'_id': trick_data['_id']})
         # TODO: удаление картинок и связанных данных
         return json.dumps({'success': '1'})
     
@@ -106,7 +106,7 @@ def add_trick():
         trick_data[field] = Markup(trick_data[field]).unescape()
         trick_data[field] = escape(trick_data[field])
 
-    new_trick = connection.Trick()
+    new_trick = app.connection.Trick()
     new_trick.update(trick_data)
 
     # меняем тумбу, если поле содержит порядковый номер, а не урл
@@ -133,7 +133,7 @@ def get_checkins_count():
     Возвращает кол-во чекинов с неотмодерированным видео.
     """
     cond = {"$where": "this.video_url && this.approved === 0"}
-    return '{"success": 1, "count": %s}' % db.trick_user.find(cond).count()
+    return '{"success": 1, "count": %s}' % app.db.trick_user.find(cond).count()
 
 
 @app.route('/admin/checkin/<checkin_id>/', methods=['PUT'])
@@ -144,7 +144,7 @@ def checkin(checkin_id):
     """
     data = json.loads(unicode(request.data, 'utf-8'))
     update = {"$set": {'approved': data['approved']}}
-    db.trick_user.update({"_id": ObjectId(checkin_id)}, update)
+    app.db.trick_user.update({"_id": ObjectId(checkin_id)}, update)
     return request.data
 
 
@@ -154,15 +154,15 @@ def checkins():
     """
     Список чекинов на модерацию.
     """
-    checkins = db.trick_user.find({"$where": "this.video_url"}).sort('time_added', -1)
+    checkins = app.db.trick_user.find({"$where": "this.video_url"}).sort('time_added', -1)
 
     def _(checkin):
         checkin['id'] = '%s' % checkin.pop('_id')
         checkin['time_added'] = '%s' % checkin['time_added']
 
         # подсасываем кое-какие данные
-        checkin['username'] = db.user.find_one({'_id': checkin['user']})['nick']
-        checkin['trick_title'] = db.trick.find_one({'_id': checkin['trick']})['title']
+        checkin['username'] = app.db.user.find_one({'_id': checkin['user']})['nick']
+        checkin['trick_title'] = app.db.trick.find_one({'_id': checkin['trick']})['title']
 
         return checkin
 
@@ -173,5 +173,5 @@ def checkins():
 @stuff_only
 def manage_user(user_id):
     data = json.loads(unicode(request.data, 'utf-8'))
-    db.user.find_and_modify({'_id': user_id}, data)
+    app.db.user.find_and_modify({'_id': user_id}, data)
     return '{"success":1}'

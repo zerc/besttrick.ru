@@ -1,6 +1,6 @@
 #!venv/bin/python
 # -*- coding: utf-8 -*-
-from project import app, connection, db, markdown
+from project import app, markdown
 from apps import tricks, users, utils, admin, bt
 from flask import render_template
 
