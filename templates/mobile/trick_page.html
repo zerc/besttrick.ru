@@ -1,7 +1,42 @@
 {% extends 'mobile/base.html' %}
 
 {% block content %}
+    <style>
+    .trick__page__image {max-width:100%;}
+    .trick__users {float:left; width:100%; max-width:480px;}
+    .trick__user {
+        height:40px; clear:both; float:none;
+        margin-bottom:10px; background:white; line-height:35px;
+    }
+    .trick__user span.left_block {
+        display:block; float:left; background:#AEAEAE; text-align:center;
+        width:40px; height:40px; line-height:36px; color:white; margin-right:10px;
+    }
+    .trick__user__photo {height:40px; width:40px; float:right; margin-left:10px;}
+    .trick__user a {float:right;}
+
+    .trick__user_king {background:#B55A5A;}
+    .trick__user_king a {color:#fff;}
+    .trick__user_king a:hover {color:#f4f4f4;}
+    .no_one {padding-left:10px; width: 490px;}
+
+    </style>
     <h2>{{ trick_title(trick) }}</h2>
-    <img src="{{ config.HOST }}/static/images/trick{{ trick._id }}-0.jpg">
+    <img class="trick__page__image" src="{{ config.HOST }}/static/images/trick{{ trick._id }}-0.jpg">
     <p>{{ trick.descr }}</p>
+
+    <h3>Этот трюк делают:</h3>
+   
+    <div class="trick__users">
+        {% for u in trick['users'] %}
+            <div class="trick__user{{ ' trick__user_king' if loop.index0 == 0 else ''}}">
+                <span class="left_block">{{ u['cones'] }}</span>
+                
+                <img src="{{ u['user']['photo'] }}" class="trick__user__photo">
+                <a href="/profile{{ u['user']['id'] }}/">{{ u['user']['nick'] }}</a>
+            </div>
+        {% endfor %}
+    </div>
+    <div class="clear"></div>
+</div>
 {% endblock %}

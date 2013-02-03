@@ -107,14 +107,10 @@ def checkin_page(*args, **context):
   
 @render_to()
 @allow_for_robot
-def trick_page(trick_id):
-    """ Лучшие пользователи по этому трюку """
-    trick, trick_users = get_trick(trick_id, False)
+def trick_page(trick):
+    """ Страничка трюка :) """
+    return {'trick': trick}
     
-    return {
-        'trick'       : trick,
-        'trick_users' : trick_users
-    }
 
 
 @render_to()

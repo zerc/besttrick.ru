@@ -52,8 +52,6 @@ var App = Backbone.Router.extend({
         this.default_page_title = window.document.title;
         this.active_route = 'route:index';
 
-        console.log(args.user, userModel)
-
         /*
          * Работаем с сессиоными куками 
          * чекиним пользователя, редиректим на страницу откуда логинился и пр.

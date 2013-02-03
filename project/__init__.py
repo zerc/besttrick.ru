@@ -12,28 +12,38 @@ try:
 except ImportError:
     Mail, email_dispatched, mail_on_500 = None, None, None
 
+## {{{ http://code.activestate.com/recipes/576563/ (r1)
+def cached_property(f):
+    """returns a cached property that is calculated by function f"""
+    def get(self):
+        try:
+            return self._property_cache[f]
+        except AttributeError:
+            self._property_cache = {}
+            x = self._property_cache[f] = f(self)
+            return x
+        except KeyError:
+            x = self._property_cache[f] = f(self)
+            return x
+        
+    return property(get)
+## end of http://code.activestate.com/recipes/576563/ }}}
+
 
 class MyFlask(Flask):
-    def __init__(self, *args, **kwargs):
-        super(MyFlask, self).__init__(*args, **kwargs)
-        self._db, self._connection = None, None
-
-    @property # TODO: cached proprty decorator
+    @cached_property
     def connection(self):
-        if not self._connection:
-            self._connection = Connection(self.config['MONGODB_HOST'], self.config['MONGODB_PORT'])
-        return self._connection
+        return Connection(self.config['MONGODB_HOST'], self.config['MONGODB_PORT'])
 
-    @property
+    @cached_property
     def db(self):
-        if not self._db:
-            self._db = getattr(self.connection, self.config['MONGODB_DB'])
-        return self._db
+        return getattr(self.connection, self.config['MONGODB_DB'])
 
 
 app = MyFlask(__name__)
 app.root_path = '/'.join(app.root_path.split('/')[:-1])
 app.config.from_object('project.settings')
+
 
 if mail_on_500: mail_on_500(app, app.config['ADMINS'])
 

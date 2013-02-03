@@ -402,7 +402,7 @@ TrickFullView = Backbone.View.extend({
                 var share_params = {};
 
                 self.$el.html(self.template.render({
-                    'users': response.trick_users,
+                    'users': response.trick.users,
                     'trick': self.model,
                     'checktrick': self.checktrick
                 }));

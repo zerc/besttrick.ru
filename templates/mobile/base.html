@@ -4,7 +4,7 @@
 {% endmacro %}
 
 {% macro trick_url(trick) %}
-    http://{{ request.host }}{{ '/trick%s/' % trick.id }}
+    http://{{ request.host }}{{ '/tricks/trick%s/' % trick.id }}
 {% endmacro %}
 
 <html>
@@ -39,6 +39,24 @@
     .messages li {padding:0 5px;}
     .messages .error {background-color:#D35757; border:1px solid red;}
     .messages .success {background-color:#8DE27C; border:1px solid green;}
+
+    .trick__page__image {max-width:100%;}
+    .trick__users {float:left; width:100%; max-width:480px;}
+    .trick__user {
+        height:40px; clear:both; float:none;
+        margin-bottom:10px; background:white; line-height:35px;
+    }
+    .trick__user span.left_block {
+        display:block; float:left; background:#AEAEAE; text-align:center;
+        width:40px; height:40px; line-height:36px; color:white; margin-right:10px;
+    }
+    .trick__user__photo {height:40px; width:40px; float:right; margin-left:10px;}
+    .trick__user a {float:right;}
+
+    .trick__user_king {background:#B55A5A;}
+    .trick__user_king a {color:#fff;}
+    .trick__user_king a:hover {color:#f4f4f4;}
+    .no_one {padding-left:10px; width: 490px;}
 
     </style>
     {% block extra_head %}{% endblock %}

@@ -9,11 +9,21 @@ from httplib import socket
 from gdata.youtube import service
 
 from flask import request, g
+from werkzeug.routing import BaseConverter, ValidationError
 
 from project import app, markdown
 from apps.notify import send_notify, CHECKTRICK_WITH_VIDEO
 from apps.users import get_user
 from apps.utils import grouped_stats
+
+
+class TrickConverter(BaseConverter):
+    def to_python(self, trick_id):
+        return get_trick(trick_id, False)
+
+    def to_url(self, trick):
+        return trick.get('id')
+app.url_map.converters['trick'] = TrickConverter
 
 ### авторизуемся на ютубе, чтобы заливать видосы
 try:
@@ -55,17 +65,16 @@ def get_tags(*args, **kwargs):
 
 def get_trick(trick_id, simple=True):
     trick_id = int(trick_id)
-    rows = []
+    trick = app.db.trick.find_one({'_id': trick_id})
 
-    if simple is False:
-        rows = grouped_stats('user', {'trick': trick_id})
-    
-        for row in rows:
-            row['user'] = get_user(user_dict=row['user'])
+    rows = grouped_stats('user', {'trick': trick_id})
 
-        rows = sorted(rows, key=lambda x: x['cones'], reverse=True)
+    for row in rows:
+        row['user'] = get_user(user_dict=row['user'])
 
-    return app.db.trick.find_one({'_id': trick_id}), rows
+    trick['users'] = sorted(rows, key=lambda x: x['cones'], reverse=True)
+
+    return trick
 
 
 def get_tricks(*args, **kwargs):
