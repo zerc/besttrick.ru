@@ -1,0 +1,15 @@
+{% extends 'mobile/base.html' %}
+
+{% block content %}
+    <div class="trick__users">
+        {% for u in users %}
+            <div class="trick__user{{ ' trick__user_king' if loop.index0 == 0 else ''}}">
+                <span class="left_block">{{ u['rating'] }}</span>
+                
+                <img src="{{ u['photo'] }}" class="trick__user__photo">
+                <a href="/profile{{ u['id'] }}/">{{ u['nick'] }}</a>
+            </div>
+        {% endfor %}
+    </div>
+    <div class="clear"></div>
+{% endblock %}

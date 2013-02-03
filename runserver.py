@@ -14,21 +14,36 @@ url('/pown/<int:user_id>/',     'pown',             bt.pown,            subdomai
 url('/feedback/',               'feedback',         bt.feedback,        methods=['POST'])
 url('/youtube_reciver/',        'youtube_reciver',  bt.youtube_reciver, methods=['POST'])
 
-url('/login/',                  'login',            users.login,        methods=['POST'])
-url('/login/',                  'login',            users.login,        methods=['POST'], subdomain="m")
-
-url('/logout/',                  'logout',          users.logout,        methods=['GET'])
-url('/logout/',                  'logout',          users.logout,        methods=['GET'], subdomain="m")
 
 
 ### Trick urls
 url('/tricks/',                             'tricks',                   tricks.tricks_list)
 url('/tricks/',                             'mobile_tricks',            tricks.tricks_list, subdomain='m')
-url('/tricks/trick<trick:trick>/',         'tricks_trick',             tricks.trick_page, methods=['GET'])
-url('/tricks/trick<trick:trick>/',         'mobile_tricks_trick',      tricks.trick_page, methods=['GET'], subdomain='m')
-url('/tricks/trick<trick:trick>/check/',   'tricks_check',             tricks.check, methods=['PUT'])
+url('/tricks/trick<trick:trick>/',         'tricks_trick',              tricks.trick_page, methods=['GET'])
+url('/tricks/trick<trick:trick>/',         'mobile_tricks_trick',       tricks.trick_page, methods=['GET'], subdomain='m')
+url('/tricks/trick<trick:trick>/check/',   'tricks_check',              tricks.check, methods=['PUT'])
 url('/check/',                              'mobile_checkin_page',      tricks.checkin_page, methods=['GET', 'POST'], subdomain='m')
 url('/prepare_youtube_upload/',             'prepare_youtube_upload',   tricks.prepare_youtube_upload, methods=['GET'])
+
+
+### User urls
+url('/login/',                  'login',            users.login,        methods=['POST'])
+url('/login/',                  'login',            users.login,        methods=['POST'], subdomain="m")
+url('/logout/',                 'logout',           users.logout)
+url('/logout/',                 'logout',           users.logout,       subdomain="m")
+
+url('/profile/<int:user_id>/',  'profile',          users.user_profile)
+url('/profile/<int:user_id>/',  'profile',          users.user_profile, subdomain="m")
+
+url('/user/',                   'my',               users.my, methods=['PUT', 'GET'])
+url('/user/',                   'mobile_my',        users.my, methods=['POST', 'GET'], subdomain="m")
+
+url('/rating/',                 'rating',           users.top_users)
+url('/rating/',                 'mobile_rating',    users.top_users,  subdomain="m")
+
+url('/banned/',                 'banned',           lambda: render_template('banned.html'))
+url('/users/',                  'users',            users.list_of_users)
+url('/my/tricks/',              'my_tricks',        users.my_tricks)
 
 
 if __name__ == '__main__':

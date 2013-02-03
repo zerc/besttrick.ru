@@ -6,7 +6,7 @@
         <a href="{{ url_for('mobile_checkin_page') }}">Делаю трюк</a>
     </li>
     <li><a href="{{ url_for('mobile_tricks') }}">Трюки</a></li>
-    <li><a href="#">Топ пользователей</a></li> 
-    <li><a href="#">Профиль</a></li>
+    <li><a href="{{ url_for('mobile_rating') }}">Топ пользователей</a></li> 
+    <li><a href="{{ url_for('mobile_my') }}">Профиль</a></li>
 </ul>
 {% endblock %}

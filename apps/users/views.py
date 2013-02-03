@@ -12,8 +12,9 @@ import simplejson as json
 
 from flask import render_template, request, session, url_for, g, redirect
 from project import app
-from apps.utils import grouped_stats, get_user_rating
+from apps.utils import grouped_stats, get_user_rating, render_to
 from .base import *
+from .models import User
 
 @app.before_request
 def before_request():
@@ -29,7 +30,7 @@ def add_user():
     }
 
 
-@app.route('/banned/')
+
 def banned():
     return render_template('banned.html')
 
@@ -57,14 +58,13 @@ def logout():
     return redirect(url_for('index'))
 
 
-@app.route('/my/tricks/', methods=['GET'])
 @user_only
 def my_tricks():
     rows = grouped_stats('trick', {'user': g.user['id']})
     return json.dumps(sorted(rows, key=lambda x: x['cones'], reverse=True))
 
 
-@app.route('/user/', methods=['PUT', 'GET'])
+@render_to()
 @user_only
 def my():
     user = g.user
@@ -81,16 +81,13 @@ def my():
             except KeyError:
                 del params[p]
 
-        app.db.user.update({'_id': user.id}, {'$set': params})
+        app.db.user.update({'_id': user['id']}, {'$set': params})
         
-        return '{"success":1}'
-
-    user = app.db.user.find_one({'_id': user.id})
-    user['rating'] = get_user_rating(user.id)
-    return json.dumps(user)
+        return {'success': 1}
+    return {}
 
 
-@app.route('/profile/<int:user_id>/')
+@render_to()
 def user_profile(user_id):
     context = {}
 
@@ -103,8 +100,9 @@ def user_profile(user_id):
 
     return json.dumps(context)
 
+
 #TODO: cached this!
-@app.route('/rating/', methods=['GET'])
+@render_to()
 def top_users():
     tricks_scores = {}
     for trick in app.db.trick.find():
@@ -114,13 +112,12 @@ def top_users():
         return get_user(user_dict=user)
 
     users = map(_, app.db.user.find({'banned': False}))
-    return json.dumps(sorted(users, key=lambda user: user['rating'], reverse=True))
+    return {'users': sorted(users, key=lambda user: user['rating'], reverse=True)}
 
 
-@app.route('/users/', methods=['GET'])
 @user_only
 def list_of_users():
-    is_admin = not not app.db.user.find_one({'_id': session['user_id']})['admin']
+    is_admin = app.db.user.find_one({'_id': session['user_id']})['admin']
 
     def _(user):
         user['id'] = user.pop('_id')

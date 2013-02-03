@@ -100,7 +100,7 @@ var App = Backbone.Router.extend({
             url: '/rating/',
             dataType: 'json',
             success: function (response) {
-                self.$el.html(template.render({'users': response}));
+                self.$el.html(template.render(response));
                 self.loader.hide();
             },
             error: function () {

@@ -1,6 +1,9 @@
 {% extends 'mobile/base.html' %}
 
 {% block content %}
+    {{ g.user }}
+
+    {#
     <h2>{{ trick_title(trick) }}</h2>
     <img class="trick__page__image" src="{{ config.HOST }}/static/images/trick{{ trick._id }}-0.jpg">
     <p>{{ trick.descr }}</p>
@@ -18,4 +21,5 @@
         {% endfor %}
     </div>
     <div class="clear"></div>
+    #}
 {% endblock %}
