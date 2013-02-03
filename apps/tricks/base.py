@@ -19,7 +19,10 @@ from apps.utils import grouped_stats
 
 class TrickConverter(BaseConverter):
     def to_python(self, trick_id):
-        return get_trick(trick_id, False)
+        try:
+            return get_trick(trick_id, False)
+        except BaseException, e:
+            raise ValidationError(e)
 
     def to_url(self, trick):
         return trick.get('id')
