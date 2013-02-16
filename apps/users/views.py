@@ -30,11 +30,6 @@ def add_user():
     }
 
 
-
-def banned():
-    return render_template('banned.html')
-
-
 def login():
     url = "http://loginza.ru/api/authinfo?%s"
     params = urllib.urlencode({'token': request.form['token'], 'id': '', 'sig': ''})
@@ -98,7 +93,7 @@ def user_profile(user_id):
     user_tricks = grouped_stats('trick', {'user': int(user_id)})
     context['tricks'] = sorted(user_tricks, key=lambda x: x['cones'], reverse=True)
 
-    return json.dumps(context)
+    return context
 
 
 #TODO: cached this!

@@ -1,15 +1,15 @@
 <div class="trick__users top_users">
     <% if (users.length > 0) { %>
-        <% _.map(users, function (user, i) {%>
+        <% users.forEach(function (user, i) { %>
             <div class="trick__user<% if (i === 0) { %> trick__user_king<% } %>">
-                <span class="left_block" title="рейтинг пользователя"><%= user.rating %></span>
-                <% if (user.city) { %><span class="info_block" title="город"><%= user.city %></span><% } %>
-                <% if (user.video_url) { %>
-                    <a class="has_video" href="<%= user.video_url %>" target="_blank" title="есть видео подтверждение"></a>
+                <span class="left_block" title="рейтинг пользователя"><%= user.get('rating') %></span>
+                <% if (user.get('city')) { %><span class="info_block" title="город"><%= user.get('city') %></span><% } %>
+                <% if (user.get('video_url')) { %>
+                    <a class="has_video" href="<%= user.get('video_url') %>" target="_blank" title="есть видео подтверждение"></a>
                 <% } %>
-                <img src="<%= user.photo %>" class="trick__user__photo">
-                <a href="#!profile-<%= user.id %>"><%= user.nick %></a>
-                <% if (user.team) { %><span class="info_block_team" title="команда"><%= user.team %></span><% } %>
+                <img src="<%= user.get('photo') %>" class="trick__user__photo">
+                <a href="<%= user.get_profile_url() %>"><%= user.get('nick') %></a>
+                <% if (user.get('team')) { %><span class="info_block_team" title="команда"><%= user.get('team') %></span><% } %>
             </div>
         <%}) %>
     <% } else { %>

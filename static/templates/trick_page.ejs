@@ -2,14 +2,15 @@
 
 <div class="trick__users">
 <% if (users.length > 0) { %>
-    <% _.map(users, function (row, i) {%>
+    <% _.map(users, function (user, i) {%>
+
         <div class="trick__user<% if (i === 0) { %> trick__user_king<% } %>">
-            <span class="left_block"><%= row.cones %></span>
-            <% if (row.video_url && row.approved == 1) { %>
-                <a class="has_video video_approved" href="<%= row.video_url %>" target="_blank" title="есть видео подтверждение"></a>
+            <span class="left_block"><%= user.get('cones') %></span>
+            <% if (user.get('video_url') && user.get('approved') == 1) { %>
+                <a class="has_video video_approved" href="<%= user.get('video_url') %>" target="_blank" title="есть видео подтверждение"></a>
             <% } %>
-            <img src="<%= row.user.photo %>" class="trick__user__photo">
-            <a href="#!profile-<%= row.user.id %>"><%= row.user.nick %></a>
+            <img src="<%= user.get('photo') %>" class="trick__user__photo">
+            <a href="<%= user.get_profile_url() %>"><%= user.get('nick') %></a>
         </div>
     <%}) %>
 <% } else { %>

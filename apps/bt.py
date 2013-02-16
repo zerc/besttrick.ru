@@ -56,6 +56,11 @@ def index(*args, **context):
     return response
 
 
+@utils.render_to(template="mobile/index.html")
+def mobile_index():
+    return {}
+
+
 def feedback():
     body = u'\n'.join(['%s:%s' % (k,v) for k, v in request.form.items()])
     if Message:

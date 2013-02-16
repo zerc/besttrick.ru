@@ -62,7 +62,7 @@ window.BTUsers.UserModel = UserModel = Backbone.Model.extend({
     },
 
     get_profile_url: function () {
-        return '#!profile-' + this.id;
+        return '#!users/user' + this.id;
     }
 });
 
@@ -265,16 +265,16 @@ UserProfile = Backbone.View.extend({
         this.$el.html(el);
 
         $.ajax({
-            url: '/profile/'+user_id+'/',
+            url: '/users/user'+user_id+'/',
             dataType: 'json',
             success: function (response) {
-                console.log(response);
                 response.user = new UserModel(response.user);
                 response.profile = true;
 
                 _.each(response.tricks, function (row) {
                     row.trick = new window.BTTricks.Trick(row.trick);
                 });
+
 
                 el.html(template.render(response));
             }

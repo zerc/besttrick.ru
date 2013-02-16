@@ -35,10 +35,11 @@ var App = Backbone.Router.extend({
         '!u'                         : 'my',
         '!trick:trick'               : 'trick',
         '!trick/:trick'              : 'old_trick', // старый урл
-        '!profile-:user_id'          : 'profile',
+        '!users/user:user_id'        : 'profile',
         'filter=:tags_selected'      : 'filter', // no index for search engines
         '!about'                     : 'about',
-        '!top'                       : 'top_users'
+        '!users/rating'              : 'top_users',
+        '!top'                       : 'top_users' // depricated, remove soon
     },
 
     initialize: function (args) {
@@ -97,10 +98,12 @@ var App = Backbone.Router.extend({
         self.loader.show();
 
         $.ajax({
-            url: '/rating/',
+            url: '/users/rating/',
             dataType: 'json',
             success: function (response) {
-                self.$el.html(template.render(response));
+                self.$el.html(template.render({
+                    users: new window.BTUsers.UsersCollection(response.users)
+                }));
                 self.loader.hide();
             },
             error: function () {

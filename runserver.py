@@ -8,7 +8,7 @@ url = app.add_url_rule
 
 
 url('/',                        'index',            bt.index)
-url('/',                        'mobile_index',     lambda: render_template('mobile/index.html'),         subdomain='m')
+url('/',                        'mobile_index',     bt.mobile_index,    subdomain='m')
 url('/pown/<int:user_id>/',     'pown',             bt.pown,            methods=['GET'])
 url('/pown/<int:user_id>/',     'pown',             bt.pown,            subdomain='m', methods=['GET'])
 url('/feedback/',               'feedback',         bt.feedback,        methods=['POST'])
@@ -31,19 +31,18 @@ url('/login/',                  'login',            users.login,        methods=
 url('/login/',                  'login',            users.login,        methods=['POST'], subdomain="m")
 url('/logout/',                 'logout',           users.logout)
 url('/logout/',                 'logout',           users.logout,       subdomain="m")
-
-url('/profile/<int:user_id>/',  'profile',          users.user_profile)
-url('/profile/<int:user_id>/',  'profile',          users.user_profile, subdomain="m")
-
-url('/user/',                   'my',               users.my, methods=['PUT', 'GET'])
-url('/user/',                   'mobile_my',        users.my, methods=['POST', 'GET'], subdomain="m")
-
-url('/rating/',                 'rating',           users.top_users)
-url('/rating/',                 'mobile_rating',    users.top_users,  subdomain="m")
-
 url('/banned/',                 'banned',           lambda: render_template('banned.html'))
-url('/users/',                  'users',            users.list_of_users)
-url('/my/tricks/',              'my_tricks',        users.my_tricks)
+
+url('/my/',                   'my',               users.my, methods=['PUT', 'GET'])
+url('/my/',                   'mobile_my',        users.my, methods=['POST', 'GET'], subdomain="m")
+url('/my/tricks/',            'my_tricks',        users.my_tricks)
+
+url('/users/',                          'users',            users.list_of_users)
+url('/users/user<int:user_id>/',        'profile',          users.user_profile)
+url('/users/user<int:user_id>/',        'profile',          users.user_profile, subdomain="m")
+url('/users/rating/',                   'rating',           users.top_users)
+url('/users/rating/',                   'mobile_rating',    users.top_users,  subdomain="m")
+
 
 
 if __name__ == '__main__':

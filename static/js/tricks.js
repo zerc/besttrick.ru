@@ -46,6 +46,14 @@ window.BTTricks.Trick = Trick = Backbone.Model.extend({
         users_full      : []
     },
 
+    get_best_user: function () {
+        if (!this._best_user_cache) {
+            this._best_user_cache = new window.BTUsers.UserModel(this.get('best_user'));
+        }
+
+        return this._best_user_cache;
+    },
+
     url: function () {
         return '/tricks/trick' + this.get('id') + '/check/';
     },
@@ -400,9 +408,13 @@ TrickFullView = Backbone.View.extend({
             dataType: 'json',
             success: function (response) {
                 var share_params = {};
-
                 self.$el.html(self.template.render({
-                    'users': response.trick.users,
+                    'users': _.map(response.trick.users, function (row) { 
+                        var user = new window.BTUsers.UserModel(row.user);
+                        delete row.user
+                        _.extend(user, row);
+                        return user;
+                    }),
                     'trick': self.model,
                     'checktrick': self.checktrick
                 }));
