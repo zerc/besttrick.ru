@@ -18,7 +18,7 @@ url('/youtube_reciver/',        'youtube_reciver',  bt.youtube_reciver, methods=
 
 ### Trick urls
 url('/tricks/',                             'tricks',                   tricks.tricks_list)
-url('/tricks/',                             'mobile_tricks',            tricks.tricks_list, subdomain='m')
+#url('/tricks/',                             'mobile_tricks',            tricks.tricks_list, subdomain='m')
 url('/tricks/trick<trick:trick>/',         'tricks_trick',              tricks.trick_page, methods=['GET'])
 url('/tricks/trick<trick:trick>/',         'mobile_tricks_trick',       tricks.trick_page, methods=['GET'], subdomain='m')
 url('/tricks/trick<trick:trick>/check/',   'tricks_check',              tricks.check, methods=['PUT'])

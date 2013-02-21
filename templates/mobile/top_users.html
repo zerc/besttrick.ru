@@ -7,7 +7,8 @@
                 <span class="left_block">{{ u['rating'] }}</span>
                 
                 <img src="{{ u['photo'] }}" class="trick__user__photo">
-                <a href="/profile{{ u['id'] }}/">{{ u['nick'] }}</a>
+                {# <a href="/profile{{ u['id'] }}/">{{ u['nick'] }}</a> #}
+                {{ u['nick'] }}
             </div>
         {% endfor %}
     </div>

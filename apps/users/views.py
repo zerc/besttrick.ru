@@ -50,7 +50,7 @@ def login():
 
 def logout():
     session.pop('user_id', None)
-    return redirect(url_for('index'))
+    return redirect(request.referrer or url_for('index'))
 
 
 @user_only

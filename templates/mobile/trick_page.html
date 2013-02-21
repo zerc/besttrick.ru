@@ -11,9 +11,9 @@
         {% for u in trick['users'] %}
             <div class="trick__user{{ ' trick__user_king' if loop.index0 == 0 else ''}}">
                 <span class="left_block">{{ u['cones'] }}</span>
-                
                 <img src="{{ u['user']['photo'] }}" class="trick__user__photo">
-                <a href="/profile{{ u['user']['id'] }}/">{{ u['user']['nick'] }}</a>
+                {# <a href="/profile{{ u['user']['id'] }}/">{{ u['user']['nick'] }}</a> #}
+                {{ u['user']['nick'] }}
             </div>
         {% endfor %}
     </div>

@@ -44,7 +44,6 @@ def index(*args, **context):
     tags   = tricks_view.get_tags(*args, tricks=tricks)
 
     context.update({
-        #'user'   : json.dumps(context['user']),
         'tricks' : json.dumps(tricks),
         'tags'   : json.dumps(tags)
     })
@@ -57,8 +56,10 @@ def index(*args, **context):
 
 
 @utils.render_to(template="mobile/index.html")
-def mobile_index():
-    return {}
+def mobile_index(*args, **kwargs):
+    return {
+        'tricks': tricks_view.get_tricks(*args, **kwargs)
+    }
 
 
 def feedback():

@@ -93,8 +93,9 @@ def checkin_page(*args, **context):
 
     #TODO объеденить в функцией checktrick
     form_data = request.form.to_dict()
-    trick_id = form_data.pop('trick_id')
-    
+    trick_id  = form_data.pop('trick_id')
+    ref       = form_data.pop('ref')
+
     checkin_result = checkin_user(trick_id, g.user['id'], form_data)
 
     if isinstance(checkin_result, tuple):
@@ -102,7 +103,7 @@ def checkin_page(*args, **context):
     else:
         flash(u'Вы успешно зачекинились', 'success')
 
-    return redirect(url_for('mobile_checkin_page'))
+    return redirect(ref or url_for('mobile_checkin_page'))
 
   
 @render_to()
@@ -119,5 +120,4 @@ def tricks_list(*args, **kwargs):
     Возврващет список трюков в формате json.
     Используюется в качеству url для коллекции трюков со стороны js.
     """
-    print getattr(app, 'test_a', 'False')
     return {'tricks_list': get_tricks(*args, **kwargs)}

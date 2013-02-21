@@ -1,12 +1,10 @@
 {% extends 'mobile/base.html' %}
+{% from 'mobile/base.html' import trick_preview with context %}
 
 {% block content %}
-<ul class="menu">
-    <li class="checktrick">
-        <a href="{{ url_for('mobile_checkin_page') }}">Делаю трюк</a>
-    </li>
-    <li><a href="{{ url_for('mobile_tricks') }}">Трюки</a></li>
-    <li><a href="{{ url_for('mobile_rating') }}">Топ пользователей</a></li> 
-    <li><a href="{{ url_for('mobile_my') }}">Профиль</a></li>
-</ul>
+    <ul class="trick_list">
+        {% for trick in tricks %}
+            {{ trick_preview(trick) }}
+        {% endfor %}
+    </ul>
 {% endblock %}
