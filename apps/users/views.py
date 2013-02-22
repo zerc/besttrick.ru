@@ -45,7 +45,8 @@ def login():
     
     session['user_id'] = user['_id']
 
-    return redirect(url_for('index'))
+    return redirect('http://%s' % request.host)
+    # return redirect(url_for('index'))
 
 
 def logout():

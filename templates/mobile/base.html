@@ -11,80 +11,19 @@
 <li class="trick{{ ' user_do_this' if trick.user_do_this }}">
     <img src="{{ config.HOST }}/static/images/{{ trick.thumb }}" alt="" height="30">
     <a href="{{ trick_url(trick) }}">{{ trick_title(trick) }}</a>
-    <a href="{{ url_for('mobile_checkin_page') }}?trick={{ trick.id }}" class="checkin_link">+</a>
+    {% if user %}
+        <a href="{{ url_for('mobile_checkin_page') }}?trick={{ trick.id }}" class="checkin_link">+</a>
+    {% endif %}
 </li>
 {% endmacro %}
 
 <html>
 <head>
     <meta charset="utf-8"></meta>
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
     <title>Besttrick Mobile</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/base.css') }}">
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/skeleton.css') }}">
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/layout.css') }}">
-
-    <style>
-        html, body {margin:0; padding:0; font-family:Arial; font-size:0.9em;}
-        a {text-decoration:none;}
-
-        .header {padding:5px;margin:0; text-align:left;}
-        .header .site_title {
-            font-size:16px; font-weight:bolder; margin:-5px -5px 5px -5px; 
-            padding-left:5px; background-color:#B55A5A;
-        }
-        .site_title a {color:#fff;}
-        .site_title a.exit {
-            float:right; font-size:12px; font-weight:normal; margin-right:5px;
-        }
-
-        .user_block {text-align:left; height:40px; margin-bottom:5px;}
-        .user_block a.button {margin:5px 0 0 0;}
-        .user_block img.photo {
-            float:left; height:40px; width:40px; margin-right:10px;
-        }
-
-        ul.trick_list {margin:0px 5px;}
-        ul.trick_list .trick {
-            border:1px solid #aeaeae; line-height:30px; height:30px;
-        }
-
-        ul.trick_list .trick img {float:left; margin-right:5px;}
-
-        ul.trick_list .user_do_this {background-color:#fdecdd;}
-
-        ul.trick_list .trick a.checkin_link {
-            float:right; background:red; width:30px; text-align:center;
-            color:#fff; font-size:18;
-        }
-
-        ul.trick_list .trick a.checkin_link:hover {color:#000;}
-
-        .trick__page__image {max-width:100%;}
-        .trick__users {float:left; width:100%; max-width:480px;}
-        .trick__user {
-            height:40px; clear:both; float:none;
-            margin-bottom:10px; background:white; line-height:35px;
-            text-align:right;
-        }
-        .trick__user span.left_block {
-            display:block; float:left; background:#AEAEAE; text-align:center;
-            width:40px; height:40px; line-height:36px; color:white; margin-right:10px;
-        }
-        .trick__user__photo {height:40px; width:40px; float:right; margin-left:10px;}
-        .trick__user a {float:right;}
-
-        .trick__user_king {background:#B55A5A; color:#fff;}
-        .trick__user_king a {color:#fff;}
-        .trick__user_king a:hover {color:#f4f4f4;}
-        .no_one {padding-left:10px; width: 490px;}
-
-        .copyright {text-align:center; font-size:10px; color:#aeaeae;}
-
-        ul.messages {margin:0 5px;}
-        .messages li {padding:0 5px;}
-        .messages .error {background-color:#D35757; border:1px solid red;}
-        .messages .success {background-color:#8DE27C; border:1px solid green;}
-    </style>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/mobile.css') }}">
     {% block extra_head %}{% endblock %}
 </head>
 <body>
@@ -123,7 +62,7 @@
         {% block content %}{% endblock %}
         
         <div class="copyright">
-            <a href="http://zerc.ru">zerc.ru</a> @ 2012-2013
+            <a href="http://zerc.ru">zerc.ru</a> @ 2012-2013, <a href="{{ config['HOST'] }}" rel="nofollow">Полная версия сайта</a>
         </div>
     </div>
 </body>
