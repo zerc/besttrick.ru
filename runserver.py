@@ -3,6 +3,8 @@
 from project import app, markdown
 from apps import tricks, users, utils, admin, bt
 from flask import render_template
+import upload
+
 
 url = app.add_url_rule
 

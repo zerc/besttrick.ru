@@ -1,7 +1,10 @@
 html, body {margin:0; padding:0; font-family:Arial; font-size:0.9em;}
 a {text-decoration:none;}
+h2, h3 {font-size:1.5em; line-height:1.5em; margin:0;}
+h3 {font-size:1.3em;}
+#content {padding:0 5px;}
 
-.header {padding:5px;margin:0; text-align:left;}
+.header {padding:5px;margin:0 -5px; text-align:left;}
 .header .site_title {
     font-size:16px; font-weight:bolder; margin:-5px -5px 5px -5px; 
     padding-left:5px; background-color:#B55A5A;
@@ -17,10 +20,12 @@ a {text-decoration:none;}
     float:left; height:40px; width:40px; margin-right:10px;
 }
 
-ul.trick_list {margin:0px 5px;}
+ul.trick_list {margin:0px;}
 ul.trick_list .trick {
     border:1px solid #aeaeae; line-height:30px; height:30px;
 }
+
+ul.trick_list .trick a {text-decoration:underline;}
 
 ul.trick_list .trick img {float:left; margin-right:5px;}
 
