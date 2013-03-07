@@ -1,7 +1,7 @@
 #!venv/bin/python
 # -*- coding: utf-8 -*-
 from os.path import join as path_join
-from project import app, db
+from project import app
 from apps import tricks as tricks_views
 from flaskext.script import Manager
 
@@ -9,7 +9,7 @@ manager = Manager(app)
 
 @manager.command
 def sitemap():
-    tricks = db.trick.find()
+    tricks = app.db.trick.find()
     xml = [
         u"""<?xml version="1.0" encoding="UTF-8"?>""", 
         u"""<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">"""
