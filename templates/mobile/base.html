@@ -40,13 +40,15 @@
         <div class="header">
             <div class="site_title">
                 <a href="/">Besttrick</a>
-                {% if user %}<a href="{{ url_for('logout') }}" class="exit">выход</a>{% endif %}
+                
             </div>
-
             <table class="user_block">
                 <tbody>
                     <tr>
                     {% if user %}
+                        <td style="text-align:left;">
+                            <a href="{{ url_for('logout') }}">выход</a>
+                        </td>
                         <td>
                             {{ user.nick }}<br>                
                             <a href="{{ url_for('mobile_rating') }}">рейтинг: {{ user.rating }}</a>    
@@ -65,7 +67,6 @@
                     </tr>
                 </tbody>
             </table>
-            <div class="clear"></div>
         </div>
 
         {% block msgs_block %}

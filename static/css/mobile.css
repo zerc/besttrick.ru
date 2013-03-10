@@ -18,7 +18,7 @@ h3 {font-size:1.3em;}
     text-align:right; width:100%; max-width:480px;
     border-bottom:1px solid #aeaeae; 
 }
-.user_block td {height:40px; vertical-align:middle;}
+.user_block td {height:50px; vertical-align:middle;}
 .user_block .photo {width:45px;}
 .user_block .photo img {height:40px; width:40px;}
 .user_block a.button {margin:5px 0 0 0;}
