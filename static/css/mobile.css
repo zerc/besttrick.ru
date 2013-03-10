@@ -23,16 +23,18 @@ h3 {font-size:1.3em;}
     float:right; height:40px; width:40px; margin-left:10px;
 }
 
-ul.trick_list {margin:0px;}
-ul.trick_list .trick {
-    border:1px solid #aeaeae; line-height:30px; height:30px;
+table.trick_list {margin:0px; border:0; width:100%; max-width:480px;}
+table.trick_list tr td {height:30px; vertical-align:middle;}
+table.trick_list tr.separator td {height:10px;}
+table.trick_list td.trick__image {width:45px; }
+table.trick_list .trick {
+    background-color:rgb(243, 243, 243); line-height:30px; height:30px;
 }
 
-ul.trick_list .trick a {}
+table.trick_list .trick a {}
 
-ul.trick_list .trick img {float:left; margin-right:5px;}
 
-ul.trick_list .user_do_this {background-color:#fdecdd;}
+table.trick_list .user_do_this {background-color:#fdecdd;}
 
 a.checkin_link {
     float:right; background:red; width:30px; text-align:center;

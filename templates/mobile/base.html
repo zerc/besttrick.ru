@@ -8,15 +8,22 @@
 {% endmacro %}
 
 {% macro trick_preview(trick) %}
-<li class="trick{{ ' user_do_this' if trick.user_do_this }}">
-    <a href="{{ trick_url(trick) }}">
-    	<img src="{{ config.HOST }}/static/images/{{ trick.thumb }}" alt="" height="30">
-    </a>
-    <a href="{{ trick_url(trick) }}">{{ trick_title(trick) }}</a>
-    {% if user %}
-        <a href="{{ url_for('mobile_checkin_page') }}?trick={{ trick.id }}&cones={{ trick.cones }}" class="checkin_link">+</a>
-    {% endif %}
-</li>
+    <tr class="trick{{ ' user_do_this' if trick.user_do_this }}">
+        <td class="trick__image">
+            <a href="{{ trick_url(trick) }}">
+                <img src="{{ config.HOST }}/static/images/{{ trick.thumb }}" alt="" height="30">
+            </a>
+        </td>
+        <td>
+            <a href="{{ trick_url(trick) }}">{{ trick_title(trick) }}</a>
+        </td>
+        <td>
+            {% if user %}
+                <a href="{{ url_for('mobile_checkin_page') }}?trick={{ trick.id }}&cones={{ trick.cones }}" class="checkin_link">+</a>
+            {% endif %}
+        </td>
+    </tr>
+    <tr class="separator"><td colspan="3"></td></tr>
 {% endmacro %}
 
 <html>
