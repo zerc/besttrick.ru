@@ -3,7 +3,12 @@
 from project import app, markdown
 from apps import tricks, users, utils, admin, bt
 from flask import render_template
-import upload
+
+# hook just remove this when army end
+try:
+    import upload
+except ImportError:
+    pass
 
 
 url = app.add_url_rule
