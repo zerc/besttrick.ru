@@ -43,19 +43,28 @@
                 {% if user %}<a href="{{ url_for('logout') }}" class="exit">выход</a>{% endif %}
             </div>
 
-            <div class="user_block">
-                {% if user %}
-                    <img src="{{ user.photo }}" class="photo">
-                    {{ user.nick }}
-                    <br>                
-                    <a href="{{ url_for('mobile_rating') }}">рейтинг: {{ user.rating }}</a>
-                {% else %}
-                    <img src="{{ url_for('static', filename='i/ava.jpg') }}" class="photo">
-                    <a href="http://loginza.ru/api/widget/?token_url=http://{{ request.host }}/login/&providers_set=vkontakte,twitter,facebook" class="button">Авторизоваться</a>
-                    <br>
-                    
-                {% endif %}
-            </div>
+            <table class="user_block">
+                <tbody>
+                    <tr>
+                    {% if user %}
+                        <td>
+                            {{ user.nick }}<br>                
+                            <a href="{{ url_for('mobile_rating') }}">рейтинг: {{ user.rating }}</a>    
+                        </td>
+                        <td class="photo">
+                            <img src="{{ user.photo }}">
+                        </td>
+                    {% else %}
+                        <td>
+                            <a href="http://loginza.ru/api/widget/?token_url=http://{{ request.host }}/login/&providers_set=vkontakte,twitter,facebook" class="button">Авторизоваться</a>
+                        </td>
+                        <td class="photo">
+                            <img src="{{ url_for('static', filename='i/ava.jpg') }}">
+                        </td>
+                    {% endif %}
+                    </tr>
+                </tbody>
+            </table>
             <div class="clear"></div>
         </div>
 

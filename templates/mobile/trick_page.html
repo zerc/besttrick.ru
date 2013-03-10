@@ -1,29 +1,46 @@
 {% extends 'mobile/base.html' %}
 
 {% block content %}
-    <h2>
-        {{ trick_title(trick) }}
-        {% if user %}
-            <a class="checkin_link" href="{{ url_for('mobile_checkin_page') }}?trick={{ trick.id }}&cones={{ trick['user_result'] }}">+</a>
-            <span style="float:right; background:#aeaeae; padding:0 10px; font-size:0.9em; color:#ffffff;">{{ trick['user_result'] }}</span>
-        {% endif %}
-    </h2>
-    <img class="trick__page__image" src="{{ config.HOST }}/static/images/trick{{ trick.id }}-0.jpg">
-    <p>{{ trick.descr }}</p>
+    <table class="trick_page">
+        <tbody>
+            <tr>
+                <td><h2>{{ trick_title(trick) }}</h2></td>
+                <td>
+                    {% if user %}
+                        <a class="checkin_link" href="{{ url_for('mobile_checkin_page') }}?trick={{ trick.id }}&cones={{ trick['user_result'] }}">+</a>
+                        <span style="float:right; background:#aeaeae; padding:0 10px; font-size:0.9em; color:#ffffff;">{{ trick['user_result'] }}</span>
+                    {% endif %}            
+                </td>
+            </tr>
+            <tr>
+                <td colspan="2">
+                    <img class="trick__page__image" src="{{ config.HOST }}/static/images/trick{{ trick.id }}-0.jpg">
+                    <p>{{ trick.descr }}</p>
+                </td>
+            </tr>
 
-    {% if trick['users'] %}
-        <h3>Этот трюк делают:</h3>
-   
-        <div class="trick__users">
-            {% for u in trick['users'] %}
-                <div class="trick__user{{ ' trick__user_king' if loop.index0 == 0 else ''}}">
-                    <span class="left_block">{{ u['cones'] }}</span>
-                    <img src="{{ u['user']['photo'] }}" class="trick__user__photo">
-                    {# <a href="/profile{{ u['user']['id'] }}/">{{ u['user']['nick'] }}</a> #}
-                    {{ u['user']['nick'] }}
-                </div>
-            {% endfor %}
-        </div>
-        <div class="clear"></div>
-    {% endif %}
+            {% if trick['users'] %}
+            <tr>
+                <td colspan="2">
+                    <h3>Этот трюк делают:</h3>
+               
+                    <div class="trick__users">
+                        {% for u in trick['users'] %}
+                            <div class="trick__user{{ ' trick__user_king' if loop.index0 == 0 else ''}}">
+                                <span class="left_block">{{ u['cones'] }}</span>
+                                <img src="{{ u['user']['photo'] }}" class="trick__user__photo">
+                                {# <a href="/profile{{ u['user']['id'] }}/">{{ u['user']['nick'] }}</a> #}
+                                {{ u['user']['nick'] }}
+                            </div>
+                        {% endfor %}
+                    </div>
+                    <div class="clear"></div>
+                </td>
+            </tr>
+            {% endif %}
+        </tbody>
+    </table>
+        
+
+    
 {% endblock %}

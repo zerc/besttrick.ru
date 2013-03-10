@@ -15,13 +15,13 @@ h3 {font-size:1.3em;}
 }
 
 .user_block {
-    text-align:right; height:40px; margin-bottom:5px; 
-    border-bottom:1px solid #aeaeae; padding-bottom:5px;
+    text-align:right; width:100%; max-width:480px;
+    border-bottom:1px solid #aeaeae; 
 }
+.user_block td {height:40px; vertical-align:middle;}
+.user_block .photo {width:45px;}
+.user_block .photo img {height:40px; width:40px;}
 .user_block a.button {margin:5px 0 0 0;}
-.user_block img.photo {
-    float:right; height:40px; width:40px; margin-left:10px;
-}
 
 table.trick_list {margin:0px; border:0; width:100%; max-width:480px;}
 table.trick_list tr td {height:30px; vertical-align:middle;}
@@ -42,7 +42,7 @@ a.checkin_link {
 }
 a.checkin_link:hover {color:#000;}
 
-
+table.trick_page {width:100%; max-width:480px;}
 .trick__page__image {max-width:100%; margin-top:5px;}
 .trick__users {width:100%; max-width:480px;}
 .trick__user {
