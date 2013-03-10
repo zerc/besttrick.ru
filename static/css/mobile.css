@@ -1,5 +1,5 @@
 html, body {margin:0; padding:0; font-family:Arial; font-size:0.9em;}
-a {text-decoration:none;}
+a {text-decoration:underline;}
 h2, h3 {font-size:1.5em; line-height:1.5em; margin:0;}
 h3 {font-size:1.3em;}
 #content {padding:0 5px;}
@@ -14,10 +14,13 @@ h3 {font-size:1.3em;}
     float:right; font-size:12px; font-weight:normal; margin-right:5px;
 }
 
-.user_block {text-align:left; height:40px; margin-bottom:5px;}
+.user_block {
+    text-align:right; height:40px; margin-bottom:5px; 
+    border-bottom:1px solid #aeaeae; padding-bottom:5px;
+}
 .user_block a.button {margin:5px 0 0 0;}
 .user_block img.photo {
-    float:left; height:40px; width:40px; margin-right:10px;
+    float:right; height:40px; width:40px; margin-left:10px;
 }
 
 ul.trick_list {margin:0px;}
@@ -25,20 +28,20 @@ ul.trick_list .trick {
     border:1px solid #aeaeae; line-height:30px; height:30px;
 }
 
-ul.trick_list .trick a {text-decoration:underline;}
+ul.trick_list .trick a {}
 
 ul.trick_list .trick img {float:left; margin-right:5px;}
 
 ul.trick_list .user_do_this {background-color:#fdecdd;}
 
-ul.trick_list .trick a.checkin_link {
+a.checkin_link {
     float:right; background:red; width:30px; text-align:center;
-    color:#fff; font-size:18;
+    color:#fff; font-size:18; text-decoration:none;
 }
+a.checkin_link:hover {color:#000;}
 
-ul.trick_list .trick a.checkin_link:hover {color:#000;}
 
-.trick__page__image {max-width:100%;}
+.trick__page__image {max-width:100%; margin-top:5px;}
 .trick__users {width:100%; max-width:480px;}
 .trick__user {
     height:40px; clear:both; float:none;
@@ -57,9 +60,13 @@ ul.trick_list .trick a.checkin_link:hover {color:#000;}
 .trick__user_king a:hover {color:#f4f4f4;}
 .no_one {padding-left:10px; width: 490px;}
 
-.copyright {text-align:center; font-size:10px; color:#aeaeae;}
+.copyright {text-align:center; font-size:10px; color:#aeaeae; border-top:1px solid #aeaeae;}
 
 ul.messages {margin:0 5px;}
-.messages li {padding:0 5px;}
+.messages li {padding:0 5px; margin:0 -5px 10px -5px;}
 .messages .error {background-color:#D35757; border:1px solid red;}
 .messages .success {background-color:#8DE27C; border:1px solid green;}
+
+.form_holder {border:1px solid #aeaeae; margin:5px 0px 15px 0px; padding:5px;}
+.form_holder form {margin:0;}
+.form_holder form button {margin:0;}

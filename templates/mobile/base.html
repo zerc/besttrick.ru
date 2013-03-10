@@ -14,7 +14,7 @@
     </a>
     <a href="{{ trick_url(trick) }}">{{ trick_title(trick) }}</a>
     {% if user %}
-        <a href="{{ url_for('mobile_checkin_page') }}?trick={{ trick.id }}" class="checkin_link">+</a>
+        <a href="{{ url_for('mobile_checkin_page') }}?trick={{ trick.id }}&cones={{ trick.cones }}" class="checkin_link">+</a>
     {% endif %}
 </li>
 {% endmacro %}

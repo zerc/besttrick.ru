@@ -1,15 +1,6 @@
 {% extends 'mobile/base.html' %}
 {% from 'mobile/base.html' import trick_title with context %}
 
-
-{% block extra_head %}
-    <style>
-        .form_holder {border:1px solid #aeaeae; margin:5px; padding:5px;}
-        .form_holder form {margin:0;}
-        .form_holder form button {margin:0;}
-    </style>
-{% endblock %}
-
 {% block content %}
     <div class="form_holder">
         <form action="." method="POST">
@@ -21,7 +12,7 @@
             </select>
 
             <label for="cones">Сколько конусов:</label>
-            <input type="text" name="cones" id="cones" />
+            <input type="text" name="cones" id="cones" value="{{ request.args.get('cones')|int or 0 }}"/>
             <input type="hidden" name="ref" value="{{ request.referrer }}">
             <button type="submit">Я Делаю!</button>
         </form>

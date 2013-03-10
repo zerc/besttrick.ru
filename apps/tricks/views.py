@@ -110,6 +110,14 @@ def checkin_page(*args, **context):
 @allow_for_robot
 def trick_page(trick):
     """ Страничка трюка :) """
+    user_id = g.user['id'] if g.user else False
+    if user_id is not False:
+        trick['user_result'] = app.db.trick_user.find_one(
+            {'trick': trick['id'], 'user': user_id}, sort=[('cones', -1)]) or 0
+
+        if trick['user_result']:
+            trick['user_result'] = trick['user_result']['cones']
+
     return {'trick': trick}
     
 

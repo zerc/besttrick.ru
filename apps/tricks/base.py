@@ -77,6 +77,10 @@ def get_trick(trick_id, simple=True):
 
     trick['users'] = sorted(rows, key=lambda x: x['cones'], reverse=True)
 
+    # патчу трюк, как-то объеденить функции get_trick и get_tricks
+    trick['descr_html'] = markdown(trick['descr'])
+    trick[u'id'] = trick.pop(u'_id')
+
     return trick
 
 
@@ -221,7 +225,7 @@ def checkin_user(trick_id, user_id, update_data):
         return _checkin(update_data)
 
     # поддерживаем только положительную динамику
-    if prev_checkin['cones'] > update_data['cones']:
+    if prev_checkin['cones'] >= update_data['cones']:
         return u'Ни шагу назад!', 400
 
     # пользоавтель добавил видос - припишем его к старому чекину
