@@ -13,7 +13,7 @@ from flask import g, redirect
 from project import app
 from apps.utils import get_user_rating
 
-from .base import User
+from .models import User
 
 
 def user_only(func):
