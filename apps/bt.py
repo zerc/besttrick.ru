@@ -80,7 +80,7 @@ def youtube_reciver():
     return jsonify(request.args)
 
 
-def pown(user_id, domain=None):
+def pown(user_id):
     """
     Авторизация по указанному user_id. Исключительно в отладочных целях и на локальной копии.
     """

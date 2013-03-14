@@ -195,7 +195,8 @@ def checkin_user(trick_id, user_id, update_data):
 
     Или же возвращает кортеж (u'Текст ошибки', http_код_ошибки)
     """
-    #TODO: валидацию данных реализовать лучше
+    #TODO: внести валидацию непосредственно в модель (вадидаторы написать)
+    #      отлавливать ошибки все дела
     try:
         trick_id = int(trick_id)
     except ValueError:
@@ -206,6 +207,9 @@ def checkin_user(trick_id, user_id, update_data):
     except ValueError:
         return 'Number of cones must be are integer', 400
 
+    if update_data['cones'] > 300:
+        return u'Cones value to big', 400
+
     trick = app.db.trick.find_one({'_id': trick_id})
     if not trick:
         return u'Unknow trick with id = %s' % trick_id, 400
@@ -214,6 +218,12 @@ def checkin_user(trick_id, user_id, update_data):
         update_data.update({'user': user_id, 'trick': trick_id})
         trick_user = app.connection.TrickUser()
         trick_user.update(update_data)
+        
+        try:
+            trick_user.validate()
+        except BaseException, e:
+            return str(e), 400
+
         trick_user.save()
         send_notice_about_video(trick, user_id, update_data)
         return update_data

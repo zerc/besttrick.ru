@@ -57,11 +57,13 @@ def check(trick_id, *args, **kwargs):
     Вью выполняет чекин пользователя.
     TODO: разбить функцию на более мелкие и прояснить логику.
     """
+    if not request.data: return
+    
     trick_data = json.loads(unicode(request.data, 'utf-8'))
-
+    
     try:
         trick_data['cones'] = int(trick_data['cones'])
-    except TypeError:
+    except ValueError:
         return 'Number of cones must be are integer', 400
     
     update_data = {

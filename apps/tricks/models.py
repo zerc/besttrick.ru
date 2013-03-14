@@ -7,6 +7,7 @@ from mongokit.schema_document import ValidationError
 
 from project import app
 
+__all__ = ['Trick', 'TrickUser', 'Tag']
 
 ### Validators
 def positive_integer(val):
