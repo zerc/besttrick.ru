@@ -27,9 +27,12 @@ class TricksTestCase(unittest.TestCase):
     def test_tricks(self):
         r = self.client.get('/tricks/')
         self.assertEqual(r.status_code, 200, u'Wrong response status code: %s' % r.status_code)
-
+        
         # is json?
-        json.loads(r.data)
+        tricks = json.loads(r.data)
+
+        r = self.client.get('/tricks/trick%s/' % tricks['tricks_list'][0]['id'])
+        self.assertEqual(r.status_code, 200, u'Trick page BROKEN!!')
 
     def test_check(self):
         r = self.client.put('/tricks/trick0/check/')
