@@ -47,6 +47,9 @@ class TricksTestCase(unittest.TestCase):
             {'cones': 9999},
             {'cones': u'ada'},
             {'cones': u'фыв2'},
+            {'cones': 10, 'video_url': u'asdsa'},
+            {'cones': 10, 'video_url': u'http://'},
+            {'cones': 10, 'video_url': u'<script>alert("asda");</script>'},
         )
 
         for data_set in test_data_sets:

@@ -21,6 +21,12 @@ def is_youtube_link(val):
         raise ValidationError(u'%s is not youtube link!')
     return True
 
+def cones_value_validator(val):
+    if val > 300:
+        raise ValidationError(u'Cones value to big!')
+    return True
+
+
 ### Models
 class Trick(Document):
     __database__   = app.config['MONGODB_DB']
@@ -61,7 +67,7 @@ class TrickUser(Document):
     required_fields = ['user', 'trick']
 
     validators = {
-        'cones'     : positive_integer,
+        'cones'     : [positive_integer, cones_value_validator],
         'video_url' : is_youtube_link,
     }
 app.connection.register([TrickUser])

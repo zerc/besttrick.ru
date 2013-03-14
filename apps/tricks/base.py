@@ -202,14 +202,6 @@ def checkin_user(trick_id, user_id, update_data):
     except ValueError:
         return u'Incorrect trick_id = %s' % trick_id, 400
 
-    try:
-        update_data['cones'] = int(update_data['cones'])
-    except ValueError:
-        return 'Number of cones must be are integer', 400
-
-    if update_data['cones'] > 300:
-        return u'Cones value to big', 400
-
     trick = app.db.trick.find_one({'_id': trick_id})
     if not trick:
         return u'Unknow trick with id = %s' % trick_id, 400
