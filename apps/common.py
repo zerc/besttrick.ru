@@ -3,7 +3,7 @@ from pytils.utils import takes, one_of
 from pytils.numeral import get_plural
 import simplejson as json
 from functools import wraps
-
+from mongokit import Document
 from project import app
 
 from flask import render_template, request, make_response, url_for
@@ -15,21 +15,25 @@ def render_to(template=None):
         @wraps(f)
         def decorated_function(*args, **kwargs):
             subdomain = subdomain_or_none(request.host)
+            status_code = 200
             ctx = f(*args, **kwargs) or {}
 
             if isinstance(ctx, BaseResponse):
                 return ctx
 
+            if isinstance(ctx, tuple):
+                ctx, status_code = ctx
+
             subdomain_to_folder = {'m': 'mobile/'}
 
             if subdomain is None:
-                return json.dumps(ctx)
+                return json.dumps(ctx), status_code
 
             template_name = template
             if template_name is None:
                 template_name = subdomain_to_folder.get(subdomain, '') + f.__name__ + '.html'
 
-            return render_template(template_name, **ctx)
+            return render_template(template_name, **ctx), status_code
         return decorated_function
     return decorator
 
@@ -130,3 +134,20 @@ def allow_for_robot(func):
         return context
 
     return wrapper
+
+
+### Models stuff
+class classproperty(object):
+    """
+    decorator :)
+    """
+    def __init__(self, getter):
+        self.getter= getter
+    def __get__(self, instance, owner):
+        return self.getter(owner)
+
+
+class BaseModel(Document):
+    @classproperty
+    def __database__(self):
+        return app.config['MONGODB_DB']

@@ -2,10 +2,12 @@
 import re
 from datetime import datetime
 
-from mongokit import Document, DocumentMigration
+from mongokit import DocumentMigration
 from mongokit.schema_document import ValidationError
 
 from project import app
+from apps.common import BaseModel
+
 
 __all__ = ['Trick', 'TrickUser', 'Tag']
 
@@ -28,8 +30,7 @@ def cones_value_validator(val):
 
 
 ### Models
-class Trick(Document):
-    __database__   = app.config['MONGODB_DB']
+class Trick(BaseModel):
     __collection__ = "trick"
 
     structure = {
@@ -49,8 +50,7 @@ app.connection.register([Trick])
 app.db.seqs.insert({'_id': 'tricks_seq',  'val': 0})
 
 
-class TrickUser(Document):
-    __database__   = app.config['MONGODB_DB']
+class TrickUser(BaseModel):
     __collection__ = "trick_user"
 
     structure = {
@@ -73,10 +73,9 @@ class TrickUser(Document):
 app.connection.register([TrickUser])
 
 
-class Tag(Document):
-    __database__   = app.config['MONGODB_DB']
+class Tag(BaseModel):
     __collection__ = "tag"
-
+    
     structure = {
         'title': unicode,
         'major': bool,

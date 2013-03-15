@@ -14,7 +14,7 @@ from werkzeug.routing import BaseConverter, ValidationError
 from project import app, markdown
 from apps.notify import send_notify, CHECKTRICK_WITH_VIDEO
 from apps.users import get_user
-from apps.utils import grouped_stats
+from apps.common import grouped_stats
 
 
 class TrickConverter(BaseConverter):

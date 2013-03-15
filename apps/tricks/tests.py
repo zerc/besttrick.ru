@@ -8,22 +8,11 @@
     :copyright: (c) 2012 by zero13cool
 """
 import simplejson as json
-import os
 import unittest
 
+from apps.tests import BaseTestCase
 
-class TricksTestCase(unittest.TestCase):
-    @property
-    def app(self, *args, **kwargs):
-        """ monkey path please """
-        raise NotImplemented('Set up app instance')
-
-    def setUp(self):
-        self.client = self.app.test_client()
-
-    def tearDown(self):
-        pass
-
+class TricksTestCase(BaseTestCase):
     def test_tricks(self):
         r = self.client.get('/tricks/')
         self.assertEqual(r.status_code, 200, u'Wrong response status code: %s' % r.status_code)

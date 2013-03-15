@@ -7,10 +7,10 @@
 
     :copyright: (c) 2012 by zero13cool
 """
-from mongokit import Document, DocumentMigration
+from mongokit import DocumentMigration
 
 from project import app
-from apps.utils import grouped_stats, get_user_rating
+from apps.common import grouped_stats, get_user_rating, BaseModel
 
 
 ### Models            
@@ -50,8 +50,7 @@ class UserMigration(DocumentMigration):
         self.update = {'$set': {'banned': False}}
 
 
-class User(Document):
-    __database__     = app.config['MONGODB_DB']
+class User(BaseModel):
     __collection__   = u'user'
     use_dot_notation = True
 

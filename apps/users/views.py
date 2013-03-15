@@ -12,7 +12,7 @@ import simplejson as json
 
 from flask import render_template, request, session, url_for, g, redirect
 from project import app
-from apps.utils import grouped_stats, get_user_rating, render_to
+from apps.common import grouped_stats, get_user_rating, render_to
 from .base import *
 from .models import User
 

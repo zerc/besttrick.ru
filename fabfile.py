@@ -7,11 +7,13 @@ from fabric.api import *
 from os.path import join as path_join
 
 from runserver import app
-from apps.tricks import tests as tricks_tests, models as trick_models
 
+from apps.tricks.tests import TricksTestCase
+from apps.tests import BtTestCase
 
 env.hosts = _app.config['FLASK_HOSTS']
- 
+TESTS_SET = (TricksTestCase, BtTestCase)
+
 
 def roll():
     local('git push origin master')
@@ -71,20 +73,16 @@ def run_tests():
     """
     Запускает тесты для каждого модуля
     """
-    tricks_tests.TricksTestCase.app = app
-
     # set up test database
     test_database_name = 'test_besttrick'
     app.connection.copy_database(app.config['MONGODB_DB'], test_database_name)
     app.config['MONGODB_DB'] = test_database_name
 
-    # path models :D
-    for model_name in trick_models.__all__:
-        getattr(trick_models, model_name).__database__ = app.config['MONGODB_DB']
-
     # run tests
-    suite  = ut.TestLoader().loadTestsFromTestCase(tricks_tests.TricksTestCase)
-    result = ut.TextTestRunner(verbosity=1).run(suite)
+    for t in TESTS_SET:
+        t.app  = app
+        suite  = ut.TestLoader().loadTestsFromTestCase(t)
+        result = ut.TextTestRunner(verbosity=1).run(suite)
 
     # clean up :)    
     app.connection.drop_database(test_database_name)

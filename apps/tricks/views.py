@@ -6,7 +6,7 @@ from flask import render_template, request, jsonify, session, redirect, url_for,
 from flask.views import View
 from project import app, markdown
 
-from apps.utils import grouped_stats, allow_for_robot, is_robot, render_to
+from apps.common import grouped_stats, allow_for_robot, is_robot, render_to
 from apps.users import user_only, get_user
 
 from .base import yt_service, checkin_user, checkin_user, get_tricks, get_trick, get_best_results

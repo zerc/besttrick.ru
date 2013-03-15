@@ -11,7 +11,7 @@ from functools import wraps
 
 from flask import g, redirect
 from project import app
-from apps.utils import get_user_rating
+from apps.common import get_user_rating
 
 from .models import User
 

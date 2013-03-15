@@ -18,7 +18,7 @@ except ImportError:
 from project import app, markdown
 import tricks as tricks_view
 import users as users_view
-import utils, admin
+import common, admin
 
 
 def index(*args, **context):
@@ -55,7 +55,7 @@ def index(*args, **context):
     return response
 
 
-@utils.render_to(template="mobile/index.html")
+@common.render_to(template="mobile/index.html")
 def mobile_index(*args, **kwargs):
     return {
         'tricks': tricks_view.get_tricks(*args, **kwargs)
