@@ -199,7 +199,7 @@ def checkin_user(trick_id, user_id, update_data):
     #      отлавливать ошибки все дела
     try:
         trick_id = int(trick_id)
-    except ValueError:
+    except (ValueError, TypeError):
         return u'Incorrect trick_id = %s' % trick_id, 400
 
     trick = app.db.trick.find_one({'_id': trick_id})
@@ -210,7 +210,7 @@ def checkin_user(trick_id, user_id, update_data):
         update_data.update({'user': user_id, 'trick': trick_id})
         trick_user = app.connection.TrickUser()
         trick_user.update(update_data)
-        
+
         try:
             trick_user.validate()
         except BaseException, e:

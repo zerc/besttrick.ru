@@ -95,9 +95,16 @@ def checkin_page(*args, **context):
 
     #TODO объеденить в функцией checktrick
     form_data = request.form.to_dict()
-    trick_id  = form_data.pop('trick_id')
-    ref       = form_data.pop('ref')
+    trick_id  = form_data.pop('trick_id', None)
+    ref       = form_data.pop('ref', None)    
+    default_redirect = redirect(ref or url_for('mobile_checkin_page'))
 
+    try:
+        form_data['cones'] = int(form_data['cones'])
+    except ValueError:
+        flash(u'Неверное кол-во конусов', 'error')
+        return default_redirect
+    
     checkin_result = checkin_user(trick_id, g.user['id'], form_data)
 
     if isinstance(checkin_result, tuple):
@@ -105,7 +112,7 @@ def checkin_page(*args, **context):
     else:
         flash(u'Вы успешно зачекинились', 'success')
 
-    return redirect(ref or url_for('mobile_checkin_page'))
+    return default_redirect
 
   
 @render_to()

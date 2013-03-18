@@ -10,10 +10,12 @@
 import simplejson as json
 import unittest
 
+from flask import get_flashed_messages
+
 from apps.tests import BaseTestCase
 
 class TricksTestCase(BaseTestCase):
-    def test_tricks(self):
+    def _test_tricks(self):
         r = self.client.get('/tricks/')
         self.assertEqual(r.status_code, 200, u'Wrong response status code: %s' % r.status_code)
         
@@ -30,7 +32,7 @@ class TricksTestCase(BaseTestCase):
         r = self.client.get('/tricks/trick0/check/')
         self.assertEqual(r.status_code, 405, u'Not closed for another requests types!')
 
-        # типа авторизовались :D
+        # # типа авторизовались :D
         self.client.get('/pown/0/', follow_redirects=True)
         
         test_data_sets = (
@@ -51,6 +53,15 @@ class TricksTestCase(BaseTestCase):
         r = self.client.put('/tricks/trick0/check/', data=json.dumps({'cones': 200}))
         self.assertEqual(r.status_code, 200, u'Checkin broken, ALARM! (status_code = %s, text = %s)' % \
             (r.status_code, unicode(r.data, r.charset)))
+
+        # mobile part        
+        r = self.client.get('/check/?trick=0&cones=0', base_url=self.app.config['MOBILE_HOST'])
+        self.assertEqual(r.status_code, 200, u'Mobile checkin page BROKEN!!')
+        for data_set in test_data_sets:
+            with self.client as c:
+                r = c.post('/check/', data=data_set, base_url=self.app.config['MOBILE_HOST'])
+                self.assertEqual(r.status_code, 302, u'Mobile checkin broken with data_set=%s' % repr(data_set))
+                
 
 if __name__ == '__main__':
     unittest.main()
