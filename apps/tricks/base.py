@@ -209,11 +209,17 @@ def checkin_user(trick_id, user_id, update_data):
     def _checkin(update_data):
         update_data.update({'user': user_id, 'trick': trick_id})
         trick_user = app.connection.TrickUser()
+
+        for k, v in update_data.items(): # типа приводим к нужным типам .. пока хз почему я так делаю
+            if v:
+                update_data[k] = trick_user.structure[k](v)
+
         trick_user.update(update_data)
-        
+
         try:
             trick_user.validate()
         except BaseException, e:
+            print update_data
             return str(e), 400
 
         trick_user.save()
