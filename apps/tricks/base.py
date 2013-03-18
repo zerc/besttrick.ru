@@ -219,7 +219,6 @@ def checkin_user(trick_id, user_id, update_data):
         try:
             trick_user.validate()
         except BaseException, e:
-            print update_data
             return str(e), 400
 
         trick_user.save()
