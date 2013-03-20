@@ -1,5 +1,5 @@
 #!venv/bin/python
-# -*- coding: utf-8 -*-
+# coding: utf-8
 from mongokit import Connection
 
 from flask import Flask
@@ -11,6 +11,7 @@ try:
     from flask_errormail import mail_on_500
 except ImportError:
     Mail, email_dispatched, mail_on_500 = None, None, None
+
 
 ## {{{ http://code.activestate.com/recipes/576563/ (r1)
 def cached_property(f):
@@ -63,6 +64,7 @@ JS_LIBS = (
     'js/common.js',
     'js/tricks.js',
     'js/users.js',
+    'js/achives.js',
     'js/app.js',
 )
 

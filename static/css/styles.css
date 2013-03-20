@@ -35,9 +35,12 @@ a.logo {
 #jr_overlay {background:#aeaeae; opacity: 0.9; -moz-opacity: 0.9; filter:alpha(opacity=9);}
 
 .user_container {position:relative; display:block; float:right; line-height:40px; margin-right:10px;}
-a.user_rating {
+.user_container .user_rating, .user_container .user_achives {
     background:#AEAEAE; padding:2px 5px; color:#fff; -webkit-border-radius: 3px;
     -moz-border-radius: 3px; border-radius: 3px; margin-right:10px; text-decoration:none;
+}
+.user_container .user_achives {
+    background:rgb(145, 179, 37);
 }
 
 .user_container .logout {margin-left:15px;}
@@ -462,3 +465,16 @@ div.bbf-editorYouTube div input {width:190px !important; display:inline;}
     position:absolute; width:100%; opacity:0.9; -moz-opacity:0.9; filter:alpha(opacity=9);
     top:0; background-color: #F2F2F2; overflow:hidden; height:1200px;
 }
+
+
+/* Achives page */
+.achives_filter {
+  padding: 10px 95px 10px 10px;
+  margin-bottom: 10px;
+  border-bottom: 1px solid #E8E9EB;
+  background-color: #fefefe;
+}
+.achives_list {display:block; margin:0;}
+.achives_list li {border:1px solid #aeaeae; padding:10px; background-color:#fff; margin-bottom:10px;}
+.achives_list li.achive_done {background-color:rgb(184, 238, 184);}
+.achives_list li .done {color:green;}

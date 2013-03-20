@@ -1,0 +1,10 @@
+<div class="achives_filter"></div>
+<ul class="achives_list">
+    <% achives.forEach(function (achive, i) { %>
+        <li class="achive<% if (achive.get('done')) { %> achive_done<% } %>">
+            <%= achive.get('title') %><br>
+            <%= achive.get_descr() %>
+            <%= achive.show_progress() %>
+        </li>
+    <% }); %>
+</ul>

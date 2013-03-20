@@ -1,7 +1,7 @@
 #!venv/bin/python
 # -*- coding: utf-8 -*-
 from project import app, markdown
-from apps import tricks, users, common, admin, bt
+from apps import tricks, users, common, admin, bt, achives
 from flask import render_template
 
 # hook just remove this when army end
@@ -48,6 +48,11 @@ url('/users/user<int:user_id>/',        'profile',          users.user_profile)
 url('/users/user<int:user_id>/',        'profile',          users.user_profile, subdomain="m")
 url('/users/rating/',                   'rating',           users.top_users)
 url('/users/rating/',                   'mobile_rating',    users.top_users,  subdomain="m")
+
+### Achives urls
+url('/my/achives/',                       'my_achives',      achives.my_achives)
+url('/my/achives/achive<int:achive_id>',  'my_achive',       achives.my_achive)
+
 
 
 

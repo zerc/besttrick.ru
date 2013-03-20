@@ -39,7 +39,8 @@ var App = Backbone.Router.extend({
         'filter=:tags_selected'      : 'filter', // no index for search engines
         '!about'                     : 'about',
         '!users/rating'              : 'top_users',
-        '!top'                       : 'top_users' // depricated, remove soon
+        '!u/achives'                 : 'my_achives',
+        '!users/user:user_id/achives': 'profile_achives'
     },
 
     initialize: function (args) {
@@ -76,6 +77,7 @@ var App = Backbone.Router.extend({
         this.trickFull  = new TrickFullView({user: userModel});
         this.feedback   = new FeedBack({user: userModel});
         this.loader     = new Loader();
+        this.achives    = new window.BTAchives.AchivesView({user: this.user, base: '/my'});
 
         // Общие действия при переходе по страницам
         this.bind('all', function (a, b, c) {
@@ -89,6 +91,13 @@ var App = Backbone.Router.extend({
         });
 
         Backbone.history.start();
+    },
+
+    my_achives: function () {
+        var self = this;
+        this.achives.render({callback: function () {
+            self.loader.hide();
+        }});
     },
 
     top_users: function () {
@@ -114,11 +123,10 @@ var App = Backbone.Router.extend({
     },
 
     about: function () {
-        this.loader.show();
-
         var template = new EJS({url: '/static/templates/about.ejs'});
+        
+        this.loader.show();
         this.$el.html(template.render());
-
         this.loader.hide();
     },
 
