@@ -469,12 +469,22 @@ div.bbf-editorYouTube div input {width:190px !important; display:inline;}
 
 /* Achives page */
 .achives_filter {
-  padding: 10px 95px 10px 10px;
-  margin-bottom: 10px;
-  border-bottom: 1px solid #E8E9EB;
-  background-color: #fefefe;
+  padding:10px 95px 10px 10px; margin-bottom:10px; border-bottom:1px solid #E8E9EB;
+  background-color:#fefefe; text-align:center;
 }
+
+.achives_filter a {
+  padding:5px 10px;
+  text-decoration:none;
+}
+
+.achives_filter a.selected {
+  background:#B55A5A; color:#fff;
+  -webkit-border-radius:5px; -moz-border-radius:5px; border-radius:5px;
+}
+
 .achives_list {display:block; margin:0;}
 .achives_list li {border:1px solid #aeaeae; padding:10px; background-color:#fff; margin-bottom:10px;}
 .achives_list li.achive_done {background-color:rgb(184, 238, 184);}
 .achives_list li .done {color:green;}
+

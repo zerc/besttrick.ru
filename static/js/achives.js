@@ -100,8 +100,10 @@ window.BTAchives.Achive = Backbone.Model.extend({
 window.BTAchives.AchiveList = Backbone.Collection.extend({
     model: window.BTAchives.Achive,
 
+    level: 1,
+
     url: function () {
-        return this.base + '/achives/?level=2';
+        return this.base + '/achives/?level=' + this.level;
     },
 
     initialize: function (base) {
@@ -120,7 +122,7 @@ window.BTAchives.AchivesView = Backbone.View.extend({
     template: new EJS({url: '/static/templates/achives.ejs'}),
 
     events: {
-        // 'click a.tricks_filter__tag': 'activate_tag'
+        'click a.achives_level': 'change_level'
     },
 
     initialize: function (args) {
@@ -128,9 +130,14 @@ window.BTAchives.AchivesView = Backbone.View.extend({
         this.collection = new window.BTAchives.AchiveList(args.base);
     },
 
+    change_level: function () {
+
+    },
+
     render: function (args) {
         var self = this;
 
+        this.collection.level = args.level;
         this.collection.fetch({success: function (a, b, c) {
             self.$el.html(self.template.render({achives: a}));
             args.callback();

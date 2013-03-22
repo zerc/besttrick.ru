@@ -39,7 +39,10 @@ var App = Backbone.Router.extend({
         'filter=:tags_selected'      : 'filter', // no index for search engines
         '!about'                     : 'about',
         '!users/rating'              : 'top_users',
+        
         '!u/achives'                 : 'my_achives',
+        '!u/achives/level:level'     : 'my_achives',
+
         '!users/user:user_id/achives': 'profile_achives'
     },
 
@@ -93,9 +96,9 @@ var App = Backbone.Router.extend({
         Backbone.history.start();
     },
 
-    my_achives: function () {
+    my_achives: function (level) {
         var self = this;
-        this.achives.render({callback: function () {
+        this.achives.render({level: level || 1, callback: function () {
             self.loader.hide();
         }});
     },
