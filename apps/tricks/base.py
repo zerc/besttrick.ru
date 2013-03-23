@@ -11,7 +11,7 @@ from gdata.youtube import service
 from flask import request, g
 from werkzeug.routing import BaseConverter, ValidationError
 
-from project import app, markdown
+from project import app, markdown, checkin_signal
 from apps.notify import send_notify, CHECKTRICK_WITH_VIDEO
 from apps.users import get_user
 from apps.common import grouped_stats
@@ -218,6 +218,7 @@ def checkin_user(trick_id, user_id, update_data):
 
         trick_user.save()
         send_notice_about_video(trick, user_id, update_data)
+        checkin_signal.send(trick_user)
         return update_data
 
     # выбираем последний лучший результат

@@ -9,3 +9,4 @@ Flask-ErrorMail
 Flask-Script
 fabric
 gdata
+blinker

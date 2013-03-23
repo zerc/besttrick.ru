@@ -34,8 +34,12 @@ window.BTAchives.Achive = Backbone.Model.extend({
         return _.keys(this.get('rule'))[0];
     },
 
+    get_level: function () {
+        return this.collection.level;
+    },
+
     url: function () {
-        var common_string = '/achives/achive' + this.get('id') + '/level' + this.get('level') + '/';
+        var common_string = '/achives/achive' + this.get('id') + '/level' + this.get_level() + '/';
 
         if (this.get('user_id') === this.user.get('id')) {
             return '/my' + common_string;
@@ -46,7 +50,7 @@ window.BTAchives.Achive = Backbone.Model.extend({
 
     get_max_progress_for_lvl: function () {
         if (this.get('rule').cones) {
-            return this.get('rule').cones[this.get('level') - 1];
+            return this.get('rule').cones[this.get_level() - 1];
         }
 
         if (this.get('rule').complex) {
@@ -69,19 +73,18 @@ window.BTAchives.Achive = Backbone.Model.extend({
     },
 
     show_progress: function () {
+        window.ata = this;
         if (this.get('rule').cones) {
             var max = this.get_max_progress_for_lvl(),
-                max_index = this.get('rule').cones.indexOf(max),
-                min = this.get('rule').cones[_.max([0, max_index-1])];
-            min = _.max([min, this.get('progress')[0]]);
-            return _.template('Выполнено <%= min %> / <%= max %>', {min: min, max: max})
+                progress = this.get('progress')[0] || 0;
+            return _.template('Выполнено <%= progress %> / <%= max %>', {progress: progress, max: max})
         }
 
         if (this.get('rule').complex) {
             var tmpl = "Чтобы получить достижение нужно выполнить следующее:<br><%= els %>",
                 els = _.map(this.get('rule').complex, function (e, i) {
                     var el = this.collection.get(e);
-                    el.done = _.include(this.get('progress'), el.id);
+                    el.done = _.include(this.get('progress'), el.id) && el.get('done');
                     return el;
                 }, this);
 

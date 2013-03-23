@@ -7,3 +7,4 @@ Flask-Markdown
 Flask-Script
 fabric
 gdata
+blinker

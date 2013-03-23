@@ -9,7 +9,7 @@
 """
 from flask import render_template, request, jsonify, session, redirect, url_for, make_response, flash, g
 
-from project import app
+from project import app, checkin_signal
 
 from apps.common import grouped_stats, allow_for_robot, is_robot, render_to
 from apps.users import user_only, get_user
@@ -26,7 +26,7 @@ def get_achives_for_user(user_id, level):
                 'progress'     : e.get('progress'),
                 #'time_changed' : e.get('time_changed').t,
             });
-            a['id'] = a.pop('_id');
+        a['id'] = a.pop('_id');
         return a
     return map(_patch, app.connection.Achive.fetch())
 
@@ -48,3 +48,14 @@ def my_achives(*args, **kwargs):
 @render_to()
 def my_achive(achive_id):
     return {}
+
+
+
+def add_achive_after_checkin(trick_user):
+    achives = app.connection.Achive.fetch({"trick_id": trick_user['trick']})
+    for a in achives:        
+        if a.test(trick_user['cones']):
+            level = a.get_level(trick_user['cones'])
+            a.make_event(trick_user['user'], trick_user['cones'])
+            a.update_parents(trick_user['user'], level)
+checkin_signal.connect(add_achive_after_checkin)

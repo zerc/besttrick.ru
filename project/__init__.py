@@ -5,6 +5,7 @@ from mongokit import Connection
 from flask import Flask
 from flask.ext.assets import Environment, Bundle
 from flaskext.markdown import Markdown
+from blinker import signal
 
 try:
     from flaskext.mail import Mail, email_dispatched
@@ -78,3 +79,7 @@ def log_message(message, app):
 if Mail:
     email_dispatched.connect(log_message)
     mail = Mail(app)
+
+
+# signals
+checkin_signal = signal('checkin')

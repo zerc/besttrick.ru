@@ -25,12 +25,11 @@ class Achive(BaseModel):
     def __get(self, method_prefix, value):
         rule_name, condition = self.get('rule').items()[0]
         try:
-            return getattr(self, '%s_%s' % (status_event, rule_name))(value)
+            return getattr(self, '%s_%s' % (method_prefix, rule_name))(value)
         except AttributeError:
             print u'Unknow rule: %s' % rule_name
         return False
 
-    
     ### Определения статуса ачивки - выполнена, не выполнена
     def status_event(self, value):
         return self.__get('_status_event', value)
@@ -73,11 +72,11 @@ class Achive(BaseModel):
         pass
 
     def get_event(self, user_id, level):
-        event = app.connection.Event.fetch_one({"user_id": user_id, "achive_id": self.get("_id"), "level": level})
+        event = app.connection.Event.fetch_one({"user_id": user_id, "achive_id": int(self.get("_id")), "level": level})
         created = False
         if not event:
             event = app.connection.Event()
-            event.update({"user_id": user_id, "achive_id": self.get("_id"), "level": level})
+            event.update({"user_id": user_id, "achive_id": int(self.get("_id")), "level": level})
             created = True
         return event, created
 
@@ -88,23 +87,31 @@ class Achive(BaseModel):
         if not self.test(value): return False
 
         level = self.get_level(value)
-        event, _ = self.get_event(user_id, level)
-        event.update({'progress': [value], 'done': self.status_event(value)})
-        event.save()
+
+        for lvl in xrange(1, level+1):
+            event, _ = self.get_event(user_id, lvl)
+            event.update({'progress': [value], 'done': self.status_event(value)})
+            event.save()
 
     def update_parents(self, user_id, level):
         """
-        Обновляет данные по дереву родителей
+        Обновляет данные по родителя
+        #TODO: когда-нибудь понадобится добавить проход на большую глубину
         """
-        parents = app.connection.Achive.fetch({"_id": {"$in": self.get('parents')}})
-        for p in parents:
-            event, _ = p.get_event(user_id, level)
-            event.update({'level': level})
-            current_progress = event.get('progress', [])
-            current_progress.append(self.get("_id"))
-            current_progress = list(set(current_progress)) # убираем возможные дубли
-            event.update({'progress': current_progress, 'done': p.status_event(current_progress)})
-            event.save()
+        parents = list(app.connection.Achive.fetch({"_id": {"$in": self.get('parents')}}))
+
+        for lvl in xrange(1, level+1):
+            for p in parents:
+                event, _ = p.get_event(user_id, lvl)
+                event.update({'level': lvl})
+                current_progress = event.get('progress', [])
+       
+                if self.get_event(user_id, lvl)[0].get('done') is False: continue
+
+                current_progress.append(self.get("_id"))
+                current_progress = list(set(current_progress)) # убираем возможные дубли
+                event.update({'progress': current_progress, 'done': p.status_event(current_progress)})
+                event.save()
 app.connection.register([Achive])
 app.db.seqs.insert({'_id': 'achives_seq',  'val': 0})
 
