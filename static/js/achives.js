@@ -73,7 +73,6 @@ window.BTAchives.Achive = Backbone.Model.extend({
     },
 
     show_progress: function () {
-        window.ata = this;
         if (this.get('rule').cones) {
             var max = this.get_max_progress_for_lvl(),
                 progress = this.get('progress')[0] || 0;

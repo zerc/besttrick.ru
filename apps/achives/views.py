@@ -23,8 +23,7 @@ def get_achives_for_user(user_id, level):
                 'user_id'      : user_id,
                 'level'        : level,
                 'done'         : e.get('done'),
-                'progress'     : e.get('progress'),
-                #'time_changed' : e.get('time_changed').t,
+                'progress'     : e.get('progress')
             });
         a['id'] = a.pop('_id');
         return a

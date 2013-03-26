@@ -10,10 +10,15 @@ from runserver import app
 
 from apps.tricks.tests import TricksTestCase
 from apps.tests import BtTestCase
+from apps.achives.tests import AchivesTestCase
+
 
 env.hosts = _app.config['FLASK_HOSTS']
-TESTS_SET = (TricksTestCase, BtTestCase)
-
+TESTS_SET = {
+    'bt'     : BtTestCase,
+    'tricks' : TricksTestCase,
+    'achives': AchivesTestCase,
+}
 
 def roll():
     local('git push origin master')
@@ -69,7 +74,7 @@ def pulldb():
     """)
 
 
-def run_tests():
+def run_tests(test_name=None):
     """
     Запускает тесты для каждого модуля
     """
@@ -79,10 +84,12 @@ def run_tests():
     app.config['MONGODB_DB'] = test_database_name
 
     # run tests
-    for t in TESTS_SET:
+    def _(t):
         t.app  = app
         suite  = ut.TestLoader().loadTestsFromTestCase(t)
-        result = ut.TextTestRunner(verbosity=1).run(suite)
+        return ut.TextTestRunner(verbosity=1).run(suite)
+        
+    result = _(TESTS_SET[test_name]) if test_name else map(_, TESTS_SET.values())
 
     # clean up :)    
     app.connection.drop_database(test_database_name)
@@ -92,7 +99,7 @@ def run_tests():
 
 def testing(func):
     """
-    Сперва прогоним тесты
+    Декоратор для прогона тестов
     """
     @wraps(func)
     def wrapper(*args, **kwargs):
@@ -103,7 +110,3 @@ def testing(func):
 
 roll = testing(roll)
 push = testing(push)
-
-
-
-

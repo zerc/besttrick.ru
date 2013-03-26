@@ -1,8 +1,10 @@
 # coding: utf-8
 from datetime import datetime
 
-from project import app
+from project import app, cached_property
 from apps.common import BaseModel
+
+__all__ = ['Achive', 'SimpleEvent', 'ComplexEvent']
 
 
 class Achive(BaseModel):
@@ -21,102 +23,66 @@ class Achive(BaseModel):
     required_fields = ['title', 'descr']
     indexes = [{'fields': ['trick_id']}]
 
-    ### private methods
-    def __get(self, method_prefix, value):
-        rule_name, condition = self.get('rule').items()[0]
-        try:
-            return getattr(self, '%s_%s' % (method_prefix, rule_name))(value)
-        except AttributeError:
-            print u'Unknow rule: %s' % rule_name
-        return False
+    @property
+    def _event_cls(self):
+        rule_to_class_map = {
+            'cones'   : 'SimpleEvent',
+            'complex' : 'ComplexEvent'
+        }
+        return getattr(app.connection, rule_to_class_map[self.get('rule').keys()[0]])
 
-    ### Определения статуса ачивки - выполнена, не выполнена
-    def status_event(self, value):
-        return self.__get('_status_event', value)
+    def get_events(user_id):
+        params = {"user_id": user_id, "achive_id": int(self.get("_id"))}
+        return app.connection.Event.fetch(params)
 
-    def _status_event_cones(self, value):
-        index = self.get_level(value) - 1
-        condition = self.get('rule')['cones']
-        return value >= condition[index]        
-
-    def _status_event_complex(self, value):
-        condition = self.get('rule')['complex']
-        return len(condition) == len(value)
-
-    ### Тестирование передаваемых данных - выполняют ли они ачивку или нет
     def test(self, value):
-        return self.__get('_test', value)
+        return self._event_cls.test(self.get('rule'), value)
 
-    def _test_cones(self, value):
-        return not not self._level_for_cones(value)
-
-    def _test_complex(self, value):
-        original   = set(self.get('rule')['complex'])
-        value      = set(value)
-        return not value - original
+    def _get_event_or_dummy(self, user_id):
+        params  = {'user_id': user_id, 'achive_id': int(self.get("_id"))}
+        event = self._event_cls.fetch_one(params.copy())
         
-    ### Определение уровня ачивки по передаваемым данным
-    def get_level(self, value):
-        return self.__get('_level_for', value)  
-
-    def _level_for_cones(self, value):
-        conditions, level = self.get('rule')['cones'], 1        
-        for c in conditions:
-            if value <= c or level == len(conditions):
-                break
-            level += 1
-        return level
-
-    def _level_for_complex(self, value):
-        # берем по лвл дочерней ачивки
-        pass
-
-    def get_event(self, user_id, level):
-        event = app.connection.Event.fetch_one({"user_id": user_id, "achive_id": int(self.get("_id")), "level": level})
-        created = False
         if not event:
-            event = app.connection.Event()
-            event.update({"user_id": user_id, "achive_id": int(self.get("_id")), "level": level})
-            created = True
-        return event, created
+            event = self._event_cls()
+            event.update(params)
 
-    def make_event(self, user_id, value):
-        """
-        Регистрирует достижение пользователя
-        """
-        if not self.test(value): return False
+        try:
+            event._property_cache['achive'] = self # переписать с методом __set__
+        except AttributeError:
+            event._property_cache = {'achive': self}
 
-        level = self.get_level(value)
+        return event
+        
+    def do(self, user_id, value):
+        event = self._get_event_or_dummy(user_id)
+        event.update({'progress': [value]})
+        event.save()
+        return event
 
-        for lvl in xrange(1, level+1):
-            event, _ = self.get_event(user_id, lvl)
-            event.update({'progress': [value], 'done': self.status_event(value)})
-            event.save()
+    def do_parents(self, user_id):
+        event = self._get_event_or_dummy(user_id)
+        parents = app.connection.Achive.fetch({"_id": {"$in": self.get('parents')}})
+        _ = lambda a: unicode(int(a))
 
-    def update_parents(self, user_id, level):
-        """
-        Обновляет данные по родителя
-        #TODO: когда-нибудь понадобится добавить проход на большую глубину
-        """
-        parents = list(app.connection.Achive.fetch({"_id": {"$in": self.get('parents')}}))
+        for p in parents:
+            e = p._get_event_or_dummy(user_id)
 
-        for lvl in xrange(1, level+1):
-            for p in parents:
-                event, _ = p.get_event(user_id, lvl)
-                event.update({'level': lvl})
-                current_progress = event.get('progress', [])
-       
-                if self.get_event(user_id, lvl)[0].get('done') is False: continue
+            current_progress = e.get('progress', [])
 
-                current_progress.append(self.get("_id"))
-                current_progress = list(set(current_progress)) # убираем возможные дубли
-                event.update({'progress': current_progress, 'done': p.status_event(current_progress)})
-                event.save()
+            if not current_progress:
+                current_progress.append({
+                    _(self.get("_id")): event.get('level')
+                })
+            else:
+                current_progress[0][_(self.get("_id"))] = event.get('level')
+
+            e.update({'progress': current_progress})
+            e.save()
 app.connection.register([Achive])
 app.db.seqs.insert({'_id': 'achives_seq',  'val': 0})
 
 
-class Event(BaseModel):
+class BaseEvent(BaseModel):
     __collection__ = "event"
 
     structure = {
@@ -127,12 +93,42 @@ class Event(BaseModel):
         'done'         : bool,
         'progress'     : []
     }
-    default_values  = {'done': False, 'level': 0, 'time_changed': datetime.now}
+    default_values  = {'done': False, 'level': 1, 'time_changed': datetime.now, 'progress': []}
     required_fields = ['user_id']
     indexes         = [{'fields': ['user_id', 'achive_id']}]
-app.connection.register([Event])
+
+
+class SimpleEvent(BaseEvent):
+    @cached_property
+    def achive(self):
+        return app.connection.Achive.fetch_one({"_id": self.get("achive_id")})
+
+    def _get_level(self):
+        conditions, level = self.achive.get('rule')['cones'], 0
+        value = self.get('progress')[0]
+        for c in conditions:
+            if value <= c or level == len(conditions):
+                break
+            level += 1
+        return level
+
+    def test(self, rule_dict, value):
+        return value > min(rule_dict['cones'])  
+
+    def save(self, *args, **kwargs):        
+        self.update({'level' : self._get_level()})
+        return super(SimpleEvent, self).save(*args, **kwargs)
+app.connection.register([SimpleEvent])
 app.db.seqs.insert({'_id': 'events_seq',  'val': 0})
 
+
+class ComplexEvent(SimpleEvent):
+    def test(self, value):
+        pass
+
+    def _get_level(self):
+        return min(self.get('progress')[0].values())
+app.connection.register([ComplexEvent])
 
 
 ### исключительно для теста :)
@@ -168,6 +164,3 @@ def fill():
         a['_id'] = app.db.seqs.find_and_modify({"_id": "achives_seq"}, {"$inc": {"val": 1}})['val']
         achive.update(a)
         achive.save()
-
-# achive = app.connection.Achive.fetch({"_id": 1})[0]
-# test_value, user_id = 10, 0
