@@ -38,7 +38,7 @@ class Achive(BaseModel):
     def test(self, value):
         return self._event_cls.test(self.get('rule'), value)
 
-    def _get_event_or_dummy(self, user_id):
+    def get_event_or_dummy(self, user_id):
         params  = {'user_id': user_id, 'achive_id': int(self.get("_id"))}
         event = self._event_cls.fetch_one(params.copy())
         
@@ -54,18 +54,18 @@ class Achive(BaseModel):
         return event
         
     def do(self, user_id, value):
-        event = self._get_event_or_dummy(user_id)
+        event = self.get_event_or_dummy(user_id)
         event.update({'progress': [value]})
         event.save()
         return event
 
     def do_parents(self, user_id):
-        event = self._get_event_or_dummy(user_id)
+        event = self.get_event_or_dummy(user_id)
         parents = app.connection.Achive.fetch({"_id": {"$in": self.get('parents')}})
         _ = lambda a: unicode(int(a))
 
         for p in parents:
-            e = p._get_event_or_dummy(user_id)
+            e = p.get_event_or_dummy(user_id)
 
             current_progress = e.get('progress', [])
 
@@ -93,27 +93,27 @@ class BaseEvent(BaseModel):
         'done'         : bool,
         'progress'     : []
     }
-    default_values  = {'done': False, 'level': 1, 'time_changed': datetime.now, 'progress': []}
+    default_values  = {'done': False, 'level': 0, 'time_changed': datetime.now, 'progress': []}
     required_fields = ['user_id']
     indexes         = [{'fields': ['user_id', 'achive_id']}]
 
-
-class SimpleEvent(BaseEvent):
     @cached_property
     def achive(self):
         return app.connection.Achive.fetch_one({"_id": self.get("achive_id")})
 
+class SimpleEvent(BaseEvent):
     def _get_level(self):
         conditions, level = self.achive.get('rule')['cones'], 0
         value = self.get('progress')[0]
         for c in conditions:
-            if value <= c or level == len(conditions):
+            if value < c:
                 break
             level += 1
         return level
 
     def test(self, rule_dict, value):
-        return value > min(rule_dict['cones'])  
+        return True
+        # return value > min(rule_dict['cones'])  
 
     def save(self, *args, **kwargs):        
         self.update({'level' : self._get_level()})
@@ -127,7 +127,10 @@ class ComplexEvent(SimpleEvent):
         pass
 
     def _get_level(self):
-        return min(self.get('progress')[0].values())
+        l = len(self.achive.get('rule')['complex'])
+        val = self.get('progress')[0].values()
+
+        return 0 if len(val) < l else min(val)
 app.connection.register([ComplexEvent])
 
 

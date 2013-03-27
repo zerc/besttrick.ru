@@ -35,7 +35,7 @@ window.BTAchives.Achive = Backbone.Model.extend({
     },
 
     get_level: function () {
-        return this.collection.level;
+        return this.get('level');
     },
 
     url: function () {
@@ -50,7 +50,7 @@ window.BTAchives.Achive = Backbone.Model.extend({
 
     get_max_progress_for_lvl: function () {
         if (this.get('rule').cones) {
-            return this.get('rule').cones[this.get_level() - 1];
+            return this.get('rule').cones[this.get_level()];
         }
 
         if (this.get('rule').complex) {
@@ -59,37 +59,40 @@ window.BTAchives.Achive = Backbone.Model.extend({
     },
 
     get_descr: function () {
-        var text_tmpl = this.get('descr') + '<br>';
+        var text_tmpl = this.get('descr') + '<br>',
+            progress = this.get_max_progress_for_lvl();
 
         if (this.get('rule').cones) {
-            return _.template(text_tmpl, {
-                'cones': EJS.Helpers.prototype.plural(this.get_max_progress_for_lvl(),
-                'банка', 'банки', 'банок')
-            });
+            if (progress) {
+                return _.template(text_tmpl, {
+                    'cones': EJS.Helpers.prototype.plural(progress,
+                    'банка', 'банки', 'банок')
+                }); 
+            } else {
+                return 'Нет предела совершенству, но вы на правильном пути!<br>';
+            }
         }
 
         return this.get('descr');
-
     },
 
     show_progress: function () {
         if (this.get('rule').cones) {
             var max = this.get_max_progress_for_lvl(),
+                formatted = max ? '/ ' + max : '',
                 progress = this.get('progress')[0] || 0;
-            return _.template('Выполнено <%= progress %> / <%= max %>', {progress: progress, max: max})
+            return _.template('Выполнено <%= progress %> <%= max %>', {progress: progress, max: formatted})
         }
 
         if (this.get('rule').complex) {
-            var tmpl = "Чтобы получить достижение нужно выполнить следующее:<br><%= els %>",
+            window.at = this.collection
+            var tmpl = "Чтобы получить следующий уровень достижения нужно:<br><%= els %>",
+                max_lvl = _.max(this.collection.map(function (e) { return e.get('level'); })) || 1,
+                e,
                 els = _.map(this.get('rule').complex, function (e, i) {
-                    var el = this.collection.get(e);
-                    el.done = _.include(this.get('progress'), el.id) && el.get('done');
-                    return el;
+                    e = this.collection.get(e);
+                    return '<span' + (e.get('level') == max_lvl ? ' class="done">' : '>') + e.get('title') + ' (' + e.get('level') + ')</span>';
                 }, this);
-
-            els = _.map(els, function (e, i) {
-                return '<span' + (e.done ? ' class="done">' : '>') + e.get('title') + '</span>';
-            });
 
             return _.template(tmpl, {
                 els: els.join(' ')
@@ -105,7 +108,7 @@ window.BTAchives.AchiveList = Backbone.Collection.extend({
     level: 1,
 
     url: function () {
-        return this.base + '/achives/?level=' + this.level;
+        return this.base + '/achives/';
     },
 
     initialize: function (base) {

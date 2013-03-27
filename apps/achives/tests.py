@@ -14,6 +14,12 @@ from .models import *
 
 
 class AchivesTestCase(BaseTestCase):
+    def setUp(self):
+        self.client = self.app.test_client()
+
+        # clean first
+        self.app.connection.SimpleEvent.collection.drop()
+
     def test_base_logic(self):
         valid_checkin_data = {'cones': 21, 'video_url': None, 'trick': 7, 'user': 1, 'approved': 0}
   
@@ -30,8 +36,8 @@ class AchivesTestCase(BaseTestCase):
 
         do_simple()
 
-        e = self.app.connection.Achive.fetch_one({"_id": 2})._get_event_or_dummy(valid_checkin_data['user'])
-        self.assertEqual(e.get('level'), 2, 'Level detection for complex event is broken!')        
+        e = self.app.connection.Achive.fetch_one({"_id": 2}).get_event_or_dummy(valid_checkin_data['user'])
+        self.assertEqual(e.get('level'), 0, 'Level detection for complex event is broken!')        
         val, expected = e.get('progress')[0], {u'0': 2}
         self.assertEqual(val, expected, u'Invalid progress value=%s!' % repr(val))    
         

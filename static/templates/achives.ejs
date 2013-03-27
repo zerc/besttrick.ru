@@ -1,13 +1,9 @@
 <div class="achives_filter">
-    <% [1, 2, 3].forEach(function (a, i) { %>
-        <a href="#!u/achives/level<%= a %>" class="achives_level<% if (achives.level == a) { %> selected<% } %>">
-            <%= a %> уровень
-        </a>
-    <% }) %>
 </div>
 <ul class="achives_list">
     <% achives.forEach(function (achive, i) { %>
         <li class="achive<% if (achive.get('done')) { %> achive_done<% } %>">
+            <%= achive.get('level') %><br>
             <%= achive.get('title') %><br>
             <%= achive.get_descr() %>
             <%= achive.show_progress() %>
