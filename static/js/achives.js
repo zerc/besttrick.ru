@@ -76,6 +76,15 @@ window.BTAchives.Achive = Backbone.Model.extend({
         return this.get('descr');
     },
 
+    get_percent_of_progress: function () {
+        if (this.get('rule').cones) {
+            var max = this.get_max_progress_for_lvl(),
+                progress = this.get('progress')[0] || 0;
+            return 100.0 * progress / max;
+        }
+        return 0;
+    },
+
     show_progress: function () {
         if (this.get('rule').cones) {
             var max = this.get_max_progress_for_lvl(),
@@ -145,6 +154,7 @@ window.BTAchives.AchivesView = Backbone.View.extend({
         this.collection.level = args.level;
         this.collection.fetch({success: function (a, b, c) {
             self.$el.html(self.template.render({achives: a}));
+            self.$el.find('div.progress_holder').tooltip({trigger: 'click'});
             args.callback();
         }})
     }

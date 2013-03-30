@@ -484,7 +484,32 @@ div.bbf-editorYouTube div input {width:190px !important; display:inline;}
 }
 
 .achives_list {display:block; margin:0;}
-.achives_list li {border:1px solid #aeaeae; padding:10px; background-color:#fff; margin-bottom:10px;}
+.achives_list li {
+  border:1px solid #aeaeae; padding:3px 0 0 4px; background-color:#fff; margin-bottom:10px;
+  float:left; width:124px; height:124px; margin-right:5px;
+}
+
+.achives_list li .level_holder {
+  width: 20px;
+  height: 20px;
+  background: red;
+  text-align: center;
+  color: #fff;
+  float: right;
+  margin-right: 4px;
+}
+
+.progress_holder {
+  border: 1px solid;
+  height: 18px;
+  width: 98px;
+  float: left;
+}
+.progress_holder .bar {
+  background: green;
+  height: 18px;
+  width: 99%;
+}
 .achives_list li.achive_done {background-color:rgb(184, 238, 184);}
 .achives_list li .done {color:green;}
 
