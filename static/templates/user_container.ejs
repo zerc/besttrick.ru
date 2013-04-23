@@ -1,6 +1,6 @@
 <% if (user) { %>
     <a href="#!u/achives" title="Ваши достижения" class="user_achives">0</a>
-    <a href="#!top" title="Ваш персональный рейтинг" class="user_rating"><%= user.get('rating') %></a>
+    <a href="#!users/rating" title="Ваш персональный рейтинг" class="user_rating"><%= user.get('rating') %></a>
     <a href="#!u" class="my"><%= user.get('nick') %></a> <a href="/logout/" class="logout" rel="nofollow">Выйти</a>
 <% } else { %>
     Войти с помощью: <a href="<%= window.BTUsers.Loginza.href %>" class="loginza"><img src="http://loginza.ru/img/providers/vkontakte.png" alt="Вконтакте" title="Вконтакте"><img src="http://loginza.ru/img/providers/twitter.png" alt="Twitter" title="Twitter"><img src="http://loginza.ru/img/providers/facebook.png" alt="Facebook" title="Facebook"></a>

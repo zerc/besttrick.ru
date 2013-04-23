@@ -1,7 +1,7 @@
 #!venv/bin/python
 # -*- coding: utf-8 -*-
 ADMINS = ['zero13cool@yandex.ru']
-SERVER_NAME = "bt:8000"
+SERVER_NAME = "bt.ru:8000"
 HOST   = "http://" + SERVER_NAME # используется для генерации сайтмапа
 
 DEBUG        = True

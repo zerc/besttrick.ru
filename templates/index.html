@@ -1,6 +1,6 @@
 {% extends 'base.html' %}
 
- {% block title %}Besttrick - покажи свой лучший трюк! Трюки на роликах, фристайл слалом, видео трюков, рейтинг роллеров{% endblock %}
+{% block title %}Besttrick - покажи свой лучший трюк! Трюки на роликах, фристайл слалом, видео трюков, рейтинг роллеров{% endblock %}
 
 {% block extra_head %}
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
@@ -31,7 +31,6 @@
         <script src="{{ url_for('static', filename='js/backbone-forms.min.js') }}"></script>
         <script type="text/javascript" src="{{ url_for('static', filename='js/admin.js') }}"></script>
     {% endif %}
-
 
     <script type="text/javascript" src="//yandex.st/share/share.js" charset="utf-8"></script>
 
@@ -74,7 +73,7 @@
         </div>
 
         <div class="copyright">
-            &copy; <a href="http://www.zerc.ru/" target="_blank">zerc</a>, 2012 <span style="color:#aeaeae;">(бета)</span> - <a href="#!about" title="О проекте">О проекте</a>, <a href="#!top" title="Топ пользователей">Топ пользователей</a>, <a href="{{ config['MOBILE_HOST'] }}" rel="nofollow">Мобильная версия</a>
+            &copy; <a href="http://www.zerc.ru/" target="_blank">zerc</a>, 2012 <span style="color:#aeaeae;">(бета)</span> - <a href="#!about" title="О проекте">О проекте</a>, <a href="#!users/rating" title="Топ пользователей">Топ пользователей</a>, <a href="{{ config['MOBILE_HOST'] }}" rel="nofollow">Мобильная версия</a>
         </div>
     </div>
 

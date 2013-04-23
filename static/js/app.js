@@ -41,8 +41,6 @@ var App = Backbone.Router.extend({
         '!users/rating'              : 'top_users',
         
         '!u/achives'                 : 'my_achives',
-        '!u/achives/level:level'     : 'my_achives',
-
         '!users/user:user_id/achives': 'profile_achives'
     },
 

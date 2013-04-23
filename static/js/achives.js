@@ -4,7 +4,14 @@
 /*
  * Модели, вьюхи и вспомогательные функции, относящиеся к ачичкам
  */
-window.BTAchives = {};
+window.BTAchives = {
+    max_achive_lvl  : 3,
+    common_phrases  : [
+        '<br>Для того, чтобы получить достижение <a href="#" class="more_link">откатайте</a>:',
+        '<br>Для получения следующего уровня достижения вам нужно <a href="#" class="more_link">откатать</a>:'
+    ],
+    cls_for_lvl: 'achive__lvl_'
+};
 
 /* Models */
 window.BTAchives.Achive = Backbone.Model.extend({
@@ -34,8 +41,21 @@ window.BTAchives.Achive = Backbone.Model.extend({
         return _.keys(this.get('rule'))[0];
     },
 
-    get_level: function () {
-        return this.get('level');
+    get_title: function () {
+        return this.get('title') + ' lvl ' + this.get('level');
+    },
+
+    get_next_lvl: function () {
+        return _.min([this.get('level')+1, window.BTAchives.max_achive_lvl]);
+    },
+
+    get_descr: function () {
+        return this.get('descr') + window.BTAchives.common_phrases[_.min([this.get('level'), 1])];
+    },
+
+    get_time_changed: function () {
+        var t = new Date(this.get('time_changed'));
+        return t.getDate() + '.' + t.getMonth() + '.' + t.getFullYear() + ' ' + t.getHours() + ':' + t.getMinutes();
     },
 
     url: function () {
@@ -48,9 +68,9 @@ window.BTAchives.Achive = Backbone.Model.extend({
         return '/profile' + this.get('user_id') + common_string;
     },
 
-    get_max_progress_for_lvl: function () {
+    get_max_progress_for_lvl: function (for_lvl) {
         if (this.get('rule').cones) {
-            return this.get('rule').cones[this.get_level()];
+            return this.get('rule').cones[(for_lvl || this.get('level'))-1 || 0];
         }
 
         if (this.get('rule').complex) {
@@ -58,54 +78,12 @@ window.BTAchives.Achive = Backbone.Model.extend({
         }
     },
 
-    get_descr: function () {
-        var text_tmpl = this.get('descr') + '<br>',
-            progress = this.get_max_progress_for_lvl();
-
+    show_progress: function (for_lvl) {
         if (this.get('rule').cones) {
-            if (progress) {
-                return _.template(text_tmpl, {
-                    'cones': EJS.Helpers.prototype.plural(progress,
-                    'банка', 'банки', 'банок')
-                }); 
-            } else {
-                return 'Нет предела совершенству, но вы на правильном пути!<br>';
-            }
-        }
-
-        return this.get('descr');
-    },
-
-    get_percent_of_progress: function () {
-        if (this.get('rule').cones) {
-            var max = this.get_max_progress_for_lvl(),
-                progress = this.get('progress')[0] || 0;
-            return 100.0 * progress / max;
-        }
-        return 0;
-    },
-
-    show_progress: function () {
-        if (this.get('rule').cones) {
-            var max = this.get_max_progress_for_lvl(),
-                formatted = max ? '/ ' + max : '',
-                progress = this.get('progress')[0] || 0;
-            return _.template('Выполнено <%= progress %> <%= max %>', {progress: progress, max: formatted})
-        }
-
-        if (this.get('rule').complex) {
-            window.at = this.collection
-            var tmpl = "Чтобы получить следующий уровень достижения нужно:<br><%= els %>",
-                max_lvl = _.max(this.collection.map(function (e) { return e.get('level'); })) || 1,
-                e,
-                els = _.map(this.get('rule').complex, function (e, i) {
-                    e = this.collection.get(e);
-                    return '<span' + (e.get('level') == max_lvl ? ' class="done">' : '>') + e.get('title') + ' (' + e.get('level') + ')</span>';
-                }, this);
-
-            return _.template(tmpl, {
-                els: els.join(' ')
-            });
+            var max = this.get_max_progress_for_lvl(for_lvl),
+                formatted = max ? '/' + max : '',
+                progress = this.get('progress')[0] || 0;                
+            return _.template('<%= progress %><%= max %>', {progress: progress, max: formatted})
         }
     }
 });
@@ -113,8 +91,6 @@ window.BTAchives.Achive = Backbone.Model.extend({
 
 window.BTAchives.AchiveList = Backbone.Collection.extend({
     model: window.BTAchives.Achive,
-
-    level: 1,
 
     url: function () {
         return this.base + '/achives/';
@@ -131,32 +107,83 @@ window.BTAchives.AchiveList = Backbone.Collection.extend({
 
 
 /*** Views ***/
+window.BTAchives.AchiveView = Backbone.View.extend({
+    tagName     : 'div',
+    className   : 'achive',
+    template    : new EJS({url: '/static/templates/achive.ejs'}),
+    
+    _cached     : false,
+
+    events: {
+        'click div.achive__header' : 'toggle',
+        'click div.achive__text a.more_link' : 'toggle'
+    },
+
+    initialize: function (args) {
+        _.bindAll(this, 'render', 'toggle');
+        this.$el.addClass(window.BTAchives.cls_for_lvl + this.model.get('level'));
+    },
+
+    toggle: function () {
+        // TODO: переписать так, чтобы от родителя можно было добраться до детей (поле childrens) =()
+        var self = this,
+            toggle_cls = 'showing_progress',
+            childrens;
+
+        if (this.$el.hasClass(toggle_cls)) {
+            this.$el.removeClass(toggle_cls);
+            return false;
+        } else if (!this._cached) {
+            childrens= this.model.collection.filter(function (e) {
+                return _.include(e.get('parents'), self.model.id);
+            });
+
+            this.render({childrens: childrens});
+            this._cached = true;
+        }
+
+        this.$el.addClass(toggle_cls);
+        return false;
+    },
+
+    render: function (args) {
+        var opts = {achive: this.model, childrens: []}
+        _.extend(opts, args)
+        this.$el.html(this.template.render(opts));
+        this.$el.find('ul.achive__progress span, div.achive__status').tooltip();
+
+        return this.$el;
+    }
+});
+
+
 window.BTAchives.AchivesView = Backbone.View.extend({
     el: 'div.content',
     template: new EJS({url: '/static/templates/achives.ejs'}),
-
-    events: {
-        'click a.achives_level': 'change_level'
-    },
 
     initialize: function (args) {
         _.bindAll(this, 'render');
         this.collection = new window.BTAchives.AchiveList(args.base);
     },
 
-    change_level: function () {
-
-    },
-
     render: function (args) {
-        var self = this;
+        var self = this,
+            achives = [[], []],
+            achive_list__cell,
+            tmp;
 
-        this.collection.level = args.level;
+        this.$el.html(this.template.render());        
+        achive_list__cell = self.$el.find('.achive_list__cell');
+
         this.collection.fetch({success: function (a, b, c) {
-            self.$el.html(self.template.render({achives: a}));
-            self.$el.find('div.progress_holder').tooltip({trigger: 'click'});
+            a.filter(function (e) { return e.get('rule').complex; })
+             .forEach(function (e, i) {
+                tmp = new window.BTAchives.AchiveView({model: e});
+                $(achive_list__cell[i % 2]).append(tmp.render());
+            });
+
             args.callback();
-        }})
+        }});
     }
 });
 

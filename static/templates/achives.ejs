@@ -1,17 +1,6 @@
 <div class="achives_filter"></div>
-<ul class="achives_list">
-    <% achives.forEach(function (achive, i) { %>
-        <li class="achive<% if (achive.get('done')) { %> achive_done<% } %>">
-            <img src="/static/images/trick7-2.jpg" alt="">
-            <div class="progress_holder" title="ADada">
-                <div class="bar" style="width:<%= achive.get_percent_of_progress() %>%;"></div>
-            </div>
-            <div class="level_holder" title="ADada"><%= achive.get('level') %></div>
-            <!--<br>
-            <%= achive.get('title') %><br>
-            <%= achive.get_descr() %>
-            <%= achive.show_progress() %>-->
-        </li>
-    <% }); %>
-</ul>
-<br class="clear">
+<div class="achives_list">
+    <div class="achive_list__cell"></div>
+    <div class="achive_list__cell"></div>
+<br class="clear"></br>
+</div>

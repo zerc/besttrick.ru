@@ -18,13 +18,9 @@ from apps.users import user_only, get_user
 def get_achives_for_user(user_id):
     def _patch(a):
         e = a.get_event_or_dummy(user_id)
-        a.update({
-            'user_id'      : user_id,
-            'level'        : e.get('level'),
-            'done'         : e.get('done'),
-            'progress'     : e.get('progress')
-        });
         a['id'] = a.pop('_id');
+        a.update({'user_id': user_id, 'time_changed': e.get('time_changed').ctime()})
+        a.update(dict((k, e.get(k)) for k in ('level', 'done', 'progress')))
         return a
     return map(_patch, app.connection.Achive.fetch())
 

@@ -1,4 +1,12 @@
 # coding: utf-8
+"""
+    apps.achives.models
+    ~~~~~~~~~~~~~~~~~~
+
+    Модели для ачивок
+
+    :copyright: (c) 2013 by zero13cool
+"""
 from datetime import datetime
 
 from project import app, cached_property
@@ -132,38 +140,3 @@ class ComplexEvent(SimpleEvent):
 
         return 0 if len(val) < l else min(val)
 app.connection.register([ComplexEvent])
-
-
-### исключительно для теста :)
-def fill():
-    achives = (
-        {
-            'title'      : u'OneWheel forward',
-            'trick_id'   : 7,
-            'descr'      : u'Выполните трюк на 4,20,40 конусов',
-            'icon'       : u'0.jpg',            
-            'rule'       : {u'cones': [4,20,40]},
-            'parents'    : [2],
-        },
-        {
-            'title'      : u'OneWheel backward',
-            'trick_id'   : 13,
-            'descr'      : u'Выполните трюк на 4,20,40 конусов',
-            'icon'       : u'0.jpg',
-            'rule'       : {u'cones': [4,20,40]},
-            'parents'    : [2],
-        },
-        {
-            'title'      : u'OneWheel dual',            
-            'descr'      : u'Получите достижения OneWheel forward и OneWheel backward.',
-            'icon'       : u'0.jpg',
-            'score'      : 2.0,
-            'rule'       : {u'complex': [0, 1]}            
-        }
-    )
-
-    for a in achives:
-        achive = app.connection.Achive()
-        a['_id'] = app.db.seqs.find_and_modify({"_id": "achives_seq"}, {"$inc": {"val": 1}})['val']
-        achive.update(a)
-        achive.save()

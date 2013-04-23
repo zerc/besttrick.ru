@@ -469,47 +469,45 @@ div.bbf-editorYouTube div input {width:190px !important; display:inline;}
 
 /* Achives page */
 .achives_filter {
-  padding:10px 95px 10px 10px; margin-bottom:10px; border-bottom:1px solid #E8E9EB;
-  background-color:#fefefe; text-align:center;
+  padding:10px 0; margin-bottom:10px; border-bottom:1px solid #E8E9EB; background-color:#fff;
 }
 
-.achives_filter a {
-  padding:5px 10px;
-  text-decoration:none;
+.achives_list {margin:-15px 0 0 -15px;}
+.achive_list__cell {float:left; width:50%;}
+
+.achive {
+  display:inline-block; position:relative; overflow:hidden;
+  width:391px; /*height:143px;*/
+  padding:10px; margin:15px 0 0 15px;
+  border:1px solid #E8E9EB; border-bottom-width:4px;
+  background-color:#fff;
 }
 
-.achives_filter a.selected {
-  background:#B55A5A; color:#fff;
-  -webkit-border-radius:5px; -moz-border-radius:5px; border-radius:5px;
+.achive__header {position:relative; cursor:pointer; margin:0 -10px; padding:0 10px;}
+.achive__lvl_0 .achive__header {background-color:#F0F0F0;}
+.achive__lvl_0 .achive__header:hover {background-color:#E8E9EB;}
+
+.achive__lvl_1 .achive__header {background-color:#D5E2AD;}
+.achive__lvl_1 .achive__header:hover {background-color:#BBD56A;}
+
+.achive__lvl_2 .achive__header {background-color:#ECE69D;}
+.achive__lvl_2 .achive__header:hover {background-color:#DBD153;}
+
+.achive__lvl_3 .achive__header {background-color:#F5DD7D;}
+.achive__lvl_3 .achive__header:hover {background-color:#F8D237;}
+
+.achive__status {
+  position:absolute; width:26px; height:30px; top:2px; right:5px;
+  background:url('/static/i/common.png') 0 -62px no-repeat;
 }
 
-.achives_list {display:block; margin:0;}
-.achives_list li {
-  border:1px solid #aeaeae; padding:3px 0 0 4px; background-color:#fff; margin-bottom:10px;
-  float:left; width:124px; height:124px; margin-right:5px;
-}
+.achive__lvl_0 .achive__status {background-position:-26px -62px;}
 
-.achives_list li .level_holder {
-  width: 20px;
-  height: 20px;
-  background: red;
-  text-align: center;
-  color: #fff;
-  float: right;
-  margin-right: 4px;
-}
+.achive__text {margin-bottom:5px;}
 
-.progress_holder {
-  border: 1px solid;
-  height: 18px;
-  width: 98px;
-  float: left;
+.achive__progress {display:none; margin-left:-12px; background: #aeaeae;}
+.achive__progress li {
+  float:left; margin-left:12px; margin-bottom:0;
 }
-.progress_holder .bar {
-  background: green;
-  height: 18px;
-  width: 99%;
-}
-.achives_list li.achive_done {background-color:rgb(184, 238, 184);}
-.achives_list li .done {color:green;}
-
+.achive__progress .achive_done {color:green;}
+.showing_progress .achive__progress {display:block;}
