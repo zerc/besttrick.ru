@@ -1,6 +1,6 @@
 <div class="achive__header">
     <h4><%= achive.get_title() %></h4>
-    <div class="achive__status"<% if (achive.get('level') > 0) { %> title="Достижения получено: <%= achive.get_time_changed() %>"<% } %>></div>
+    <div class="achive__status"<% if (achive.get('level') > 0) { %> title="Достижения получено: <nobr><%= achive.get_time_changed() %></nobr>"<% } %>></div>
 </div>
 <div class="achive__text">
     <%= achive.get_descr() %>

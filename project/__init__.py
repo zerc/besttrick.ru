@@ -61,6 +61,7 @@ JS_LIBS = (
     'js/bootstrap-tooltip.js',
     'js/jquery.reject.js',
     'js/jquery.cookie.js',
+    'js/date.format.js',
 
     'js/common.js',
     'js/tricks.js',

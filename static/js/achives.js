@@ -55,7 +55,7 @@ window.BTAchives.Achive = Backbone.Model.extend({
 
     get_time_changed: function () {
         var t = new Date(this.get('time_changed'));
-        return t.getDate() + '.' + t.getMonth() + '.' + t.getFullYear() + ' ' + t.getHours() + ':' + t.getMinutes();
+        return t.format();
     },
 
     url: function () {
