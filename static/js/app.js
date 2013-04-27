@@ -48,7 +48,7 @@ var App = Backbone.Router.extend({
     initialize: function (args) {
         var self = this,
             userModel = args.user ? new UserModel(args.user) : false;
-            tricks = new TricksList(args.tricks),
+            tricks = args.tricks,
             
             tmp_trick_cookie_name = window.BTCommon.vars.tmp_trick_cookie_name,
             next_name = window.BTCommon.vars.next_url_cookie_name;

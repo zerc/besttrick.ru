@@ -1,5 +1,5 @@
 <div class="achive__header">
-    <h4><%= achive.get_title() %></h4>
+    <h4><%= achive.get_title() %> lvl <%= achive.get('level') %></h4>
     <div class="achive__status"<% if (achive.get('level') > 0) { %> title="Достижения получено: <nobr><%= achive.get_time_changed() %></nobr>"<% } %>></div>
 </div>
 <div class="achive__text">
@@ -9,11 +9,18 @@
     <% childrens.forEach(function (e) { %>
         <li>
             <!-- TODO: реализовать подсавывание trick по trick_id, и там реализовать функцию get_url() -->
-            <a href="#!trick<%= e.get('trick_id') %>"><%= e.get('title') %></a>
-            <span title="Прогресс: <%= e.show_progress(achive.get_next_lvl()) %>"
-                <% if (e.get('level') >= achive.get_next_lvl()) { %> class="achive_done"<% } %>>
-                (lvl <%= achive.get_next_lvl() %>)
-            </span>
+            <% if (e.is_complex()) { %>
+                <span><%= e.get_title() %></span>
+                <span<% if (e.get('level') >= achive.get_next_lvl()) { %> class="achive_done"<% } %>>
+                    (lvl <%= achive.get_next_lvl() %>)
+                </span>
+            <% } else { %>
+                <a href="#!trick<%= e.get('trick_id') %>"><%= e.get_title() %></a>
+                <span title="Прогресс: <%= e.show_progress(achive.get_next_lvl()) %>"
+                    <% if (e.get('level') >= achive.get_next_lvl()) { %> class="achive_done"<% } %>>
+                    (lvl <%= achive.get_next_lvl() %>)
+                </span>
+            <% } %>
         </li>
     <% }); %>
 </ul>

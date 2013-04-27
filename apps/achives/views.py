@@ -47,7 +47,6 @@ def my_achive(achive_id):
 def add_achive_after_checkin(trick_user):
     achives = app.connection.Achive.fetch({"trick_id": trick_user['trick']})
     for a in achives:        
-        if a.test(trick_user['cones']):
-            a.do(trick_user['user'], trick_user['cones'])
-            a.do_parents(trick_user['user'])
+        a.do(trick_user['user'], trick_user['cones'])
+        a.do_parents(trick_user['user'])
 checkin_signal.connect(add_achive_after_checkin)

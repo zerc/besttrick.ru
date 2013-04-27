@@ -7,8 +7,10 @@
 window.BTAchives = {
     max_achive_lvl  : 3,
     common_phrases  : [
-        '<br>Для того, чтобы получить достижение <a href="#" class="more_link">откатайте</a>:',
-        '<br>Для получения следующего уровня достижения вам нужно <a href="#" class="more_link">откатать</a>:'
+    // 0 lvl
+    '<br>Для того, чтобы получить достижение <a href="#" class="more_link">откатайте</a>:',
+    // 1+ lvl
+    '<br>Для получения следующего уровня достижения вам нужно <a href="#" class="more_link">откатать</a>:'
     ],
     cls_for_lvl: 'achive__lvl_'
 };
@@ -32,9 +34,17 @@ window.BTAchives.Achive = Backbone.Model.extend({
         level           : 0
     },
 
+    is_complex: function () {
+        return !!this.get('rule').complex;
+    },
+
     initialize: function (user) {
         var self = this;
         this.user = user
+    },
+
+    get_trick: function () {
+        return window.BTCommon.args.tricks.get({'id': this.get('trick_id')});
     },
 
     get_rule_name: function () {
@@ -42,7 +52,7 @@ window.BTAchives.Achive = Backbone.Model.extend({
     },
 
     get_title: function () {
-        return this.get('title') + ' lvl ' + this.get('level');
+        return this.is_complex() ? this.get('title') : this.get_trick().get_title();
     },
 
     get_next_lvl: function () {

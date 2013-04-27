@@ -20,16 +20,28 @@ class AchivesTestCase(BaseTestCase):
         # clean first
         self.app.connection.SimpleEvent.collection.drop()
 
+    def test_update_parent(self):
+        valid_checkin_data = {'cones': 21, 'video_url': None, 'trick': 7, 'user': 1, 'approved': 0}
+
+        def do_simple():
+            achive = self.app.connection.Achive.fetch_one({"trick_id": valid_checkin_data['trick']})
+            event = achive.do(valid_checkin_data['user'], valid_checkin_data['cones'])
+            achive.do_parents(valid_checkin_data['user'])
+
+        do_simple()
+        valid_checkin_data['trick'] = 13
+        do_simple()
+        
+        event = self.app.connection.Achive.fetch_one({"_id": 21}).get_event_or_dummy(valid_checkin_data['user'])
+        self.assertEqual(event.get('progress')[0], {u'2':2}, u'Recursive update parents dont work')
+
     def test_base_logic(self):
         valid_checkin_data = {'cones': 21, 'video_url': None, 'trick': 7, 'user': 1, 'approved': 0}
   
         def do_simple():
             achive = self.app.connection.Achive.fetch_one({"trick_id": valid_checkin_data['trick']})
-            test_result = achive.test(valid_checkin_data['cones'])
-            
             self.assertEqual(achive._event_cls, self.app.connection.SimpleEvent, u'SimpleEvent expected!')
-            self.assertEqual(test_result, True, u'Validation broken!')
-            
+    
             event = achive.do(valid_checkin_data['user'], valid_checkin_data['cones'])
             achive.do_parents(valid_checkin_data['user'])
             return event
@@ -37,7 +49,8 @@ class AchivesTestCase(BaseTestCase):
         do_simple()
 
         e = self.app.connection.Achive.fetch_one({"_id": 2}).get_event_or_dummy(valid_checkin_data['user'])
-        self.assertEqual(e.get('level'), 0, 'Level detection for complex event is broken!')        
+        self.assertEqual(e.get('level'), 0, 'Level detection for complex event is broken!')
+
         val, expected = e.get('progress')[0], {u'0': 2}
         self.assertEqual(val, expected, u'Invalid progress value=%s!' % repr(val))    
         

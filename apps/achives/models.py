@@ -9,6 +9,8 @@
 """
 from datetime import datetime
 
+from mongokit.schema_document import ValidationError
+
 from project import app, cached_property
 from apps.common import BaseModel
 
@@ -27,9 +29,13 @@ class Achive(BaseModel):
         'rule'       : {unicode: []},
         'parents'    : [], 
     }
-    default_values  = {'score': 1.0, 'parents': [], 'descr': u''}
-    required_fields = ['title']
+    default_values  = {'score': 1.0, 'parents': [], 'descr': u'', 'title': u''}
     indexes = [{'fields': ['trick_id']}]
+
+    def validate(self, *args, **kwargs):
+        if not self.get('trick_id') and not self.get('title'):
+            raise ValidationError(u'Set trick_id or title!')
+        return True
 
     @property
     def _event_cls(self):
@@ -43,9 +49,6 @@ class Achive(BaseModel):
         params = {"user_id": user_id, "achive_id": int(self.get("_id"))}
         return app.connection.Event.fetch(params)
 
-    def test(self, value):
-        return self._event_cls.test(self.get('rule'), value)
-
     def get_event_or_dummy(self, user_id):
         params  = {'user_id': user_id, 'achive_id': int(self.get("_id"))}
         event = self._event_cls.fetch_one(params.copy())
@@ -55,7 +58,7 @@ class Achive(BaseModel):
             event.update(params)
 
         try:
-            event._property_cache['achive'] = self # переписать с методом __set__
+            event._property_cache['achive'] = self # переписать с методом __set__ если возможно :D
         except AttributeError:
             event._property_cache = {'achive': self}
 
@@ -69,23 +72,33 @@ class Achive(BaseModel):
 
     def do_parents(self, user_id):
         event = self.get_event_or_dummy(user_id)
-        parents = app.connection.Achive.fetch({"_id": {"$in": self.get('parents')}})
+        parents = list(app.connection.Achive.fetch({"_id": {"$in": self.get('parents')}}))
         _ = lambda a: unicode(int(a))
 
-        for p in parents:
-            e = p.get_event_or_dummy(user_id)
+        def at(current_achive, current_event, parents):
+        # TODO: срефакторить как-нибудь покрасивее рекурсию
+            for p in parents:
+                e = p.get_event_or_dummy(user_id)
 
-            current_progress = e.get('progress', [])
+                current_progress = e.get('progress', [])
 
-            if not current_progress:
-                current_progress.append({
-                    _(self.get("_id")): event.get('level')
-                })
-            else:
-                current_progress[0][_(self.get("_id"))] = event.get('level')
+                if not current_progress:
+                    current_progress.append({
+                        _(current_achive.get("_id")): current_event.get('level')
+                    })
+                else:
+                    current_progress[0][_(current_achive.get("_id"))] = current_event.get('level')
 
-            e.update({'progress': current_progress})
-            e.save()
+                e.update({'progress': current_progress})
+                e.save()
+
+            for p in parents:
+                _parents = list(app.connection.Achive.fetch({"_id": {"$in": p.get('parents')}}))
+                e = p.get_event_or_dummy(user_id)
+                if _parents:
+                    at(p, e, _parents)
+        at(self, event, parents)
+
 app.connection.register([Achive])
 app.db.seqs.insert({'_id': 'achives_seq',  'val': 0})
 
@@ -119,10 +132,6 @@ class SimpleEvent(BaseEvent):
             level += 1
         return level
 
-    def test(self, rule_dict, value):
-        return True
-        # return value > min(rule_dict['cones'])  
-
     def save(self, *args, **kwargs):        
         self.update({'level' : self._get_level()})
         return super(SimpleEvent, self).save(*args, **kwargs)
@@ -131,9 +140,6 @@ app.db.seqs.insert({'_id': 'events_seq',  'val': 0})
 
 
 class ComplexEvent(SimpleEvent):
-    def test(self, value):
-        pass
-
     def _get_level(self):
         l = len(self.achive.get('rule')['complex'])
         val = self.get('progress')[0].values()

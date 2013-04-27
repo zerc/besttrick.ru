@@ -11,16 +11,14 @@ from project import app
 
 
 achives = (
-    {#0
-        'title'      : u'OneWheel forward',
+    {#0 просто вилинги
         'trick_id'   : 7,
         'descr'      : u'Выполните трюк на 4,20,40 конусов',
         'icon'       : u'0.jpg',            
         'rule'       : {u'cones': [4,20,40]},
         'parents'    : [2],
     },
-    {#1
-        'title'      : u'OneWheel backward',
+    {#1        
         'trick_id'   : 13,
         'descr'      : u'Выполните трюк на 4,20,40 конусов',
         'icon'       : u'0.jpg',
@@ -33,11 +31,11 @@ achives = (
         'icon'       : u'0.jpg',
         'score'      : 2.0,
         'rule'       : {u'complex': [0, 1]},
+        'parents'    : [21],
     },
 
-    # Вращательные
+    # Вращательные вилинги лицом
     {#3
-        'title'      : u'Seven forward',
         'trick_id'   : 10,
         'descr'      : u'',
         'icon'       : u'0.jpg',
@@ -45,7 +43,6 @@ achives = (
         'parents'    : [7],
     },
     {#4
-        'title'      : u'Chicken Leg forward',
         'trick_id'   : 18,
         'descr'      : u'',
         'icon'       : u'0.jpg',
@@ -53,15 +50,13 @@ achives = (
         'parents'    : [7],
     },
     {#5
-        'title'      : u'Chamomile Toe forward',
         'trick_id'   : 28,
         'descr'      : u'',
         'icon'       : u'0.jpg',
         'rule'       : {u'cones': [1,2,10]},
         'parents'    : [7],
     },
-    {#6
-        'title'      : u'Footgun Toe Spin forward',
+    {#61
         'trick_id'   : 29,
         'descr'      : u'',
         'icon'       : u'0.jpg',
@@ -74,17 +69,16 @@ achives = (
         'icon'       : u'0.jpg',
         'score'      : 2.0,
         'rule'       : {u'complex': [3, 4, 5, 6]},
+        'parents'    : [21],
     },
-    # Прыжковые
+    # Прыжковые вилинги
     {#8
-        'title'      : u'Toe Wiper',
         'trick_id'   : 20,
         'icon'       : u'0.jpg',            
         'rule'       : {u'cones': [4,10,20]},
         'parents'    : [10],
     },
     {#9
-        'title'      : u'Special Jump',
         'trick_id'   : 22,
         'icon'       : u'0.jpg',
         'rule'       : {u'cones': [4,10,20]},
@@ -96,17 +90,16 @@ achives = (
         'icon'       : u'0.jpg',
         'score'      : 2.0,
         'rule'       : {u'complex': [8, 9]},
+        'parents'    : [21],
     },
     # Сидячие вилинги
     {#11
-        'title'      : u'Footgun Toe forward',
         'trick_id'   : 6,
         'icon'       : u'0.jpg',            
         'rule'       : {u'cones': [4,10,20]},
         'parents'    : [13],
     },
     {#12
-        'title'      : u'Christie Toe forward',
         'trick_id'   : 26,
         'icon'       : u'0.jpg',
         'rule'       : {u'cones': [3,10,20]},
@@ -114,14 +107,14 @@ achives = (
     },
     {#13
         'title'      : u'OneWheel forward seater',            
-        'descr'      : u'Овладейте сидячие трюки на одном колесе!',
+        'descr'      : u'Овладейте сидячими трюками на одном колесе!',
         'icon'       : u'0.jpg',
         'score'      : 2.0,
         'rule'       : {u'complex': [11, 12]},
+        'parents'    : [21],
     },
-        # Вращательные
+        # Вращательные вилинги спиной
     {#14
-        'title'      : u'Seven backward',
         'trick_id'   : 17,
         'descr'      : u'',
         'icon'       : u'0.jpg',
@@ -129,7 +122,6 @@ achives = (
         'parents'    : [16],
     },
     {#15
-        'title'      : u'Chicken Leg backward',
         'trick_id'   : 3,
         'descr'      : u'',
         'icon'       : u'0.jpg',
@@ -137,13 +129,48 @@ achives = (
         'parents'    : [16],
     },
     {#16
-        'title'      : u'Backward WheelSpiner',            
+        'title'      : u'Backward WheelSpiner',
         'descr'      : u'Вы не плохо вращаетесь на одном колесе спиной вперед!',
         'icon'       : u'0.jpg',
         'score'      : 2.0,
         'rule'       : {u'complex': [14, 15]},
+        'parents'    : [21],
     },
-
+    # Вилинговые шифты
+    {#17        
+        'trick_id'   : 5,
+        'icon'       : u'0.jpg',
+        'rule'       : {u'cones': [4,20,40]},
+        'parents'    : [20],
+    },
+    {#18        
+        'trick_id'   : 11,
+        'icon'       : u'0.jpg',
+        'rule'       : {u'cones': [4,20,40]},
+        'parents'    : [20],
+    },
+    {#19        
+        'trick_id'   : 16,
+        'descr'      : u'',
+        'icon'       : u'0.jpg',
+        'rule'       : {u'cones': [4,20,40]},
+        'parents'    : [20],
+    },
+    {#20
+        'title'      : u'OneWheel Shift Master',
+        'descr'      : u'Ваши шифты великолепны!',
+        'icon'       : u'0.jpg',
+        'score'      : 2.0,
+        'rule'       : {u'complex': [17, 18, 19]},
+        'parents'    : [21],
+    },
+    {#21
+        'title'      : u'OneWheel King',
+        'descr'      : u'От ваших вилингов девушки в воздух чепчики бросают!',
+        'icon'       : u'0.jpg',
+        'score'      : 2.0,
+        'rule'       : {u'complex': [20, 16, 13, 10, 7, 2]},
+    },
 )
 
 def fill():
