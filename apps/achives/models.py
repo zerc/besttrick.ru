@@ -27,8 +27,8 @@ class Achive(BaseModel):
         'rule'       : {unicode: []},
         'parents'    : [], 
     }
-    default_values  = {'score': 1.0, 'parents': []}
-    required_fields = ['title', 'descr']
+    default_values  = {'score': 1.0, 'parents': [], 'descr': u''}
+    required_fields = ['title']
     indexes = [{'fields': ['trick_id']}]
 
     @property

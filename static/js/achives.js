@@ -58,6 +58,11 @@ window.BTAchives.Achive = Backbone.Model.extend({
         return t.format();
     },
 
+    get_childrens: function () {
+        var children_ids = this.get('rule').complex || [];
+        return _.map(children_ids, function (c_id) {return this.collection.get(c_id);}, this);        
+    },
+
     url: function () {
         var common_string = '/achives/achive' + this.get('id') + '/level' + this.get_level() + '/';
 
@@ -122,6 +127,7 @@ window.BTAchives.AchiveView = Backbone.View.extend({
     initialize: function (args) {
         _.bindAll(this, 'render', 'toggle');
         this.$el.addClass(window.BTAchives.cls_for_lvl + this.model.get('level'));
+        window.at = this.model.collection;
     },
 
     toggle: function () {
@@ -134,11 +140,7 @@ window.BTAchives.AchiveView = Backbone.View.extend({
             this.$el.removeClass(toggle_cls);
             return false;
         } else if (!this._cached) {
-            childrens= this.model.collection.filter(function (e) {
-                return _.include(e.get('parents'), self.model.id);
-            });
-
-            this.render({childrens: childrens});
+            this.render({childrens: this.model.get_childrens()});
             this._cached = true;
         }
 
@@ -157,33 +159,75 @@ window.BTAchives.AchiveView = Backbone.View.extend({
 });
 
 
+
+
 window.BTAchives.AchivesView = Backbone.View.extend({
     el: 'div.content',
     template: new EJS({url: '/static/templates/achives.ejs'}),
 
+    level_filter: false,
+
+    events : {
+        'click div.achives_filter a' : 'apply_filter'
+    },
+
     initialize: function (args) {
-        _.bindAll(this, 'render');
-        this.collection = new window.BTAchives.AchiveList(args.base);
+        _.bindAll(this, 'render', 'apply_filter');
+        this.collection = new window.BTAchives.AchiveList();
+        this.collection.on('change', this.render);
+    },
+
+    reset_filter: function () {
+        this.level_filter = false;
+        return this;
+    },
+
+    apply_filter: function (e) {
+        var $el = $(e.currentTarget),
+            level = parseInt($el.attr('href').split(':')[1]);
+
+        this.$el.find('div.achives_filter a').removeClass('active');
+
+        if (this.level_filter === level) {
+            this.level_filter = false;
+            $el.removeClass('active');
+        } else {
+            this.level_filter = level;
+            $el.addClass('active');
+        }
+
+        this.collection.trigger('change');
+        return false;
+    },
+
+    filtered_collection: function () {
+        var self = this;
+
+        return this.collection.filter(function (e) {
+            return e.get('rule').complex && (_.isNumber(self.level_filter) ? e.get('level') === self.level_filter : true);
+        });
+    },
+
+    base_render: function () {        
+        this.$el.html(this.template.render({view: this}));
+        this.empty_list_el = this.$el.find('div.achive_list__empty');
+        return this;
     },
 
     render: function (args) {
-        var self = this,
-            achives = [[], []],
-            achive_list__cell,
-            tmp;
+        var achive_list__cell = this.$el.find('.achive_list__cell'),
+            collection = this.filtered_collection();
 
-        this.$el.html(this.template.render());        
-        achive_list__cell = self.$el.find('.achive_list__cell');
+        achive_list__cell.html('');
 
-        this.collection.fetch({success: function (a, b, c) {
-            a.filter(function (e) { return e.get('rule').complex; })
-             .forEach(function (e, i) {
-                tmp = new window.BTAchives.AchiveView({model: e});
-                $(achive_list__cell[i % 2]).append(tmp.render());
+        if (collection.length === 0) {
+            this.empty_list_el.show();
+        } else {
+            this.empty_list_el.hide();
+            collection.forEach(function (e, i) {
+                $(achive_list__cell[i % 2]).append(new window.BTAchives.AchiveView({model: e}).render());
             });
-
-            args.callback();
-        }});
+        }
     }
 });
 

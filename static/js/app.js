@@ -41,6 +41,7 @@ var App = Backbone.Router.extend({
         '!users/rating'              : 'top_users',
         
         '!u/achives'                 : 'my_achives',
+
         '!users/user:user_id/achives': 'profile_achives'
     },
 
@@ -94,11 +95,17 @@ var App = Backbone.Router.extend({
         Backbone.history.start();
     },
 
-    my_achives: function (level) {
+    my_achives: function (param) {
         var self = this;
-        this.achives.render({level: level || 1, callback: function () {
-            self.loader.hide();
-        }});
+
+        this.achives
+            .reset_filter().base_render()
+            .collection.fetch({
+            success: function () {
+                self.achives.render();
+                self.loader.hide();
+            }
+        });
     },
 
     top_users: function () {
