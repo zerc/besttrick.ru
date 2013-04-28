@@ -3,7 +3,7 @@
     apps.achives.models
     ~~~~~~~~~~~~~~~~~~
 
-    Модели для ачивок
+    Models for achive module
 
     :copyright: (c) 2013 by zero13cool
 """
@@ -123,7 +123,7 @@ class BaseEvent(BaseModel):
         return app.connection.Achive.fetch_one({"_id": self.get("achive_id")})
 
 class SimpleEvent(BaseEvent):
-    def _get_level(self):
+    def get_level(self):
         conditions, level = self.achive.get('rule')['cones'], 0
         value = self.get('progress')[0]
         for c in conditions:
@@ -133,16 +133,15 @@ class SimpleEvent(BaseEvent):
         return level
 
     def save(self, *args, **kwargs):        
-        self.update({'level' : self._get_level()})
+        self.update({'level' : self.get_level()})
         return super(SimpleEvent, self).save(*args, **kwargs)
 app.connection.register([SimpleEvent])
 app.db.seqs.insert({'_id': 'events_seq',  'val': 0})
 
 
 class ComplexEvent(SimpleEvent):
-    def _get_level(self):
+    def get_level(self):
         l = len(self.achive.get('rule')['complex'])
         val = self.get('progress')[0].values()
-
         return 0 if len(val) < l else min(val)
 app.connection.register([ComplexEvent])

@@ -79,7 +79,6 @@ def get_trick(trick_id, simple=True):
 
     # патчу трюк, как-то объеденить функции get_trick и get_tricks
     trick['descr_html'] = markdown(trick['descr'])
-    trick[u'id'] = trick.pop(u'_id')
 
     return trick
 
@@ -94,7 +93,7 @@ def get_tricks(*args, **kwargs):
     Трюк в данном случае - это просто словарь с данными.
     Если передан аргумент simple - просто список трюков возвращает.
     """
-    #TODO: вероятно разделить эту функцию на 3 либо использовать ООП
+    #TODO: нужно как-то срефакторить, функция слишком большая и непонятная
     tricks = app.db.trick.find().sort("_id", 1)
     user_id = g.user['id'] if g.user else False # по идее функция не должна знать про это!
 

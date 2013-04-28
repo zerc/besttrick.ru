@@ -1,13 +1,13 @@
 <%= set_page_title(user.get('nick')) %>
 <div class="user__tricks">
     <% if (tricks.length > 0) { %>
-        <% _.map(tricks, function (trick) {%>
+        <% _.map(tricks, function (row) {%>
             <div class="user__trick">
-                <img src="/static/images/<%= trick.trick.get('thumb') %>" class="user__trick__thumb">
-                <a href="#!trick<%= trick.trick.get('_id') %>"><%= trick.trick.get_title() %></a>
-                <span><%= trick.cones %></span>
-                <% if (trick.video_url && trick.approved == 1) { %>
-                    <a class="has_video video_approved" href="<%= trick.video_url %>" target="_blank" title="есть видео подтверждение"></a>
+                <img src="<%= row.trick.img_src() %>" class="user__trick__thumb">
+                <a href="<%= row.trick.href() %>"><%= row.trick.get_title() %></a>
+                <span><%= row.cones %></span>
+                <% if (row.video_url && row.approved == 1) { %>
+                    <a class="has_video video_approved" href="<%= row.video_url %>" target="_blank" title="есть видео подтверждение"></a>
                 <% } %>
             </div>
         <%}) %>
@@ -17,9 +17,13 @@
 </div>
 <div class="user__data">
     <img class="user__photo" src="<%= user.get('photo') %>" />
+    <p>
+        <strong>Рейтинг:</strong> <%= user.get('rating') %>
+        <a href="<%= BTAchives.url_for_profile(user.get('id')) %>" class="user_achives"></a>
+    </p>
+    
     <% if (profile) { 
         _.each({
-            rating: 'Рейтинг',
             nick:   'Ник',
             team:   'Команда',
             phone:  'Телефон',

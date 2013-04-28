@@ -58,6 +58,14 @@ window.BTTricks.Trick = Trick = Backbone.Model.extend({
         return '/tricks/trick' + this.get('id') + '/check/';
     },
 
+    href: function () {
+        return '#!trick' + this.get('id');
+    },
+
+    img_src: function () {
+        return '/static/images/' + this.get('thumb');
+    },
+
     validate: function (attrs, a,b,c) {
         if (_.isNaN(attrs.cones) || attrs.cones <= 0) {
             return 'cones::введите положительное число';

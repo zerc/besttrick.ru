@@ -28,23 +28,16 @@ def get_achives_for_user(user_id):
 @render_to()
 @user_only
 def my_achives(*args, **kwargs):
-    """
-    Список ачивок пользователя
-    """
     user_id = g.user['id'] if g.user else False
-   
-    return {
-        'achives': get_achives_for_user(user_id)
-    }
+    return {'achives': get_achives_for_user(user_id)}
 
 
 @render_to()
-def my_achive(achive_id):
-    return {}
+def profile_achives(user_id, *args, **kwargs):
+    return {'achives': get_achives_for_user(user_id)}
 
 
-
-def add_achive_after_checkin(trick_user):
+def add_achive_after_checkin(trick_user):    
     achives = app.connection.Achive.fetch({"trick_id": trick_user['trick']})
     for a in achives:        
         a.do(trick_user['user'], trick_user['cones'])

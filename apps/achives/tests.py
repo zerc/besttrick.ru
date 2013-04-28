@@ -3,7 +3,7 @@
     apps.achives.tests
     ~~~~~~~~~~~~~~~~~~
 
-    Тесты для ачивок
+    Tests for achive module
 
     :copyright: (c) 2013 by zero13cool
 """
@@ -13,6 +13,7 @@ from apps.tests import BaseTestCase
 from .models import *
 
 
+
 class AchivesTestCase(BaseTestCase):
     def setUp(self):
         self.client = self.app.test_client()
@@ -20,11 +21,13 @@ class AchivesTestCase(BaseTestCase):
         # clean first
         self.app.connection.SimpleEvent.collection.drop()
 
+        self.Achive = self.app.connection.Achive
+
     def test_update_parent(self):
         valid_checkin_data = {'cones': 21, 'video_url': None, 'trick': 7, 'user': 1, 'approved': 0}
 
         def do_simple():
-            achive = self.app.connection.Achive.fetch_one({"trick_id": valid_checkin_data['trick']})
+            achive = self.Achive.fetch_one({"trick_id": valid_checkin_data['trick']})
             event = achive.do(valid_checkin_data['user'], valid_checkin_data['cones'])
             achive.do_parents(valid_checkin_data['user'])
 
@@ -32,14 +35,14 @@ class AchivesTestCase(BaseTestCase):
         valid_checkin_data['trick'] = 13
         do_simple()
         
-        event = self.app.connection.Achive.fetch_one({"_id": 21}).get_event_or_dummy(valid_checkin_data['user'])
+        event = self.Achive.fetch_one({"_id": 21}).get_event_or_dummy(valid_checkin_data['user'])
         self.assertEqual(event.get('progress')[0], {u'2':2}, u'Recursive update parents dont work')
 
     def test_base_logic(self):
         valid_checkin_data = {'cones': 21, 'video_url': None, 'trick': 7, 'user': 1, 'approved': 0}
   
         def do_simple():
-            achive = self.app.connection.Achive.fetch_one({"trick_id": valid_checkin_data['trick']})
+            achive = self.Achive.fetch_one({"trick_id": valid_checkin_data['trick']})
             self.assertEqual(achive._event_cls, self.app.connection.SimpleEvent, u'SimpleEvent expected!')
     
             event = achive.do(valid_checkin_data['user'], valid_checkin_data['cones'])
@@ -48,7 +51,7 @@ class AchivesTestCase(BaseTestCase):
 
         do_simple()
 
-        e = self.app.connection.Achive.fetch_one({"_id": 2}).get_event_or_dummy(valid_checkin_data['user'])
+        e = self.Achive.fetch_one({"_id": 2}).get_event_or_dummy(valid_checkin_data['user'])
         self.assertEqual(e.get('level'), 0, 'Level detection for complex event is broken!')
 
         val, expected = e.get('progress')[0], {u'0': 2}

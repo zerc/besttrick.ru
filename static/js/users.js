@@ -27,7 +27,6 @@ window.BTUsers.Loginza = {
 };
     
 
-
 /*** Модельки ***/
 window.BTUsers.UserModel = UserModel = Backbone.Model.extend({
     url: '/user/',

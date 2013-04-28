@@ -1,6 +1,6 @@
-<a class="trick__title" href="#!trick<%= model.get('id') %>"><%= model.get_title() %></a>
+<a class="trick__title" href="<%= model.href() %>"><%= model.get_title() %></a>
 <div class="user_do_this_icon" title="Вы делаете этот трюк"></div>
 
 <a href="#!trick<%= model.get('id') %>">
-    <img src="/static/images/<%= model.get('thumb') %>" alt="<%= model.get('title') %>" class="trick__thumb" />
+    <img src="<%= model.img_src() %>" alt="<%= model.get_title() %>" class="trick__thumb" />
 </a>

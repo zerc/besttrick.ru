@@ -77,6 +77,7 @@ def grouped_stats(key, _filter):
     for x in app.db.trick_user.group([key], _filter, defaults, reduce_func):
         # HACK для потдтягивания данных по id
         x[key] = app.db[key].find_one({'_id': x[key]})
+        x[key]['id'] = x[key].pop('_id')
         rows.append(x)
 
     return rows

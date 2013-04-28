@@ -89,10 +89,10 @@ def get_user(user_id=None, full=False, user_dict=None):
     if user_dict is None:
         user = app.db.user.find_one({'_id': user_id}) or False
         if user is False: return False
+        user['id'] = int(user.pop('_id'))
     else:
         user = user_dict
 
-    user['id'] = int(user.pop('_id'))
     user['rating'] = get_user_rating(user['id'])
 
     return user if full else clean_fields(user)

@@ -3,6 +3,7 @@
 ADMINS = ['zero13cool@yandex.ru']
 SERVER_NAME = "bt.ru:8000"
 HOST   = "http://" + SERVER_NAME # используется для генерации сайтмапа
+MOBILE_HOST = "http://m." + SERVER_NAME
 
 DEBUG        = True
 ASSETS_DEBUG = True

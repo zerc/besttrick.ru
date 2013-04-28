@@ -105,6 +105,7 @@ def top_users():
         tricks_scores[trick['_id']] = trick['score']
 
     def _(user):
+        user['id'] = user.pop('_id')
         return get_user(user_dict=user)
 
     users = map(_, app.db.user.find({'banned': False}))

@@ -35,13 +35,13 @@ a.logo {
 #jr_overlay {background:#aeaeae; opacity: 0.9; -moz-opacity: 0.9; filter:alpha(opacity=9);}
 
 .user_container {position:relative; display:block; float:right; line-height:40px; margin-right:10px;}
-.user_container .user_rating, .user_container .user_achives {
+.user_container .user_rating, .user_achives {
   background:#AEAEAE; padding:2px 5px; color:#fff; -webkit-border-radius: 3px;
   -moz-border-radius: 3px; border-radius: 3px; margin-right:10px; text-decoration:none;
 }
-.user_container .user_achives {
+.user_achives {
   display:inline-block; width:8px; height:22px; margin-bottom:-13px;
-  background:url('/static/i/common.png') -5px -90px no-repeat;
+  background:url('/static/i/common.png') -5px -90px no-repeat; 
 }
 
 .user_container .logout {margin-left:15px;}
@@ -276,6 +276,9 @@ a.video_approved {background-position:-24px 0px;}
 .user__data button.save {
     margin-bottom:0;
 }
+
+.user__data .user_achives {margin-left:10px;}
+
 .no_user__tricks {margin-left:10px; padding:20px 0;}
 .user__photo {float:right; width:50px; margin-left:10px;}
 .save_status.done {color:green;}

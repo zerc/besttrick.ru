@@ -40,9 +40,8 @@ var App = Backbone.Router.extend({
         '!about'                     : 'about',
         '!users/rating'              : 'top_users',
         
-        '!u/achives'                 : 'my_achives',
-
-        '!users/user:user_id/achives': 'profile_achives'
+        '!u/achives'                 : 'achives',
+        '!users/user:user_id/achives': 'achives'
     },
 
     initialize: function (args) {
@@ -95,9 +94,9 @@ var App = Backbone.Router.extend({
         Backbone.history.start();
     },
 
-    my_achives: function (param) {
-        var self = this;
-
+    achives: function (user_id) {
+        var self = this;       
+        this.achives.collection.user_id = user_id;
         this.achives
             .reset_filter().base_render()
             .collection.fetch({
@@ -178,8 +177,9 @@ var App = Backbone.Router.extend({
     },
 
     trick: function (trick_id) {
+        var trick;
         this.loader.show();
-        var trick = this.tricksView.collection.get(trick_id);
+        trick = this.tricksView.collection.get(trick_id);
         this.loader.hide();
         return this.trickFull.render({model: trick});
     },

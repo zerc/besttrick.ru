@@ -117,8 +117,7 @@ def checkin_page(*args, **context):
   
 @render_to()
 @allow_for_robot
-def trick_page(trick):
-    """ Страничка трюка :) """
+def trick_page(trick):    
     user_id = g.user['id'] if g.user else False
     if user_id is not False:
         trick['user_result'] = app.db.trick_user.find_one(

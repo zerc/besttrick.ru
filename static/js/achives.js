@@ -12,7 +12,15 @@ window.BTAchives = {
     // 1+ lvl
     '<br>Для получения следующего уровня достижения вам нужно <a href="#" class="more_link">откатать</a>:'
     ],
-    cls_for_lvl: 'achive__lvl_'
+    cls_for_lvl: 'achive__lvl_',
+
+    url: function () {
+        return '#!u/achives';
+    },
+
+    url_for_profile: function (user_id) {
+        return '#!users/user' + user_id + '/achives';
+    }
 };
 
 /* Models */
@@ -108,11 +116,8 @@ window.BTAchives.AchiveList = Backbone.Collection.extend({
     model: window.BTAchives.Achive,
 
     url: function () {
-        return this.base + '/achives/';
-    },
-
-    initialize: function (base) {
-        this.base = base || '/my';
+        return this.user_id ?
+            '/users/user' + this.user_id + '/achives/' : '/my/achives/';
     },
 
     parse: function(resp, xhr) {
@@ -172,10 +177,11 @@ window.BTAchives.AchiveView = Backbone.View.extend({
 
 
 window.BTAchives.AchivesView = Backbone.View.extend({
-    el: 'div.content',
-    template: new EJS({url: '/static/templates/achives.ejs'}),
+    el           : 'div.content',
+    template     : new EJS({url: '/static/templates/achives.ejs'}),
 
-    level_filter: false,
+    user_id      : undefined,
+    level_filter : false,
 
     events : {
         'click div.achives_filter a' : 'apply_filter'

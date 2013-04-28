@@ -25,9 +25,9 @@ url('/youtube_reciver/',        'youtube_reciver',  bt.youtube_reciver, methods=
 
 ### Trick urls
 url('/tricks/',                             'tricks',                   tricks.tricks_list)
-url('/tricks/trick<trick:trick>/',          'tricks_trick',              tricks.trick_page, methods=['GET'])
-url('/tricks/trick<trick:trick>/',          'mobile_tricks_trick',       tricks.trick_page, methods=['GET'], subdomain='m')
-url('/tricks/trick<int:trick_id>/check/',   'tricks_check',              tricks.check, methods=['PUT'])
+url('/tricks/trick<trick:trick>/',          'tricks_trick',             tricks.trick_page, methods=['GET'])
+url('/tricks/trick<trick:trick>/',          'mobile_tricks_trick',      tricks.trick_page, methods=['GET'], subdomain='m')
+url('/tricks/trick<int:trick_id>/check/',   'tricks_check',             tricks.check, methods=['PUT'])
 url('/check/',                              'mobile_checkin_page',      tricks.checkin_page, methods=['GET', 'POST'], subdomain='m')
 url('/prepare_youtube_upload/',             'prepare_youtube_upload',   tricks.prepare_youtube_upload, methods=['GET'])
 
@@ -51,10 +51,7 @@ url('/users/rating/',                   'mobile_rating',    users.top_users,  su
 
 ### Achives urls
 url('/my/achives/',                       'my_achives',      achives.my_achives)
-url('/my/achives/achive<int:achive_id>',  'my_achive',       achives.my_achive)
-
-
-
+url('/users/user<int:user_id>/achives/',  'profile_achives', achives.profile_achives)
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=8000)
