@@ -182,15 +182,27 @@ window.BTAchives.AchivesView = Backbone.View.extend({
 
     user_id      : undefined,
     level_filter : false,
+    achive_views : [],
 
     events : {
-        'click div.achives_filter a' : 'apply_filter'
+        'click div.achives_filter a' : 'apply_filter',
+        'click div.achives_filter span.toggle_all': 'toggle_all'
     },
 
     initialize: function (args) {
-        _.bindAll(this, 'render', 'apply_filter');
+        _.bindAll(this, 'render', 'apply_filter', 'toggle_all');
         this.collection = new window.BTAchives.AchiveList();
         this.collection.on('change', this.render);
+    },
+
+    toggle_all: function (e) {
+        var $el = $(e.currentTarget);
+        $el.toggleClass('toggled');
+        
+        _.forEach(this.achive_views, function (v) {
+            v.toggle();
+        });
+        return false;
     },
 
     reset_filter: function () {
@@ -232,7 +244,8 @@ window.BTAchives.AchivesView = Backbone.View.extend({
 
     render: function (args) {
         var achive_list__cell = this.$el.find('.achive_list__cell'),
-            collection = this.filtered_collection();
+            collection = this.filtered_collection(),
+            tmp;
 
         achive_list__cell.html('');
         remove_tooltips();
@@ -241,9 +254,12 @@ window.BTAchives.AchivesView = Backbone.View.extend({
             this.empty_list_el.show();
         } else {
             this.empty_list_el.hide();
+            self.achive_views = [];
             collection.forEach(function (e, i) {
-                $(achive_list__cell[i % 2]).append(new window.BTAchives.AchiveView({model: e}).render());
-            });
+                tmp = new window.BTAchives.AchiveView({model: e});
+                this.achive_views.push(tmp);
+                $(achive_list__cell[i % 2]).append(tmp.render());
+            }, this);
         }
     }
 });
