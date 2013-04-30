@@ -47,7 +47,7 @@ class Achive(BaseModel):
 
     def get_events(user_id):
         params = {"user_id": user_id, "achive_id": int(self.get("_id"))}
-        return app.connection.Event.fetch(params)
+        return self._event_cls.fetch(params)
 
     def get_event_or_dummy(self, user_id):
         params  = {'user_id': user_id, 'achive_id': int(self.get("_id"))}
@@ -122,6 +122,7 @@ class BaseEvent(BaseModel):
     def achive(self):
         return app.connection.Achive.fetch_one({"_id": self.get("achive_id")})
 
+
 class SimpleEvent(BaseEvent):
     def get_level(self):
         conditions, level = self.achive.get('rule')['cones'], 0
@@ -136,7 +137,6 @@ class SimpleEvent(BaseEvent):
         self.update({'level' : self.get_level()})
         return super(SimpleEvent, self).save(*args, **kwargs)
 app.connection.register([SimpleEvent])
-app.db.seqs.insert({'_id': 'events_seq',  'val': 0})
 
 
 class ComplexEvent(SimpleEvent):

@@ -1,7 +1,11 @@
-# -*- coding: utf-8 -*-
+# coding: utf-8
 """
-Тут должны находиться всякие низкоуровневые штуки,
-относящиеся к трюкам.
+    apps.tricks.base
+    ~~~~~~~~~~~
+
+    Low level functions for tricks module
+
+    :copyright: (c) 2012 by zero13cool
 """
 import simplejson as json
 from urllib import unquote
@@ -15,6 +19,8 @@ from project import app, markdown, checkin_signal
 from apps.notify import send_notify, CHECKTRICK_WITH_VIDEO
 from apps.users import get_user
 from apps.common import grouped_stats
+
+from .models import TrickUser
 
 
 class TrickConverter(BaseConverter):
@@ -40,6 +46,32 @@ try:
 except socket.gaierror, e:
     # нет коннекта до YouTube
     yt_service = None
+
+
+def get_checkins(user_id, only_best=True):
+    """
+    Returns collection of TrickUser objects selected for selected by user_id grouped by trick
+    * only_best - if False return all checkins for this trick & user.
+    """
+    reduce_func = u"""function(obj, prev) {
+        if (obj.cones > prev.cones) {
+            prev.user      = NumberInt(obj.user);
+            prev.trick     = NumberInt(obj.trick);
+            prev.cones     = NumberInt(obj.cones);
+            prev.video_url = obj.video_url;
+        }
+    }"""
+
+    if only_best:
+        return (TrickUser(x) for x in app.db.trick_user.group(['trick'], {'user': user_id}, {'cones': 0}, reduce_func))
+
+    result, tricks_user = {}, app.db.trick_user.find({'user': user_id})
+    for t in tricks_user:
+        try:
+            result[t['trick']].append(TrickUser(t))
+        except KeyError:
+            result[t['trick']] = [TrickUser(t)]
+    return result
 
 
 def get_tags(*args, **kwargs):
@@ -79,6 +111,7 @@ def get_trick(trick_id, simple=True):
 
     # патчу трюк, как-то объеденить функции get_trick и get_tricks
     trick['descr_html'] = markdown(trick['descr'])
+    trick['id'] = trick.pop('_id')
 
     return trick
 
@@ -106,13 +139,7 @@ def get_tricks(*args, **kwargs):
 
         # результат пользователя
         if user_id is not False:
-            reduce_func = u"""function(obj, prev) { 
-                prev.cones = obj.cones;
-                prev.video_url = obj.video_url;
-            }"""
-            user_stats_qs = app.db.trick_user.group(['trick'], {'user': user_id}, {'cones': 0, 'video_url': ''}, reduce_func)
-
-            for x in user_stats_qs:
+            for x in get_checkins(user_id):
                 k = x.pop(u'trick')
                 user_stats[k] = x
 
@@ -147,11 +174,11 @@ def get_best_results(trick_id=None, user_id=False):
     reduce_func = u"""
     function(obj, prev) {
         if (prev.best_user_cones <= obj.cones) {
-            prev.best_user_cones = obj.cones;
-            prev.best_user_id = obj.user;
+            prev.best_user_cones = NumberInt(obj.cones);
+            prev.best_user_id = NumberInt(obj.user);
         }
 
-        prev.users.push(obj.user);
+        prev.users.push(NumberInt(obj.user));
 
         %s
 

@@ -235,6 +235,7 @@ window.BTAchives.AchivesView = Backbone.View.extend({
             collection = this.filtered_collection();
 
         achive_list__cell.html('');
+        remove_tooltips();
 
         if (collection.length === 0) {
             this.empty_list_el.show();

@@ -5,6 +5,7 @@ from mongokit import Connection
 from flask import Flask
 from flask.ext.assets import Environment, Bundle
 from flaskext.markdown import Markdown
+from flaskext.script import Manager
 from blinker import signal
 
 try:
@@ -50,6 +51,7 @@ app.config.from_object('project.settings')
 if mail_on_500: mail_on_500(app, app.config['ADMINS'])
 
 markdown = Markdown(app)
+command_manager = Manager(app)
 
 assets = Environment(app)
 JS_LIBS = (

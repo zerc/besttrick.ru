@@ -1,13 +1,22 @@
-#!venv/bin/python
-# -*- coding: utf-8 -*-
+# coding: utf-8
+"""
+    manage
+    ~~~~~~~~~~~
+
+    Main manage file for do some cool stuff
+
+    :copyright: (c) 2013 by zero13cool
+"""
 from os.path import join as path_join
-from project import app
+
+import urls
+from project import app, command_manager
 from apps import tricks as tricks_views
-from flaskext.script import Manager
 
-manager = Manager(app)
+from apps.achives import manage
 
-@manager.command
+
+@command_manager.command
 def sitemap():
     tricks = app.db.trick.find()
     xml = [
@@ -27,5 +36,10 @@ def sitemap():
     with open(path_join(app.static_folder, 'sitemap.txt'), 'w') as f:
         f.write("\n".join(xml))
 
+
+@command_manager.command
+def runserver(*args, **kwargs):    
+    app.run(host='0.0.0.0', port=8000)
+
 if __name__ == "__main__":
-    manager.run()
+    command_manager.run()

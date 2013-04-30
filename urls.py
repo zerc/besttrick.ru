@@ -1,6 +1,13 @@
-#!venv/bin/python
-# -*- coding: utf-8 -*-
-from project import app, markdown
+# coding: utf-8
+"""
+    urls
+    ~~~~~~~~~~~
+
+    All project urls rules must be there
+
+    :copyright: (c) 2013 by zero13cool
+"""
+from project import app
 from apps import tricks, users, common, admin, bt, achives
 from flask import render_template
 
@@ -52,6 +59,3 @@ url('/users/rating/',                   'mobile_rating',    users.top_users,  su
 ### Achives urls
 url('/my/achives/',                       'my_achives',      achives.my_achives)
 url('/users/user<int:user_id>/achives/',  'profile_achives', achives.profile_achives)
-
-if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=8000)

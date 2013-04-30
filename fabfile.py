@@ -6,7 +6,7 @@ from fabric.api import *
 
 from os.path import join as path_join
 
-from runserver import app
+from urls import app
 
 from apps.tricks.tests import TricksTestCase
 from apps.tests import BtTestCase
@@ -14,6 +14,7 @@ from apps.achives.tests import AchivesTestCase
 
 
 env.hosts = _app.config['FLASK_HOSTS']
+
 TESTS_SET = {
     'bt'     : BtTestCase,
     'tricks' : TricksTestCase,

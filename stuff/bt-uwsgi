@@ -30,7 +30,7 @@ get_pid() {
     fi
 }   
 
-DAEMON_OPTS="--pidfile /var/run/$NAME.pid -s /tmp/$NAME.sock -d /home/bt/logs/$NAME.log --workers 6 --listen 512 --buffer-size 32768 --chmod --master --reload-mercy 30 --max-requests 5000 --socket-timeout 180 --virtualenv /home/bt/www/venv -w runserver:app"
+DAEMON_OPTS="--pidfile /var/run/$NAME.pid -s /tmp/$NAME.sock -d /home/bt/logs/$NAME.log --workers 6 --listen 512 --buffer-size 32768 --chmod --master --reload-mercy 30 --max-requests 5000 --socket-timeout 180 --virtualenv /home/bt/www/venv -w manage:app"
 
 case "$1" in
   start)

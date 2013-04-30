@@ -7,9 +7,6 @@
 
     :copyright: (c) 2013 by zero13cool
 """
-from project import app
-
-
 achives = (
     {#0 просто вилинги
         'trick_id'   : 7,
@@ -56,7 +53,7 @@ achives = (
         'rule'       : {u'cones': [1,2,10]},
         'parents'    : [7],
     },
-    {#61
+    {#6
         'trick_id'   : 29,
         'descr'      : u'',
         'icon'       : u'0.jpg',
@@ -64,7 +61,7 @@ achives = (
         'parents'    : [7],
     },
     {#7
-        'title'      : u'Forward WheelSpiner',            
+        'title'      : u'Forward OneWheel Spiner',            
         'descr'      : u'Вы не плохо вращаетесь на одном колесе лицом вперед!',
         'icon'       : u'0.jpg',
         'score'      : 2.0,
@@ -106,8 +103,8 @@ achives = (
         'parents'    : [13],
     },
     {#13
-        'title'      : u'OneWheel forward seater',            
-        'descr'      : u'Овладейте сидячими трюками на одном колесе!',
+        'title'      : u'Master Sit-OneWheel Forward',
+        'descr'      : u'Овладейте сидячими вилингами лицом вперед!',
         'icon'       : u'0.jpg',
         'score'      : 2.0,
         'rule'       : {u'complex': [11, 12]},
@@ -129,7 +126,7 @@ achives = (
         'parents'    : [16],
     },
     {#16
-        'title'      : u'Backward WheelSpiner',
+        'title'      : u'Backward OneWheel Spiner',
         'descr'      : u'Вы не плохо вращаетесь на одном колесе спиной вперед!',
         'icon'       : u'0.jpg',
         'score'      : 2.0,
@@ -168,14 +165,29 @@ achives = (
         'title'      : u'OneWheel King',
         'descr'      : u'От ваших вилингов девушки в воздух чепчики бросают!',
         'icon'       : u'0.jpg',
-        'score'      : 2.0,
-        'rule'       : {u'complex': [20, 16, 13, 10, 7, 2]},
+        'score'      : 3.0,
+        'rule'       : {u'complex': [20, 16, 13, 10, 7, 2, 24]},
     },
-)
+    # Сидячие вилинги спиной вперед
+    {#22
+        'trick_id'   : 27,
+        'icon'       : u'0.jpg',
+        'rule'       : {u'cones': [3,10,20]},
+        'parents'    : [24],
+    },
+    {#23
+        'trick_id'   : 30,
+        'icon'       : u'0.jpg',
+        'rule'       : {u'cones': [3,10,20]},
+        'parents'    : [24],
+    },
+    {#24
+        'title'      : u'Master Sit-OneWheel Backward',
+        'descr'      : u'Мастерски освойте сидячие вилинги спиной вперед!',
+        'icon'       : u'0.jpg',
+        'score'      : 2.0,
+        'rule'       : {u'complex': [22, 23]},
+        'parents'    : [21],
+    },
 
-def fill():
-    for a in achives:
-        achive = app.connection.Achive()
-        a['_id'] = app.db.seqs.find_and_modify({"_id": "achives_seq"}, {"$inc": {"val": 1}})['val']
-        achive.update(a)
-        achive.save()
+)

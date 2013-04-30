@@ -95,7 +95,7 @@ var App = Backbone.Router.extend({
     },
 
     achives: function (user_id) {
-        var self = this;       
+        var self = this;
         this.achives.collection.user_id = user_id;
         this.achives
             .reset_filter().base_render()

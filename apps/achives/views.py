@@ -22,7 +22,7 @@ def get_achives_for_user(user_id):
         a.update({'user_id': user_id, 'time_changed': e.get('time_changed').ctime()})
         a.update(dict((k, e.get(k)) for k in ('level', 'done', 'progress')))
         return a
-    return map(_patch, app.connection.Achive.fetch())
+    return map(_patch, app.connection.Achive.fetch().sort('score', -1))
 
 
 @render_to()
@@ -39,6 +39,7 @@ def profile_achives(user_id, *args, **kwargs):
 
 def add_achive_after_checkin(trick_user):    
     achives = app.connection.Achive.fetch({"trick_id": trick_user['trick']})
+    trick_user['user'] = int(trick_user['user']) # почему то приходит флоат
     for a in achives:        
         a.do(trick_user['user'], trick_user['cones'])
         a.do_parents(trick_user['user'])
