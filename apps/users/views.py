@@ -16,6 +16,7 @@ from apps.common import grouped_stats, get_user_rating, render_to
 from .base import *
 from .models import User
 
+
 @app.before_request
 def before_request():
     if 'static' not in request.path:
@@ -39,6 +40,10 @@ def login():
         raise TypeError(u'Loginza response code = %s' % f.getcode())
 
     user_data = json.loads(unicode(f.read(), 'utf-8'))
+    
+    # hack так как vkontakte стал vk
+    # user_data['identity'] = user_data['identity'].replace('vk.com', 'vkontakte.ru')
+
     user = app.db.user.find_one({'identity': user_data['identity']}) or register(user_data)
 
     if user['banned']: return redirect(url_for('banned'))
