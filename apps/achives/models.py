@@ -33,7 +33,7 @@ class Achive(BaseModel):
     indexes = [{'fields': ['trick_id']}]
 
     def validate(self, *args, **kwargs):
-        if not self.get('trick_id') and not self.get('title'):
+        if self.get('trick_id') is None and not self.get('title'):
             raise ValidationError(u'Set trick_id or title!')
         return True
 

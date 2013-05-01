@@ -66,7 +66,7 @@ achives = (
         'icon'       : u'0.jpg',
         'score'      : 2.0,
         'rule'       : {u'complex': [3, 4, 5, 6]},
-        'parents'    : [21],
+        'parents'    : [21, 31],
     },
     # Прыжковые вилинги
     {#8
@@ -82,12 +82,12 @@ achives = (
         'parents'    : [10],
     },
     {#10
-        'title'      : u'OneWheel Jumper',            
-        'descr'      : u'Отлично прыгаете на одном колесике!',
+        'title'      : u'Wheel Jumper',            
+        'descr'      : u'Отлично прыгаете на колесиках!',
         'icon'       : u'0.jpg',
         'score'      : 2.0,
         'rule'       : {u'complex': [8, 9]},
-        'parents'    : [21],
+        'parents'    : [21, 35],
     },
     # Сидячие вилинги
     {#11
@@ -131,7 +131,7 @@ achives = (
         'icon'       : u'0.jpg',
         'score'      : 2.0,
         'rule'       : {u'complex': [14, 15]},
-        'parents'    : [21],
+        'parents'    : [21, 31],
     },
     # Вилинговые шифты
     {#17        
@@ -189,5 +189,99 @@ achives = (
         'rule'       : {u'complex': [22, 23]},
         'parents'    : [21],
     },
-
+    # Вращательные трюки лицом вперед
+    {#25
+        'trick_id'   : 1,
+        'icon'       : u'0.jpg',
+        'rule'       : {u'cones': [6,20,40]},
+        'parents'    : [29],
+    },
+    {#26
+        'trick_id'   : 2,
+        'icon'       : u'0.jpg',
+        'rule'       : {u'cones': [6,20,40]},
+        'parents'    : [29],
+    },
+    {#27
+        'trick_id'   : 14,
+        'icon'       : u'0.jpg',
+        'rule'       : {u'cones': [6,20,40]},
+        'parents'    : [29],
+    },
+    {#28
+        'trick_id'   : 21,
+        'icon'       : u'0.jpg',
+        'rule'       : {u'cones': [6,20,40]},
+        'parents'    : [29],
+    },
+    {#29
+        'title'      : u'Spin Pretendent',
+        'descr'      : u'Освойте вращения лицом вперед на двух колесиках',
+        'icon'       : u'0.jpg',
+        'score'      : 2.0,
+        'rule'       : {u'complex': [25, 26, 27, 28, 30]},
+        'parents'    : [31],
+    },
+    {#30
+        'trick_id'   : 15,
+        'icon'       : u'0.jpg',
+        'rule'       : {u'cones': [6,20,40]},
+        'parents'    : [29],
+    },
+    {#31
+        'title'      : u'Spin King',
+        'descr'      : u'От вашего мастерства идет кругом голова!',
+        'icon'       : u'0.jpg',
+        'score'      : 3.0,
+        'rule'       : {u'complex': [29, 16, 7]},
+        'parents'    : [],
+    },
+    {#32
+        'trick_id'   : 0,
+        'icon'       : u'0.jpg',
+        'rule'       : {u'cones': [3,10,20]},
+        'parents'    : [34],
+    },
+    {#33
+        'trick_id'   : 23,
+        'icon'       : u'0.jpg',
+        'rule'       : {u'cones': [3,10,20]},
+        'parents'    : [34],
+    },
+    {#34
+        'title'      : u'Kazak',
+        'descr'      : u'Вы настоящий казак!',
+        'icon'       : u'0.jpg',
+        'score'      : 2.0,
+        'rule'       : {u'complex': [32, 33]},
+        'parents'    : [35],
+    },
+    {#35
+        'title'      : u'Jump King',
+        'descr'      : u'Вы допрыгнули до звезд!',
+        'icon'       : u'0.jpg',
+        'score'      : 3.0,
+        'rule'       : {u'complex': [34, 10]},
+        'parents'    : [],
+    },
+    {#36
+        'trick_id'   : 9,
+        'icon'       : u'0.jpg',
+        'rule'       : {u'cones': [3,10,20]},
+        'parents'    : [38],
+    },
+    {#37
+        'trick_id'   : 24,
+        'icon'       : u'0.jpg',
+        'rule'       : {u'cones': [3,10,20]},
+        'parents'    : [38],
+    },
+    {#38
+        'title'      : u'Pro Cobroid',
+        'descr'      : u'Гибкость ваших ног заставляет задуматься - человек ли вы?!',
+        'icon'       : u'0.jpg',
+        'score'      : 2.0,
+        'rule'       : {u'complex': [36, 37]},
+        'parents'    : [],
+    },
 )
