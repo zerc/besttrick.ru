@@ -105,7 +105,10 @@ def testing(func):
     @wraps(func)
     def wrapper(*args, **kwargs):
         result = run_tests()
-        return func(*args, **kwargs) if result.wasSuccessful() else None
+        for r in result:
+            if not r.wasSuccessful(): return None
+
+        return func(*args, **kwargs)
 
     return wrapper
 
