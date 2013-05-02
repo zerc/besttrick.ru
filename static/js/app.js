@@ -79,7 +79,7 @@ var App = Backbone.Router.extend({
         this.trickFull  = new TrickFullView({user: userModel});
         this.feedback   = new FeedBack({user: userModel});
         this.loader     = new Loader();
-        this.achives    = new window.BTAchives.AchivesView({user: this.user, base: '/my'});
+        this.achives    = new window.BTAchives.AchivesView({user: this.user});
 
         // Общие действия при переходе по страницам
         this.bind('all', function (a, b, c) {

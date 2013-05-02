@@ -29,7 +29,7 @@ window.BTUsers.Loginza = {
 
 /*** Модельки ***/
 window.BTUsers.UserModel = UserModel = Backbone.Model.extend({
-    url: '/user/',
+    url: '/my/',
 
     defaults: {
         id       : 0,
@@ -62,6 +62,10 @@ window.BTUsers.UserModel = UserModel = Backbone.Model.extend({
 
     get_profile_url: function () {
         return '#!users/user' + this.id;
+    },
+
+    parse: function(resp, xhr) {
+      return resp.user;
     }
 });
 

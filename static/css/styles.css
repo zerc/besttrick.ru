@@ -133,6 +133,8 @@ a.trick__dialog_control {
 }
 a.trick__dialog_control:hover {color:#333;}
 
+.user_do_this a.trick__dialog_control {line-height:30px;}
+
 div.dialog_overflow {
     background-color: #CCC;
     opacity: 0.96;

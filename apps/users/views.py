@@ -85,7 +85,7 @@ def my():
         app.db.user.update({'_id': user['id']}, {'$set': params})
         
         return {'success': 1}
-    return {}
+    return {'user': get_user(user.get('id'))}
 
 
 @render_to()

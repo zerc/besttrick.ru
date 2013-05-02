@@ -244,16 +244,28 @@ $(function () { video_form = new UploadVideoForm(); });
  */
 CheckTrickView = Backbone.View.extend({
     template    : new EJS({url: '/static/templates/checktrick_form.ejs'}),
+    
     events      : {
         'click a.toggle_dialog'         : 'toggle_dialog',
         'click a.dialog__save'          : 'save',
         'click a.check_full_trick_icon' : 'toggle_dialog',
-        'click a.upload_video_link'     : 'show_upload_form'
+        'click a.upload_video_link'     : 'show_upload_form',
+        'keyup'                         : 'key_procees'
     },
 
     initialize: function (args) {
-        _.bindAll(this, 'render', 'save');
+        _.bindAll(this, 'render', 'save', 'key_procees');
         this.user = args.user;
+    },
+
+    key_procees: function (e) {
+        var key = e.keyCode || e.wich;
+        if (key === 13) {
+            this.save();
+        } else if (key === 27) {
+            this.toggle_dialog();
+        }
+        return false;
     },
 
     show_upload_form: function () {
@@ -312,6 +324,7 @@ CheckTrickView = Backbone.View.extend({
 
     save: function (data) {
         var self = this,
+            data = data || {},
             cones = parseInt(this.$el.find('#dialog__cones').val(), 10) || data.cones || -1,
             video_url = this.$el.find('#dialog__video_url').val() || data.video_url;
 

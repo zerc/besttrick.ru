@@ -11,7 +11,8 @@
 
     <div class="stats__row">
         делают: <%= model.get('users') %>
-        <a class="trick__dialog_control toggle_dialog" href="#">+</a>
+        <a class="trick__dialog_control toggle_dialog" href="#" title="<% if (model.get('user_do_this')) { %>Улучшить свой результат">^<% } else { %>Я освоил этот трюк!">+<% } %>
+        </a>
     </div>
     <div class="stats__row row__best_user">
         <% if (model.get('best_user')) { %>
