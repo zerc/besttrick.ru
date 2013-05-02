@@ -7,14 +7,15 @@
  * затуп - покажется лоадер - чтобы пользователь не паниковал.
  */
 var Loader = function() {
-    var overflow_div = $('div.global_overflow'),
-        loader_div = $('div.global_loader'),
-        win = $(window);
+    var win          = $(window),
+        doc          = $(document),
+        overflow_div = $('div.global_overflow'),
+        loader_div   = $('div.global_loader');
 
     overflow_div.height(win.height());
     
     this.show = function() {
-        overflow_div.show(); 
+        overflow_div.show();
         loader_div.show(); 
     }
 
@@ -91,7 +92,28 @@ var App = Backbone.Router.extend({
             if (/#!/.test(location.hash)) _gaq.push(['_trackPageview', '/' + location.hash]);
         });
 
+        this.bind('ajax_done', this._callbacks, this);
+        if (this.user) this.user.bind('ajax_done', this._callbacks, this);
+        this.tricksView.bind('ajax_done', this._callbacks, this);
+        this.trickFull.bind('ajax_done', this._callbacks, this);
+        this.achives.bind('ajax_done', this._callbacks, this);
+        this.profile.bind('ajax_done', this._callbacks, this);
+
         Backbone.history.start();
+    },
+
+    route: function(route, name, callback) {
+        var f = callback || this[name],
+            self = this;
+
+        return Backbone.Router.prototype.route.call(this, route, name, _.wrap(f, function (f, args) {
+            self.loader.show();
+            return f.call(self, args);
+        }));
+    },
+
+    _callbacks: function () {
+        this.loader.hide();
     },
 
     achives: function (user_id) {
@@ -102,39 +124,31 @@ var App = Backbone.Router.extend({
             .collection.fetch({
             success: function () {
                 self.achives.render();
-                self.loader.hide();
+                self._callbacks();
             }
         });
     },
 
     top_users: function () {
         var self = this,
-            template = new EJS({url: '/static/templates/top_users.ejs'});
-        
-        self.loader.show();
+            template = new EJS({url: '/static/templates/top_users.ejs'});        
 
-        $.ajax({
+        window.BTCommon.ajax(this, {
             url: '/users/rating/',
             dataType: 'json',
             success: function (response) {
                 self.$el.html(template.render({
                     users: new window.BTUsers.UsersCollection(response.users)
                 }));
-                self.loader.hide();
             },
-            error: function () {
-                alert('Network error');
-                self.loader.hide();
-            }
+            error: function () { alert('Network error'); }
         });
     },
 
     about: function () {
         var template = new EJS({url: '/static/templates/about.ejs'});
-        
-        this.loader.show();
         this.$el.html(template.render());
-        this.loader.hide();
+        this._callbacks();
     },
 
     filter: function (tags_selected) {
@@ -143,22 +157,13 @@ var App = Backbone.Router.extend({
     },
 
     my: function () {
-        if (this.user) {
-            this.loader.show();
-            this.user.render();
-            this.loader.hide();
-        } else {
-            this.navigate('', {trigger: true});
-        }
+        this.user ? this.user.render() : this.navigate('', {trigger: true});
     },
 
     index: function (tags_selected) {
-        this.loader.show();
-
         window.document.title = this.default_page_title;
         this.tricksView.render();
-
-        this.loader.hide();
+        this._callbacks();
     },
 
     fresh_index: function () {
@@ -166,22 +171,17 @@ var App = Backbone.Router.extend({
         this.tricksView.reset_filter();
         this.tricksView.collection.fetch({success: function () {
             self.index();
-            self.loader.hide();
+            self._callbacks();
         }});
     },
 
-    profile: function (user_id) {
-        this.loader.show();
+    profile: function (user_id) {        
         this.profile.render(user_id);
-        this.loader.hide();
     },
 
     trick: function (trick_id) {
-        var trick;
-        this.loader.show();
-        trick = this.tricksView.collection.get(trick_id);
-        this.loader.hide();
-        return this.trickFull.render({model: trick});
+        var trick = this.tricksView.collection.get(trick_id);        
+        this.trickFull.render({model: trick});
     },
 
     old_trick: function (trick_id) {

@@ -459,6 +459,8 @@ div.bbf-editorYouTube div input {width:190px !important; display:inline;}
 
 
 /* глобальный лоадер и оверфлоу */
+/*body.show_global_loader .global_overflow {display:block;}*/
+
 .global_loader {
     position:fixed; top:30%; left:50%; width:64px; height:64px; 
     background:url('/static/i/global_loader.gif') 0 0 no-repeat;
@@ -466,8 +468,8 @@ div.bbf-editorYouTube div input {width:190px !important; display:inline;}
 }
 
 .global_overflow {
-    position:absolute; width:100%; opacity:0.9; -moz-opacity:0.9; filter:alpha(opacity=9);
-    top:0; background-color: #F2F2F2; overflow:hidden; height:1200px;
+    position:fixed; top:0; width:100%; opacity:0.9; -moz-opacity:0.9; filter:alpha(opacity=9);
+    top:0; background-color: #F2F2F2; overflow:hidden; height:1200px; cursor:progress;
 }
 
 

@@ -168,12 +168,8 @@ FeedBack = Backbone.View.extend({
                 data: data,
                 context: this,
                 type: 'POST',
-                success: function () {
-                    this.render({success: true});
-                },
-                error: function () {
-                    alert('Произошла непредвиденная ошибка.');
-                }
+                success: function () { this.render({success: true}); },
+                error: function () { alert('Произошла непредвиденная ошибка.'); }
             });
         } else {
             return false;
@@ -204,7 +200,7 @@ UserView = Backbone.View.extend({
         var self = this,
             context = {user: this.model, save_status_text: '', profile: false};
 
-        $.ajax({
+        window.BTCommon.ajax(this, {
             url: '/my/tricks/',
             dataType: 'json',
             success: function (response) {
@@ -214,9 +210,7 @@ UserView = Backbone.View.extend({
                 context['tricks'] = response;
                 self.$el.html(self.template.render(context));
             },
-            error: function () {
-                alert('error');
-            }
+            error: function () { alert('error'); }
         });
     },
 
@@ -263,7 +257,7 @@ UserProfile = Backbone.View.extend({
 
         this.$el.html(el);
 
-        $.ajax({
+        window.BTCommon.ajax(this, {
             url: '/users/user'+user_id+'/',
             dataType: 'json',
             success: function (response) {
@@ -273,7 +267,6 @@ UserProfile = Backbone.View.extend({
                 _.each(response.tricks, function (row) {
                     row.trick = new window.BTTricks.Trick(row.trick);
                 });
-
 
                 el.html(template.render(response));
             }

@@ -411,7 +411,7 @@ TrickFullView = Backbone.View.extend({
         // сортируем все дела :)
         this.model.on('sync::full', this.render, this);
 
-        $.ajax({
+        window.BTCommon.ajax(this, {
             url: '/tricks/trick' + self.model.get('id') + '/',
             dataType: 'json',
             success: function (response) {
@@ -453,7 +453,11 @@ TrickFullView = Backbone.View.extend({
                 share_params.image = self.model.large_img(true);
                 share_params.description = self.model.get('descr');
 
-                this.share = new Ya.share(_.extend({}, ya_share_params, share_params));
+                try {
+                    this.share = new Ya.share(_.extend({}, ya_share_params, share_params));
+                } catch(e) {
+                    this.share = {};
+                }
             },
             error: function () {
                 alert('Network error');

@@ -41,5 +41,23 @@ def sitemap():
 def runserver(*args, **kwargs):    
     app.run(host='0.0.0.0', port=8000)
 
+
+@command_manager.command
+def slow_runserver(*args, **kwargs):
+    """
+    For imitation slow internet connection
+    """
+
+    import time
+    from flask import request
+
+    @app.before_request
+    def before_request():
+        if 'static' not in request.path:
+            time.sleep(3)
+
+    runserver()
+            
+
 if __name__ == "__main__":
     command_manager.run()

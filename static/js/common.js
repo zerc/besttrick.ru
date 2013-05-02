@@ -12,8 +12,18 @@ window.BTCommon = {
 
         // имя куки для сохранения данных чекина навторизованного пользователя
         tmp_trick_cookie_name: 'trick'
+    },
+
+    ajax: function (context, opts) {
+        opts.success = _.wrap(opts.success, function (f, response) {
+            var result = f(response);
+            context.trigger('ajax_done');
+            return result;
+        });
+        return $.ajax(opts);
     }
 };
+
 
 if (typeof String.prototype.trim !== 'function') {
     String.prototype.trim = function() {
