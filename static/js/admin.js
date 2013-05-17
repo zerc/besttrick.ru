@@ -8,8 +8,6 @@ window.BTAdmin = {};
 
 /*** Общие штуки ***/
 
-Backbone.Form.validators.errMessages.required = 'Обязательное поле';
-
 /*
  * Поле для вставки видео с Ютуба. 
  * Валидирует url и позволяет выбрать тумбу, 

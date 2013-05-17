@@ -35,7 +35,6 @@ var App = Backbone.Router.extend({
         '!'                          : 'fresh_index',
         '!u'                         : 'my',
         '!trick:trick'               : 'trick',
-        '!trick/:trick'              : 'old_trick', // старый урл
         '!users/user:user_id'        : 'profile',
         'filter=:tags_selected'      : 'filter', // no index for search engines
         '!about'                     : 'about',
@@ -47,11 +46,12 @@ var App = Backbone.Router.extend({
 
     initialize: function (args) {
         var self = this,
-            userModel = args.user ? new UserModel(args.user) : false;
-            tricks = args.tricks,
-            
+                        
             tmp_trick_cookie_name = window.BTCommon.vars.tmp_trick_cookie_name,
             next_name = window.BTCommon.vars.next_url_cookie_name;
+
+        this.user = args.user ? new UserModel(args.user) : false;
+        this.tricks = new TricksList(args.tricks);
 
         this.default_page_title = window.document.title;
         this.active_route = 'route:index';
@@ -62,7 +62,7 @@ var App = Backbone.Router.extend({
          * хоть куки и сессионные - удалим их руками для подстраховки:
          * Chrome 19 у меня сохранял сессионныю куку после перезапуска
          */
-        if (userModel && $.cookie(tmp_trick_cookie_name)) {
+        if (this.user && $.cookie(tmp_trick_cookie_name)) {
             $.cookie(tmp_trick_cookie_name, null);
         }
 
@@ -72,15 +72,14 @@ var App = Backbone.Router.extend({
         }
 
         this.$el        = $('div.content');
-        this.user       = userModel ? new UserView({model: userModel}) : false;
-        this.profile    = new UserProfile();
-        this.loginView  = new Login({user: userModel});
-        this.tricksView = new TricksView({tricks: tricks, tags: args.tags, user: userModel});
-        this.trickFull  = new TrickFullView({user: userModel});
-        this.feedback   = new FeedBack({user: userModel});
-        this.loader     = new Loader();
-        this.achives    = new window.BTAchives.AchivesView({user: this.user});
 
+        this.loginView  = new Login({user: this.user});
+        this.tricksView = new TricksView({tricks: this.tricks, tags: args.tags, user: this.user});
+        this.trickFull  = new TrickFullView({user: this.user});
+        this.feedback   = new FeedBack({user: this.user});
+        this.loader     = new Loader();
+        this.achives    = new window.BTAchives.AchivesView();
+        
         // Общие действия при переходе по страницам
         this.bind('all', function (a, b, c) {
             self.active_route = a;
@@ -92,13 +91,13 @@ var App = Backbone.Router.extend({
             if (/#!/.test(location.hash)) _gaq.push(['_trackPageview', '/' + location.hash]);
         });
 
+        // TODO: refactor!
+        // if (this.user) this.user.bind('ajax_done', this._callbacks, this);
         this.bind('ajax_done', this._callbacks, this);
-        if (this.user) this.user.bind('ajax_done', this._callbacks, this);
         this.tricksView.bind('ajax_done', this._callbacks, this);
         this.trickFull.bind('ajax_done', this._callbacks, this);
         this.achives.bind('ajax_done', this._callbacks, this);
-        this.profile.bind('ajax_done', this._callbacks, this);
-
+        
         Backbone.history.start();
     },
 
@@ -157,7 +156,31 @@ var App = Backbone.Router.extend({
     },
 
     my: function () {
-        this.user ? this.user.render() : this.navigate('', {trigger: true});
+        if (!this.user) return this.navigate('', {trigger: true});
+
+        var view = new UserView({
+            model  : this.user, 
+            tricks : new TricksList(this.tricks.filter(function (t) { return t.get('user_do_this'); })) 
+        });
+
+        this.loader.hide();
+        
+        return view.render();
+    },
+
+    profile: function (user_id) {
+        window.BTCommon.ajax(this, {
+            url: '/users/user'+user_id+'/',
+            dataType: 'json',
+            success: function (response) {
+                var profile    = new UserProfile({
+                        model  : new UserModel(response.user),
+                        tricks : new window.BTTricks.TricksList(response.tricks)
+                    });
+
+                return profile.render();
+            }
+        });
     },
 
     index: function (tags_selected) {
@@ -175,32 +198,8 @@ var App = Backbone.Router.extend({
         }});
     },
 
-    profile: function (user_id) {        
-        this.profile.render(user_id);
-    },
-
     trick: function (trick_id) {
         var trick = this.tricksView.collection.get(trick_id);        
         this.trickFull.render({model: trick});
-    },
-
-    old_trick: function (trick_id) {
-        var mapping = {
-            'kazachok-f'    : 0,
-            'korean-spin'   : 1,
-            'russian-spin'  : 2,
-            'chicken-leg-b' : 3,
-            'toe-machine'   : 4,
-            'day-night'     : 5,
-            'footgun-toe-f' : 6,
-            'onewheel-f'    : 7,
-            'confraglide'   : 8,
-            'cobra-b'       : 9,
-            'seven-f'       : 10,
-            'no-wiper'      : 11,
-            'foot-spin'     : 12
-        };
-
-        return this.trick(mapping[trick_id]);
     }
 });

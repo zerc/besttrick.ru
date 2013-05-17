@@ -97,6 +97,8 @@ def user_profile(user_id):
     context['user'] = clean_fields(user)
 
     user_tricks = grouped_stats('trick', {'user': int(user_id)})
+    # TODO: remove this dirty hook!
+    map(lambda a: a.update(a.pop('trick')), user_tricks)
     context['tricks'] = sorted(user_tricks, key=lambda x: x['cones'], reverse=True)
 
     return context

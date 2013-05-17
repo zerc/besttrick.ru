@@ -50,6 +50,18 @@ window.BTUsers.UserModel = UserModel = Backbone.Model.extend({
         banned   : false
     },
 
+    schema: {
+        nick: {type: 'Text', validators: ['required'], title: 'Ник'},
+        team: {type: 'Text', title: 'Команда'},
+        phone: {type: 'Text', title: 'Телефон'},
+        city: {type: 'Text', title: 'Город'},
+        icq: {type: 'Text', title: 'ICQ'},
+        skype: {type: 'Text', title: 'Skype'},
+        rolls: {type: 'Text', title: 'Ролики'},
+        epxs: {type: 'Text', title: 'Стаж'},
+        bio: {type: 'TextArea', title: 'Информация'}
+    },
+
     validate: function (attrs) {
         if (!attrs.nick) {
             return 'укажите свой ник';
@@ -188,40 +200,30 @@ FeedBack = Backbone.View.extend({
  * TODO: также нам незачем запрашивать всю инфу по трюкам - она у нас уже есть, нам нужны только id.
  */
 UserView = Backbone.View.extend({
-    el: 'div.content',
-
-    template: new EJS({url: '/static/templates/user.ejs'}),
-
-    events: {
+    el       : 'div.content',
+    
+    template : new EJS({url: '/static/templates/user.ejs'}),
+    
+    events   : {
         'click div.user__data button.save': 'update_data'
     },
 
     initialize: function () {
-        _.bindAll(this, 'render');
-    },
-
-    render: function () {
         var self = this,
-            context = {user: this.model, save_status_text: '', profile: false};
-
-        window.BTCommon.ajax(this, {
-            url: '/my/tricks/',
-            dataType: 'json',
-            success: function (response) {
-                _.each(response, function (row) {
-                    row.trick = new window.BTTricks.Trick(row.trick);
-                });
-                context['tricks'] = response;
-                self.$el.html(self.template.render(context));
-            },
-            error: function () { alert('error'); }
-        });
-    },
-
-    update_data: function () {
-        var data = this.$el.find('input, textarea'),
-            self = this,
             show_save_status;
+
+        _.bindAll(this, 'render');
+        
+        // union this as smart save button
+        this.button = $('<button>', {'type': 'button', 'class': 'save', 'text': 'Сохранить'});
+        this.status_el = $('<span>', {'class': 'save_status'});
+
+        this.form = new Backbone.Form({model: this.model}).render();
+        this.context = {
+            user    : this.model,
+            form    : this.form,
+            tricks  : this.options.tricks
+        }
 
         show_save_status = function(status, text) {
             var text = text || (status === 'done' ? 'сохранено' : 'ошибка');
@@ -229,51 +231,49 @@ UserView = Backbone.View.extend({
                 .addClass(status).text(text).fadeOut(2000, function () {
                     $(this).text('').show();
                 });
-        }
+        }         
 
-        _.each(data, function (el) {
-            self.model.set($(el).attr('name'), $(el).val(), {silent:true});
-        });
+        this.model.on('change', function () {
+            self.model.save(null, {
+                success: function (model, response) { show_save_status('done'); },
+                error: function (model, response) { show_save_status('error', response); }
+            });
+        });            
+        
+    },
 
-        if (!self.model.hasChanged()) { return; }
 
-        self.model.save(true, true, {
-            success: function (model, response) { show_save_status('done'); },
-            error: function (model, response) {
-                show_save_status('error', response);
-            }
-        });
+    render: function () {
+        this.$el.html(this.template.render(this.context));
+        
+        this.$el.find('form').replaceWith(
+            this.form.$el.append(this.button, this.status_el)
+        );
+
+        this.trigger('ajax_done'); // TODO: make this more cool
+    },
+
+    update_data: function () {
+        var errors = this.form.commit();
+        if (errors) return false;
     }
 });
 
 
-UserProfile = Backbone.View.extend({
-    el: 'div.content',
-
-    initialize: function () {
-        _.bindAll(this, 'render');
-    },
-
+UserProfile = UserView.extend({
     render: function (user_id) {
-        var template = new EJS({url: '/static/templates/user.ejs'}),
-            el = $('<div class="user__profile"></div>'),
-            self = this;
+        var self = this;
+        
+        self.$el.html(self.template.render(this.context));
 
-        this.$el.html(el);
+        self.$el.find('form').replaceWith(
+            // TODO: refactor!!!
+            $(_.map(_.filter(self.form.fields, function (e) { return e.editor.value; }), function (e) { 
+                return EJS.Helpers.prototype.print_value_if_exists(e.schema.title, e.editor.value);
+            }).join())
+        );
 
-        window.BTCommon.ajax(this, {
-            url: '/users/user'+user_id+'/',
-            dataType: 'json',
-            success: function (response) {
-                response.user = new UserModel(response.user);
-                response.profile = true;
+        self.trigger('ajax_done'); // TODO: make this more cool
 
-                _.each(response.tricks, function (row) {
-                    row.trick = new window.BTTricks.Trick(row.trick);
-                });
-
-                el.html(template.render(response));
-            }
-        });
     }
 });

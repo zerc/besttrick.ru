@@ -1,13 +1,14 @@
 <%= set_page_title(user.get('nick')) %>
+
 <div class="user__tricks">
     <% if (tricks.length > 0) { %>
-        <% _.map(tricks, function (row) {%>
+        <% tricks.each(function (trick) {%>
             <div class="user__trick">
-                <img src="<%= row.trick.img_src() %>" class="user__trick__thumb">
-                <a href="<%= row.trick.href() %>"><%= row.trick.get_title() %></a>
-                <span><%= row.cones %></span>
-                <% if (row.video_url && row.approved == 1) { %>
-                    <a class="has_video video_approved" href="<%= row.video_url %>" target="_blank" title="есть видео подтверждение"></a>
+                <img src="<%= trick.img_src() %>" class="user__trick__thumb">
+                <a href="<%= trick.href() %>"><%= trick.get_title() %></a>
+                <span><%= trick.get('cones') %></span>
+                <% if (trick.get('video_url') && trick.get('approved') == 1) { %>
+                    <a class="has_video video_approved" href="<%= trick.get('video_url') %>" target="_blank" title="есть видео подтверждение"></a>
                 <% } %>
             </div>
         <%}) %>
@@ -22,32 +23,6 @@
         <a href="<%= BTAchives.url_for_profile(user.get('id')) %>" class="user_achives"></a>
     </p>
     
-    <% if (profile) { 
-        _.each({
-            nick:   'Ник',
-            team:   'Команда',
-            phone:  'Телефон',
-            city:   'Город',
-            icq:    'ICQ',
-            skype:  'Skype',
-            rolls:  'Ролики',
-            epxs:   'Стаж',
-            bio:    'Информация'
-            }, function (key, field_name) {
-    %>
-    <%= print_value_if_exists(key, user.get(field_name)) %> 
-    <%  }); } else { %>
-        <input placeholder="ник" type="text" id="id_nick" name="nick" value="<%= user.get('nick') %>" maxlength="100" />
-        <input placeholder="команда" type="text" id="id_team" name="team" value="<%= user.get('team') %>" maxlength="100" />
-        <input placeholder="e-mail" type="text" id="id_email" name="email" value="<%= user.get('email') %>" />
-        <input placeholder="телефон" type="text" id="id_phone" name="phone" value="<%= user.get('phone') %>" />
-        <input placeholder="город" type="text" id="id_city" name="city" value="<%= user.get('city') %>" maxlength="100" />
-        <input placeholder="icq" type="text" id="id_icq" name="icq" value="<%= user.get('icq') %>" maxlength="10" />
-        <input placeholder="skype" type="text" id="id_skype" name="skype" value="<%= user.get('skype') %>" />
-        <input placeholder="я катаю на" type="text" id="id_rolls" name="rolls" value="<%= user.get('rolls') %>" />
-        <input placeholder="стаж" type="text" id="id_epxs" name="epxs" value="<%= user.get('epxs') %>" />
-        <textarea placeholder="О себе" id="id_bio" name="bio"><%= user.get('bio') %></textarea>
-        <button type="button" class="save">Сохранить</button> <span class="save_status"><%= save_status_text %></span>
-    <% } %>
+   <form></form>
 </div>
 <br class='clear'>

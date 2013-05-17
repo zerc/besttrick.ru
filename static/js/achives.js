@@ -52,7 +52,7 @@ window.BTAchives.Achive = Backbone.Model.extend({
     },
 
     get_trick: function () {
-        return window.BTCommon.args.tricks.get({'id': this.get('trick_id')});
+        return this.collection.get({'id': this.get('trick_id')});
     },
 
     get_rule_name: function () {
@@ -142,7 +142,6 @@ window.BTAchives.AchiveView = Backbone.View.extend({
     initialize: function (args) {
         _.bindAll(this, 'render', 'toggle');
         this.$el.addClass(window.BTAchives.cls_for_lvl + this.model.get('level'));
-        window.at = this.model.collection;
     },
 
     toggle: function () {

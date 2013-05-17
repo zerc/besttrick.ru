@@ -5,7 +5,12 @@ from mongokit import Connection
 from flask import Flask
 from flask.ext.assets import Environment, Bundle
 from flaskext.markdown import Markdown
-from flaskext.script import Manager
+
+try:
+    from flaskext.script import Manager
+except ImportError: # Fix this
+    from flask.ext.script import Manager
+    
 from blinker import signal
 
 try:
@@ -58,6 +63,7 @@ JS_LIBS = (
     'js/jquery.min.js',
     'js/underscore.js',
     'js/backbone.js',
+    'js/backbone-forms.js',
     'js/ejs.js',
     'js/jquery.form.js',
     'js/bootstrap-tooltip.js',

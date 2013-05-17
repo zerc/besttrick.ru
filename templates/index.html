@@ -28,7 +28,6 @@
     {% endassets %}
 
     {% if user and user.admin > 0 %}
-        <script src="{{ url_for('static', filename='js/backbone-forms.min.js') }}"></script>
         <script type="text/javascript" src="{{ url_for('static', filename='js/admin.js') }}"></script>
     {% endif %}
 
@@ -101,8 +100,8 @@
 
     <script type="text/javascript">
         (function () {
-            var args = window.BTCommon.args = {
-                'tricks' : new TricksList({{ tricks|safe }}),
+            var args = {
+                'tricks' : {{ tricks|safe }},
                 'user'   : {{ user_json|safe }},
                 'tags'   : {{ tags|safe }}
             };
