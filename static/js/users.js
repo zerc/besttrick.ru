@@ -10,6 +10,49 @@ window.BTUsers = {};
 var UserModel, UserView, UserProfile,
     Login, FeedBack;
 
+Backbone.Form.editors.SpecialSelect = Backbone.Form.editors.Select.extend({
+    tagName: 'ul',
+
+    events: {'click li': 'select'},
+
+    select: function (e) {
+        var target = $(e.currentTarget);
+        this.$el.find('li').removeClass('selected');
+        this.setValue(
+            target.addClass('selected').attr('data-achive-id')
+        );
+    },
+
+    setValue: function (val) {
+        return this.$el.val(parseInt(val));
+    },
+
+    getValue: function() {
+      return parseInt(this.$el.val());
+    },
+
+    _arrayToHtml: function(array) {
+        var html = [],
+            self = this;
+
+        _.each(array, function(option) {
+            if (_.isObject(option)) {
+                _.extend(option, {
+                    cls: option.achive_id === self.model.get('badges') ? 'selected' : ''
+                });
+
+                html.push(_.template('\
+                    <li data-achive-id="<%= achive_id %>" class="<%= cls %>">\
+                        <img width="30" height="30" scr="<%= icon %>" title="<%= title %>">\
+                    </li>')(option));
+            } else {
+                html.push('<li>'+option+'</li>');
+            }
+        });
+
+        return html.join('');
+    }
+});
 
 window.BTUsers.Loginza = {
     href: "https://loginza.ru/api/widget?token_url=http://"
@@ -47,9 +90,10 @@ window.BTUsers.UserModel = UserModel = Backbone.Model.extend({
         rolls    : '',
         epxs     : '',
         rating   : 0.0,
-        banned   : false
+        banned   : false,
+        badges   : 0
     },
-    // <input placeholder="ник" type="text" id="id_nick" name="nick" value="klassnykh" >
+
     schema: {
         nick: {
             type        : 'Text', 
@@ -87,6 +131,21 @@ window.BTUsers.UserModel = UserModel = Backbone.Model.extend({
         bio: {
             type: 'TextArea',
             editorAttrs: {'placeholder': 'Информация', 'maxlength': '300'}
+        },
+        badges: {
+            type: 'SpecialSelect',
+            editorAttrs: {'class': 'badges_list'},
+            options: function (callback) {
+                $.ajax({
+                    url: '/achives/badges/',
+                    dataType: 'json',
+                    context: this,
+                    success: function (response) {
+                        callback(response.achives);
+                    },
+                    error: function () { alert('Произошла непредвиденная ошибка.'); }
+                });
+            }
         }
     },
 

@@ -49,6 +49,10 @@ class UserMigration(DocumentMigration):
         self.target = {'banned':{'$exists':False}}
         self.update = {'$set': {'banned': False}}
 
+    def allmigration02__add_badges_feild(self):
+        self.target = {'badges':{'$exists':False}}
+        self.update = {'$set': {'badges': 0}}
+
 
 class User(BaseModel):
     __collection__   = u'user'
@@ -74,8 +78,9 @@ class User(BaseModel):
         'epxs'      : unicode,
 
         'banned'    : bool,
+        'badges'    : int,
     }
-    default_values  = {'admin': 0, 'banned': False}
+    default_values  = {'admin': 0, 'banned': False, 'badges': 0}
     required_fields = ['identity', 'provider', 'nick']
     migration_handler = UserMigration
 app.connection.register([User])

@@ -273,6 +273,7 @@ a.video_approved {background-position:-24px 0px;}
 }
 
 .user__data {
+    position:relative;
     float:right; margin-left:0; margin-right:0; padding:10px; background:#fff;
     width:280px;
 }
@@ -541,3 +542,17 @@ div.bbf-editorYouTube div input {width:190px !important; display:inline;}
 }
 .achive__progress .achive_done {color:green;}
 .showing_progress .achive__progress {display:block;}
+
+
+.badges_list {
+  position:absolute; top:70px; right:18px;
+}
+
+.badges_list li {
+  display:block; width:30px; height:30px; 
+  background:red; cursor:pointer;
+}
+
+.badges_list li.selected {
+  background:green;
+}

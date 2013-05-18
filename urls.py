@@ -59,3 +59,4 @@ url('/users/rating/',                   'mobile_rating',    users.top_users,  su
 ### Achives urls
 url('/my/achives/',                       'my_achives',      achives.my_achives)
 url('/users/user<int:user_id>/achives/',  'profile_achives', achives.profile_achives)
+url('/achives/badges/',                   'get_badges',      achives.get_badges)

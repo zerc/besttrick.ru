@@ -39,8 +39,22 @@ def profile_achives(user_id, *args, **kwargs):
 
 def add_achive_after_checkin(trick_user):    
     achives = app.connection.Achive.fetch({"trick_id": trick_user['trick']})
-    trick_user['user'] = int(trick_user['user']) # почему то приходит флоат
+    trick_user['user'] = int(trick_user['user'])
     for a in achives:        
         a.do(trick_user['user'], trick_user['cones'])
         a.do_parents(trick_user['user'])
 checkin_signal.connect(add_achive_after_checkin)
+
+
+@render_to()
+def get_badges(*args, **kwargs):
+    achives = app.connection.Achive.fetch({"score": {"$gt": 2}})
+
+    def make_badge(a):
+        return {
+            'icon'      : a.pop('icon'),
+            'title'     : a.pop('title'),
+            'achive_id' : a.pop('_id'),
+        }
+
+    return {'achives': map(make_badge, achives)}
