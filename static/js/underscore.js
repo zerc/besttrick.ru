@@ -903,9 +903,6 @@
     return code.replace(/\\\\/g, '\\').replace(/\\'/g, "'");
   };
 
-  // JavaScript micro-templating, similar to John Resig's implementation.
-  // Underscore templating handles arbitrary delimiters, preserves whitespace,
-  // and correctly escapes quotes within interpolated code.
   _.template = function(str, data) {
     var c  = _.templateSettings;
     var tmpl = 'var __p=[],print=function(){__p.push.apply(__p,arguments);};' +

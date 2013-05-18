@@ -90,14 +90,8 @@ var App = Backbone.Router.extend({
             // google analytics event push
             if (/#!/.test(location.hash)) _gaq.push(['_trackPageview', '/' + location.hash]);
         });
-
-        // TODO: refactor!
-        // if (this.user) this.user.bind('ajax_done', this._callbacks, this);
-        this.bind('ajax_done', this._callbacks, this);
-        this.tricksView.bind('ajax_done', this._callbacks, this);
-        this.trickFull.bind('ajax_done', this._callbacks, this);
-        this.achives.bind('ajax_done', this._callbacks, this);
         
+        window.BTCommon.on('ajax_done render_done', this.callbacks, this);        
         Backbone.history.start();
     },
 
@@ -111,7 +105,7 @@ var App = Backbone.Router.extend({
         }));
     },
 
-    _callbacks: function () {
+    callbacks: function () {
         this.loader.hide();
     },
 
@@ -123,7 +117,7 @@ var App = Backbone.Router.extend({
             .collection.fetch({
             success: function () {
                 self.achives.render();
-                self._callbacks();
+                window.BTCommon.trigger('render_done');
             }
         });
     },
@@ -147,7 +141,7 @@ var App = Backbone.Router.extend({
     about: function () {
         var template = new EJS({url: '/static/templates/about.ejs'});
         this.$el.html(template.render());
-        this._callbacks();
+        window.BTCommon.trigger('render_done');
     },
 
     filter: function (tags_selected) {
@@ -163,9 +157,8 @@ var App = Backbone.Router.extend({
             tricks : new TricksList(this.tricks.filter(function (t) { return t.get('user_do_this'); })) 
         });
 
-        this.loader.hide();
-        
-        return view.render();
+        view.render();
+        window.BTCommon.trigger('render_done');
     },
 
     profile: function (user_id) {
@@ -186,7 +179,7 @@ var App = Backbone.Router.extend({
     index: function (tags_selected) {
         window.document.title = this.default_page_title;
         this.tricksView.render();
-        this._callbacks();
+        window.BTCommon.trigger('render_done');
     },
 
     fresh_index: function () {
@@ -194,7 +187,6 @@ var App = Backbone.Router.extend({
         this.tricksView.reset_filter();
         this.tricksView.collection.fetch({success: function () {
             self.index();
-            self._callbacks();
         }});
     },
 

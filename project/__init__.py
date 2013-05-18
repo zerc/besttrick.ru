@@ -59,7 +59,7 @@ markdown = Markdown(app)
 command_manager = Manager(app)
 
 assets = Environment(app)
-JS_LIBS = (
+JS_FILES = (
     'js/jquery.min.js',
     'js/underscore.js',
     'js/backbone.js',
@@ -78,8 +78,20 @@ JS_LIBS = (
     'js/app.js',
 )
 
-js = Bundle(*JS_LIBS, filters='jsmin', output='js/main.min.js')
+CSS_FILES = map(lambda x: 'css/%s' % x, (
+    'backbone-forms.css',
+    'base.css',
+    'skeleton.css',
+    'layout.css',
+    'styles.css',
+    'jquery.reject.css',
+    #'reset.css',
+))
+
+js = Bundle(*JS_FILES, filters='jsmin', output='js/main.min.js')
+css = Bundle(*CSS_FILES, filters='cssmin', output='css/styles.min.css')
 assets.register('js_all', js)
+assets.register('css_all', css)
 
 
 def log_message(message, app):

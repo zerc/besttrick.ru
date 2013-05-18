@@ -2,9 +2,9 @@
 /*jslint nomen: true, maxerr: 50, indent: 4 */
 
 /*
- * Файл содержит общие для всего приложения элементы
+ * Файл содержит общие для всего приложения элементы.
  */
-window.BTCommon = {
+window.BTCommon = _.extend({
     vars: {
         // кука в которую сохраняется url страницы с которой логинились 
         // (туда будет выполнен редирект после логина)
@@ -15,14 +15,15 @@ window.BTCommon = {
     },
 
     ajax: function (context, opts) {
+        var self = this;
         opts.success = _.wrap(opts.success, function (f, response) {
             var result = f(response);
-            context.trigger('ajax_done');
+            self.trigger('ajax_done');
             return result;
         });
         return $.ajax(opts);
     }
-};
+}, Backbone.Events);
 
 
 if (typeof String.prototype.trim !== 'function') {
@@ -89,6 +90,8 @@ dateFormat.i18n = {
     ]
 };
 
+
+// Всякие штуки для форм
 (function (){
     _.extend(Backbone.Form.validators.errMessages, {
         required   : 'Обязательное поле',
@@ -96,5 +99,25 @@ dateFormat.i18n = {
         email      : 'Некорректный email',
         url        : 'Некорректный URL',
         match      : 'Значение должно быть вида "{{field}}"'
+    });
+
+    Backbone.Form.setTemplates({
+        form: '\
+          <form class="bbf-form">{{fieldsets}}</form>\
+        ',
+        
+        fieldset: '\
+          <fieldset>\
+            {{legend}}\
+            {{fields}}\
+          </fieldset>\
+        ',
+        
+        field: '\
+        <span>\
+          <div class="bbf-editor bbf-editor{{type}}">{{editor}}</div>\
+          <div class="bbf-help">{{help}}</div>\
+        </span>\
+        '
     });
 }());

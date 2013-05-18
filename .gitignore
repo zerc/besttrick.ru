@@ -8,6 +8,7 @@ pip-log.txt
 static/images/
 static/js/main.min.js
 static/js/main.js
+static/css/styles.min.css
 sitemap.txt
 dump/
 build/

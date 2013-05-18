@@ -54,7 +54,7 @@ def slow_runserver(*args, **kwargs):
     @app.before_request
     def before_request():
         if 'static' not in request.path:
-            time.sleep(3)
+            time.sleep(2)
 
     runserver()
             

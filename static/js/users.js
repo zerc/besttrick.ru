@@ -49,17 +49,45 @@ window.BTUsers.UserModel = UserModel = Backbone.Model.extend({
         rating   : 0.0,
         banned   : false
     },
-
+    // <input placeholder="ник" type="text" id="id_nick" name="nick" value="klassnykh" >
     schema: {
-        nick: {type: 'Text', validators: ['required'], title: 'Ник'},
-        team: {type: 'Text', title: 'Команда'},
-        phone: {type: 'Text', title: 'Телефон'},
-        city: {type: 'Text', title: 'Город'},
-        icq: {type: 'Text', title: 'ICQ'},
-        skype: {type: 'Text', title: 'Skype'},
-        rolls: {type: 'Text', title: 'Ролики'},
-        epxs: {type: 'Text', title: 'Стаж'},
-        bio: {type: 'TextArea', title: 'Информация'}
+        nick: {
+            type        : 'Text', 
+            validators  : ['required'],
+            editorAttrs : {'placeholder': 'Ник', 'maxlength': '100'}
+        },
+        team: {
+            type: 'Text', 
+            editorAttrs : {'placeholder': 'Команда', 'maxlength': '100'}
+        },
+        phone: {
+            type: 'Text',
+            editorAttrs : {'placeholder': 'Телефон'}
+        },
+        city: {
+            type: 'Text', 
+            editorAttrs : {'placeholder': 'Город', 'maxlength': '100'}
+        },
+        icq: {
+            type: 'Text', 
+            editorAttrs : {'placeholder': 'ICQ', 'maxlength': '10'}
+        },
+        skype: {
+            type: 'Text', 
+            editorAttrs: {'placeholder': 'Skype', 'maxlength': '50'}
+        },
+        rolls: {
+            type: 'Text',
+            editorAttrs: {'placeholder': 'Ролики', 'maxlength': '50'}
+        },
+        epxs: {
+            type: 'Text',
+            editorAttrs: {'placeholder': 'Стаж', 'maxlength': '50'}
+        },
+        bio: {
+            type: 'TextArea',
+            editorAttrs: {'placeholder': 'Информация', 'maxlength': '300'}
+        }
     },
 
     validate: function (attrs) {
@@ -193,12 +221,7 @@ FeedBack = Backbone.View.extend({
     }
 });
 
-
-/*
- * TODO: так как функционал частично пересекается с вью Профиля, возможно срефакторить через наследование
- * Личный кабинет пользователя: редактирование данных, отображение списка трюков.
- * TODO: также нам незачем запрашивать всю инфу по трюкам - она у нас уже есть, нам нужны только id.
- */
+/* Views */
 UserView = Backbone.View.extend({
     el       : 'div.content',
     
@@ -249,31 +272,30 @@ UserView = Backbone.View.extend({
         this.$el.find('form').replaceWith(
             this.form.$el.append(this.button, this.status_el)
         );
-
-        this.trigger('ajax_done'); // TODO: make this more cool
     },
 
     update_data: function () {
-        var errors = this.form.commit();
-        if (errors) return false;
+        return this.form.commit();
     }
 });
 
 
 UserProfile = UserView.extend({
     render: function (user_id) {
-        var self = this;
+        var self = this,
+            form_el;
         
         self.$el.html(self.template.render(this.context));
+        form_el = self.$el.find('form');
 
-        self.$el.find('form').replaceWith(
-            // TODO: refactor!!!
-            $(_.map(_.filter(self.form.fields, function (e) { return e.editor.value; }), function (e) { 
-                return EJS.Helpers.prototype.print_value_if_exists(e.schema.title, e.editor.value);
-            }).join())
-        );
+        _.each(self.form.fields, function (e) {
+            if (!e.editor.value) return;
 
-        self.trigger('ajax_done'); // TODO: make this more cool
+            form_el.append(
+                '<p><strong>' + e.schema.title + ':</strong> ' + e.editor.value + '</p>'
+            );
+        });
 
+        form_el.children().unwrap();
     }
 });

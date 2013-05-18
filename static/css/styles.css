@@ -254,6 +254,7 @@ a.has_video {
   background:url('/static/i/common.png?rev=1') -24px -11px no-repeat;
 }
 a.video_approved {background-position:-24px 0px;}
+
 /* User page */
 .user {}
 .user input {margin-right:0; margin-bottom:10px;}
@@ -285,6 +286,9 @@ a.video_approved {background-position:-24px 0px;}
 .user__photo {float:right; width:50px; margin-left:10px;}
 .save_status.done {color:green;}
 .save_status.error {color:red;}
+
+.bbf-error input {border-color:red;}
+.bbf-error .bbf-help {margin-top:-20px; color:red; font-size:12px;}
 
 /* From Bootstrap: https://github.com/twitter/bootstrap */
 .tooltip {
