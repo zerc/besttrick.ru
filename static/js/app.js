@@ -51,7 +51,7 @@ var App = Backbone.Router.extend({
             next_name = window.BTCommon.vars.next_url_cookie_name;
 
         this.user = args.user ? new UserModel(args.user) : false;
-        this.tricks = new TricksList(args.tricks);
+        this.tricks = window.BTTricks.tricks = new TricksList(args.tricks);
 
         this.default_page_title = window.document.title;
         this.active_route = 'route:index';

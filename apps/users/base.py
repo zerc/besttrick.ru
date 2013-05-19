@@ -94,5 +94,19 @@ def get_user(user_id=None, full=False, user_dict=None):
         user = user_dict
 
     user['rating'] = get_user_rating(user['id'])
+    
+    # TODO: refactor    
+    def make_badge(a):        
+        return {
+            'icon'         : a['icon'],
+            'title'        : a['title'],
+            'achive_id'    : a['_id'],
+            'short_title'  : ''.join('%s.' % x[0] for x in a['title'].split()[:2]).upper(),
+            'level'        : a.get_event_or_dummy(user_id)['level']
+        }
+
+    if user['badges'] > 0:
+        b = app.connection.Achive.fetch_one({"_id": user['badges']})
+        user['badge'] = make_badge(b)
 
     return user if full else clean_fields(user)

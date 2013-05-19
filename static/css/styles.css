@@ -191,22 +191,44 @@ a.tricks_filter__tag:hover {color:#555; text-decoration:none;}
 .tag__selected, .tag__selected:hover {background:#B55A5A; color:#fff; text-decoration:none;}
 
 /* Trick full page */
-.trick__users {float:left;}
-.trick__user {
-    width:500px; height:40px; clear:both; float:none;
-    margin-bottom:10px; background:white; line-height:35px;
+.trick__users {float:left; width:500px;}
+
+.trick__users table {width:100%;}
+
+.trick__user {background:white;}
+.trick__users td {line-height:40px; height:40px;}
+.trick__users td.trick__breaker {line-height:11px; height:11px;}
+
+.trick__users td.trick__user_cones {
+  background:#AEAEAE; text-align:center;
+  width:40px; color:white;
 }
-.trick__user span.left_block {
-    display:block; float:left; background:#AEAEAE; text-align:center;
-    width:40px; height:40px; line-height:36px; color:white; margin-right:10px;
+
+.trick__users td.trick__user_video_url {}
+.trick__users td.trick__user_info {
+  text-align:right; padding-right:10px; vertical-align:top;
 }
-.trick__user__photo {height:40px; width:40px; float:right; margin-left:10px;}
-.trick__user a {float:right;}
+
+.trick__users td.trick__user_info .trick__user_status {
+  height:10px; line-height:10px; margin-top:-10px; font-size:10px;
+}
+
+.trick__users td.trick__user_photo {width:40px; 
+  background-repeat:no-repeat;
+  background-position:0 0;
+  -moz-background-size:cover;
+  -o-background-size:cover;
+  -webkit-background-size:cover;
+  background-size:cover;
+}
+
 
 .trick__user_king {background:#B55A5A;}
 .trick__user_king a {color:#fff;}
 .trick__user_king a:hover {color:#f4f4f4;}
-.no_one {padding-left:10px; width: 490px;}
+tr.no_one td {padding-left:10px;}
+
+
 .trick__info {position:relative; float:right; width:315px; background:white; padding:10px 10px 0 10px;}
 .trick__info p {margin-bottom:10px;}
 
@@ -250,7 +272,7 @@ a.check_full_trick_icon {
 .full_trick__dialog p {padding:5px;}
 .showing_dialog .full_trick__dialog {display:block;}
 a.has_video {
-  display:block; width:20px; height:12px; float:left; margin:15px 0 0 15px; 
+  display:block; width:20px; height:12px; margin:13px 0 0 15px; 
   background:url('/static/i/common.png?rev=1') -24px -11px no-repeat;
 }
 a.video_approved {background-position:-24px 0px;}
@@ -364,6 +386,7 @@ a.video_approved {background-position:-24px 0px;}
   max-width: 200px;
   padding: 3px 8px;
   color: #ffffff;
+  line-height:1.5;
   text-align: center;
   text-decoration: none;
   background-color: #b1b1b1;
@@ -550,9 +573,23 @@ div.bbf-editorYouTube div input {width:190px !important; display:inline;}
 
 .badges_list li {
   display:block; width:30px; height:30px; 
-  background:red; cursor:pointer;
+  background:#AEAEAE; cursor:pointer;
+  border:2px solid #fff; text-align:center;
+  line-height:30px; color:#B55A5A;
+  -webkit-border-radius:30px;
+  -moz-border-radius:30px; border-radius:30px;
+  margin-bottom: -12px;
 }
 
 .badges_list li.selected {
-  background:green;
+  border-color:#B55A5A; background-color:#e8e8e8;
+}
+
+.badges_list li.disable {
+  color:#ccc; cursor:default;
+}
+
+.badges_list li.hint {
+  background:#aeaeae; width:14px; height:14px;line-height:1;-webkit-border-radius:14px;
+  -moz-border-radius:14px; border-radius:14px;color:#fff;
 }

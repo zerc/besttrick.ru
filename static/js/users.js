@@ -17,6 +17,8 @@ Backbone.Form.editors.SpecialSelect = Backbone.Form.editors.Select.extend({
 
     select: function (e) {
         var target = $(e.currentTarget);
+        if (target.hasClass('disable') || target.hasClass('hint')) return;
+
         this.$el.find('li').removeClass('selected');
         this.setValue(
             target.addClass('selected').attr('data-achive-id')
@@ -31,6 +33,15 @@ Backbone.Form.editors.SpecialSelect = Backbone.Form.editors.Select.extend({
       return parseInt(this.$el.val());
     },
 
+    renderOptions: function (options) {
+        Backbone.Form.editors.Select.prototype.renderOptions.call(this, options);
+        var $el = $('<li class="hint" title="\
+            По мере освоения вами сложных достижений, вы будете получать различные звания. \
+            Все они будут отображаться в вашем профиле. \
+            Вы можете выбрать одно звание, которое будет отображаться везде с вашим ником.">?</li>');
+        this.$el.append($el.tooltip({trigger: 'hover'}));
+    },
+
     _arrayToHtml: function(array) {
         var html = [],
             self = this;
@@ -38,12 +49,19 @@ Backbone.Form.editors.SpecialSelect = Backbone.Form.editors.Select.extend({
         _.each(array, function(option) {
             if (_.isObject(option)) {
                 _.extend(option, {
-                    cls: option.achive_id === self.model.get('badges') ? 'selected' : ''
+                    cls: option.achive_id === self.model.get('badges') ? 'selected' : '',
+                    disable: option.level === 0 ? 'disable' : ''
                 });
 
+                if (option.level === 0) {
+                    option.description = 'Чтобы открыть бадж вам нужно получить достижение ' + option.title;
+                } else {
+                    option.description = option.title;
+                }
+
                 html.push(_.template('\
-                    <li data-achive-id="<%= achive_id %>" class="<%= cls %>">\
-                        <img width="30" height="30" scr="<%= icon %>" title="<%= title %>">\
+                    <li title="<%= description %>" data-achive-id="<%= achive_id %>" class="<%= cls %> <%= disable %>">\
+                        <span><%= short_title %></span>\
                     </li>')(option));
             } else {
                 html.push('<li>'+option+'</li>');
@@ -91,7 +109,8 @@ window.BTUsers.UserModel = UserModel = Backbone.Model.extend({
         epxs     : '',
         rating   : 0.0,
         banned   : false,
-        badges   : 0
+        badges   : 0,
+        badge    : {}
     },
 
     schema: {
@@ -134,18 +153,22 @@ window.BTUsers.UserModel = UserModel = Backbone.Model.extend({
         },
         badges: {
             type: 'SpecialSelect',
-            editorAttrs: {'class': 'badges_list'},
-            options: function (callback) {
-                $.ajax({
-                    url: '/achives/badges/',
-                    dataType: 'json',
-                    context: this,
-                    success: function (response) {
-                        callback(response.achives);
-                    },
-                    error: function () { alert('Произошла непредвиденная ошибка.'); }
-                });
-            }
+            editorAttrs: {'class': 'badges_list'}
+        }
+    },
+
+    initialize: function () {
+        var self = this;
+
+        this.schema.badges.options = function (callback) {
+            $.ajax({
+                url: '/users/user'+self.get('id')+'/badges/',
+                dataType: 'json',
+                success: function (response) {
+                    callback(response.achives);
+                },
+                error: function () { alert('Произошла непредвиденная ошибка.'); }
+            });
         }
     },
 

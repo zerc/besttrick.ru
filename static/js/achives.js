@@ -52,7 +52,8 @@ window.BTAchives.Achive = Backbone.Model.extend({
     },
 
     get_trick: function () {
-        return this.collection.get({'id': this.get('trick_id')});
+        // TODO: make this better
+        return window.BTTricks.tricks.get({'id': this.get('trick_id')});
     },
 
     get_rule_name: function () {

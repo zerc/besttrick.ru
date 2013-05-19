@@ -1,24 +1,37 @@
 <% set_page_title(trick.get_title()) %>
 
 <div class="trick__users">
+<table cellpadding="0" cellspacing="0" border="0"><tbody>
+
 <% if (users.length > 0) { %>
     <% _.map(users, function (user, i) {%>
-
-        <div class="trick__user<% if (i === 0) { %> trick__user_king<% } %>">
-            <span class="left_block"><%= user.cones %></span>
-            <% if (user.video_url && user.approved == 1) { %>
-                <a class="has_video video_approved" href="<%= user.video_url %>" target="_blank" title="есть видео подтверждение"></a>
-            <% } %>
-            <img src="<%= user.get('photo') %>" class="trick__user__photo">
-            <a href="<%= user.get_profile_url() %>"><%= user.get('nick') %></a>
-        </div>
+        <tr class="trick__user<% if (i === 0) { %> trick__user_king<% } %>">
+            <td class="trick__user_cones"><%= user.cones %></td>
+            <td class="trick__user_video_url">
+                <% if (user.video_url && user.approved == 1) { %>
+                    <a class="has_video video_approved" href="<%= user.video_url %>" target="_blank" title="есть видео подтверждение"></a>
+                <% } %>
+            </td>
+            <td class="trick__user_info">
+                <a href="<%= user.get_profile_url() %>">
+                    <%= user.get('nick') %>
+                </a>
+                <div class="trick__user_status"><%= user.get('badge')['title'] %></div>
+            </td>
+            <td class="trick__user_photo" style="background-image:url('<%= user.get('photo') %>');">&nbsp;</td>
+        </tr>
+        <tr>
+            <td colspan="4" class="trick__breaker">&nbsp;</td>
+        </tr>
     <%}) %>
 <% } else { %>
-    <div class="trick__user no_one">
-        Еще никто не делает этот трюк!
-    </div>
+    <tr class="trick__user no_one">
+        <td>Еще никто не делает этот трюк!</td>
+    </tr>
 <% } %>
+</tbody></table>
 </div>
+
 <div class="trick__info">
     <%= checktrick.render('full') %>
     <div class="trick_video_preview">

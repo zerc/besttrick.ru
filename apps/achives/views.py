@@ -47,14 +47,16 @@ checkin_signal.connect(add_achive_after_checkin)
 
 
 @render_to()
-def get_badges(*args, **kwargs):
+def get_badges(user_id, *args, **kwargs):
     achives = app.connection.Achive.fetch({"score": {"$gt": 2}})
 
-    def make_badge(a):
+    def make_badge(a):        
         return {
-            'icon'      : a.pop('icon'),
-            'title'     : a.pop('title'),
-            'achive_id' : a.pop('_id'),
+            'icon'         : a['icon'],
+            'title'        : a['title'],
+            'achive_id'    : a['_id'],
+            'short_title'  : ''.join('%s.' % x[0] for x in a['title'].split()[:2]).upper(),
+            'level'        : a.get_event_or_dummy(user_id)['level']
         }
 
     return {'achives': map(make_badge, achives)}
