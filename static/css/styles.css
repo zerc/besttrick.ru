@@ -210,7 +210,7 @@ a.tricks_filter__tag:hover {color:#555; text-decoration:none;}
 }
 
 .trick__users td.trick__user_info .trick__user_status {
-  height:10px; line-height:10px; margin-top:-10px; font-size:10px;
+  height:10px; line-height:10px; margin-top:-12px; font-size:10px;
 }
 
 .trick__users td.trick__user_photo {width:40px; 
@@ -224,7 +224,7 @@ a.tricks_filter__tag:hover {color:#555; text-decoration:none;}
 
 
 .trick__user_king {background:#B55A5A;}
-.trick__user_king a {color:#fff;}
+.trick__user_king a, .trick__user_king .trick__user_status {color:#fff;}
 .trick__user_king a:hover {color:#f4f4f4;}
 tr.no_one td {padding-left:10px;}
 
@@ -312,6 +312,37 @@ a.video_approved {background-position:-24px 0px;}
 
 .bbf-error input {border-color:red;}
 .bbf-error .bbf-help {margin-top:-20px; color:red; font-size:12px;}
+
+
+.tituls_list {
+  position:absolute; top:70px; right:18px;
+}
+
+.tituls_list li {
+  display:block; width:30px; height:30px; 
+  background:#AEAEAE; cursor:pointer;
+  border:2px solid #fff; text-align:center;
+  line-height:30px; color:#B55A5A;
+  -webkit-border-radius:30px;
+  -moz-border-radius:30px; border-radius:30px;
+  margin-bottom: -12px;
+}
+.user_pofile .tituls_list li {cursor:default;}
+
+.tituls_list li.selected {
+  border-color:#B55A5A; background-color:#e8e8e8;
+}
+
+.tituls_list li.disable {
+  color:#ccc; cursor:default;
+}
+
+.tituls_list li.hint {
+  background:#aeaeae; width:14px; height:14px;line-height:1;-webkit-border-radius:14px;
+  -moz-border-radius:14px; border-radius:14px;color:#fff;
+}
+
+
 
 /* From Bootstrap: https://github.com/twitter/bootstrap */
 .tooltip {
@@ -414,11 +445,10 @@ div.about a {color:red;}
 div.about a:hover {text-decoration:none;}
 
 /* Top users page */
-.top_users {float:none;}
-.top_users .trick__user {width:100%;}
-.top_users .info_block {margin:0 10px; line-height:38px;}
+.top_users {float:none; width:846px;}
+.trick__user_info .user_info__city {float:left; margin:0 10px; line-height:38px;}
+.trick__user_info .user_info__team {float:right; font-size:12px; margin-right:5px; margin-top:-5px; color:#aeaeae;}
 .top_users .trick__user_king {color:#fff;}
-.top_users .info_block_team {float:right; font-size:12px; margin-right:5px; margin-top:-5px; color:#aeaeae;}
 
 
 /* admin */
@@ -565,31 +595,3 @@ div.bbf-editorYouTube div input {width:190px !important; display:inline;}
 }
 .achive__progress .achive_done {color:green;}
 .showing_progress .achive__progress {display:block;}
-
-
-.badges_list {
-  position:absolute; top:70px; right:18px;
-}
-
-.badges_list li {
-  display:block; width:30px; height:30px; 
-  background:#AEAEAE; cursor:pointer;
-  border:2px solid #fff; text-align:center;
-  line-height:30px; color:#B55A5A;
-  -webkit-border-radius:30px;
-  -moz-border-radius:30px; border-radius:30px;
-  margin-bottom: -12px;
-}
-
-.badges_list li.selected {
-  border-color:#B55A5A; background-color:#e8e8e8;
-}
-
-.badges_list li.disable {
-  color:#ccc; cursor:default;
-}
-
-.badges_list li.hint {
-  background:#aeaeae; width:14px; height:14px;line-height:1;-webkit-border-radius:14px;
-  -moz-border-radius:14px; border-radius:14px;color:#fff;
-}

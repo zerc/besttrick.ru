@@ -16,7 +16,11 @@
                 <a href="<%= user.get_profile_url() %>">
                     <%= user.get('nick') %>
                 </a>
-                <div class="trick__user_status"><%= user.get('badge')['title'] %></div>
+                <% if (_.isObject(user.get('titul'))) { %>
+                    <div class="trick__user_status" title="Звание за получение достижения">
+                        <%= user.get('titul')['title'] %>
+                    </div>
+                <% } %>
             </td>
             <td class="trick__user_photo" style="background-image:url('<%= user.get('photo') %>');">&nbsp;</td>
         </tr>

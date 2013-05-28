@@ -20,7 +20,7 @@
     <img class="user__photo" src="<%= user.get('photo') %>" />
     <p>
         <strong>Рейтинг:</strong> <%= user.get('rating') %>
-        <a href="<%= BTAchives.url_for_profile(user.get('id')) %>" class="user_achives"></a>
+        <a href="<%= profile_page ? BTAchives.url_for_profile(user.get('id')) : BTAchives.url() %>" class="user_achives"></a>
     </p>
    <form></form>
 </div>

@@ -506,7 +506,6 @@
       var i, index, length, model, cid, id, cids = {}, ids = {};
       options || (options = {});
       models = _.isArray(models) ? models.slice() : [models];
-
       // Begin by turning bare objects into model references, and preventing
       // invalid models or duplicate models from being added.
       for (i = 0, length = models.length; i < length; i++) {

@@ -9,6 +9,7 @@
                 <img src="{{ u['photo'] }}" class="trick__user__photo">
                 {# <a href="/profile{{ u['id'] }}/">{{ u['nick'] }}</a> #}
                 {{ u['nick'] }}
+                {{ render_titul(u) }}
             </div>
         {% endfor %}
     </div>

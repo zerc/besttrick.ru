@@ -47,7 +47,6 @@ window.BTAchives.Achive = Backbone.Model.extend({
     },
 
     initialize: function (user) {
-        var self = this;
         this.user = user
     },
 
@@ -174,13 +173,10 @@ window.BTAchives.AchiveView = Backbone.View.extend({
 });
 
 
-
-
 window.BTAchives.AchivesView = Backbone.View.extend({
     el           : 'div.content',
     template     : new EJS({url: '/static/templates/achives.ejs'}),
-
-    user_id      : undefined,
+    user         : undefined,
     level_filter : false,
     achive_views : [],
 
@@ -237,7 +233,7 @@ window.BTAchives.AchivesView = Backbone.View.extend({
     },
 
     base_render: function () {        
-        this.$el.html(this.template.render({view: this}));
+        this.$el.html(this.template.render({view: this, user: this.user}));
         this.empty_list_el = this.$el.find('div.achive_list__empty');
         return this;
     },

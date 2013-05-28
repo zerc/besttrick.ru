@@ -46,8 +46,8 @@ url('/logout/',                 'logout',           users.logout)
 url('/logout/',                 'logout',           users.logout,       subdomain="m")
 url('/banned/',                 'banned',           lambda: render_template('banned.html'))
 
-url('/my/',                   'my',               users.my, methods=['PUT', 'GET'])
-url('/my/',                   'mobile_my',        users.my, methods=['POST', 'GET'], subdomain="m")
+url('/user/',                   'my',               users.user, methods=['PUT', 'GET'])
+url('/user/',                   'mobile_my',        users.user, methods=['POST', 'GET'], subdomain="m")
 url('/my/tricks/',            'my_tricks',        users.my_tricks)
 
 url('/users/',                          'users',            users.list_of_users)
@@ -58,5 +58,5 @@ url('/users/rating/',                   'mobile_rating',    users.top_users,  su
 
 ### Achives urls
 url('/my/achives/',                       'my_achives',      achives.my_achives)
-url('/users/user<int:user_id>/badges/',   'get_badges', achives.get_badges)
+url('/users/tituls/',   				  'get_tituls',      achives.get_tituls)
 url('/users/user<int:user_id>/achives/',  'profile_achives', achives.profile_achives)

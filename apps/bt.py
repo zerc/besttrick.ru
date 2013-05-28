@@ -16,9 +16,7 @@ except ImportError:
     Message, email_dispatched = None, None
 
 from project import app, markdown
-import tricks as tricks_view
-import users as users_view
-import common, admin
+import tricks, common
 
 
 def index(*args, **context):
@@ -35,16 +33,16 @@ def index(*args, **context):
 
     if user and request.cookies.get('trick'):
         try:
-            tricks_view.update_checktrick_from_cookie(user['_id'])
+            tricks.update_checktrick_from_cookie(user['_id'])
         except BaseException:
             """ pokemon exception handler - im bad black ass :p """
             #raise
 
-    tricks = tricks_view.get_tricks(*args, **context)
-    tags   = tricks_view.get_tags(*args, tricks=tricks)
+    all_tricks = tricks.get_tricks(*args, **context)
+    tags       = tricks.get_tags(*args, tricks=all_tricks)
 
     context.update({
-        'tricks' : json.dumps(tricks),
+        'tricks' : json.dumps(all_tricks),
         'tags'   : json.dumps(tags)
     })
 
@@ -58,7 +56,7 @@ def index(*args, **context):
 @common.render_to(template="mobile/index.html")
 def mobile_index(*args, **kwargs):
     return {
-        'tricks': tricks_view.get_tricks(*args, **kwargs)
+        'tricks': tricks.get_tricks(*args, **kwargs)
     }
 
 
@@ -87,7 +85,6 @@ def pown(user_id):
     if not app.config.get('LOCAL'):
         return 'Only for local use', 403
 
-    user = users_view.get_user(user_id)
-    session['user_id'] = user['id']
+    session['user_id'] = user_id
 
     return redirect('http://%s' % request.host)

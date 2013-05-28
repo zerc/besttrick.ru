@@ -14,8 +14,10 @@
             </tr>
             <tr>
                 <td colspan="2">
-                    <img class="trick__page__image" src="{{ config.HOST }}/static/images/trick{{ trick.id }}-0.jpg">
-                    <p>{{ trick.descr }}</p>
+                    <a href="{{ trick['videos'][0] }}" target="_blank">
+                        <img class="trick__page__image" src="{{ config.HOST }}/static/images/trick{{ trick.id }}-0.jpg">
+                    </a>
+                    <p>{{ trick.descr_html }}</p>
                 </td>
             </tr>
 
@@ -23,14 +25,14 @@
             <tr>
                 <td colspan="2">
                     <h3>Этот трюк делают:</h3>
-               
                     <div class="trick__users">
                         {% for u in trick['users'] %}
                             <div class="trick__user{{ ' trick__user_king' if loop.index0 == 0 else ''}}">
-                                <span class="left_block">{{ u['cones'] }}</span>
+                                <span class="left_block">{{ u['cones']|int }}</span>
                                 <img src="{{ u['user']['photo'] }}" class="trick__user__photo">
                                 {# <a href="/profile{{ u['user']['id'] }}/">{{ u['user']['nick'] }}</a> #}
                                 {{ u['user']['nick'] }}
+                                {{ render_titul(u['user']) }}
                             </div>
                         {% endfor %}
                     </div>

@@ -20,7 +20,7 @@ from .models import User
 @app.before_request
 def before_request():
     if 'static' not in request.path:
-        g.user = get_user(session.get('user_id', None), True)
+        g.user = get_user(session.get('user_id'))
 
 
 @app.context_processor
@@ -43,7 +43,6 @@ def login():
     
     # hack так как vkontakte стал vk
     # user_data['identity'] = user_data['identity'].replace('vk.com', 'vkontakte.ru')
-
     user = app.db.user.find_one({'identity': user_data['identity']}) or register(user_data)
 
     if user['banned']: return redirect(url_for('banned'))
@@ -64,6 +63,30 @@ def my_tricks():
     rows = grouped_stats('trick', {'user': g.user['id']})
     return json.dumps(sorted(rows, key=lambda x: x['cones'], reverse=True))
 
+
+@render_to()
+def user():
+    if request.method == 'PUT':
+        params = json.loads(unicode(request.data, 'utf-8'))
+        params.pop('id', None)
+        params.pop('_id', None)
+
+        # типа валидация перед апдейтом данных
+        for p in params.keys():
+            try:
+                User.structure[p]
+            except KeyError:
+                del params[p]
+        app.db.user.update({'_id': g.user['id']}, {'$set': params})
+        return {'success': 1}
+
+    try:
+        user_id = int(request.args.get('user_id'))
+    except (ValueError, TypeError):
+        user_id = g.user['id']
+
+    return {'user': get_user(user_id)}
+    
 
 @render_to()
 @user_only
@@ -90,12 +113,9 @@ def my():
 
 @render_to()
 def user_profile(user_id):
-    context = {}
-
-    user = get_user(user_id)
-    user['rating'] = get_user_rating(user_id)
-    context['user'] = clean_fields(user)
-
+    context = {
+        'user': get_user(user_id).hide
+    }    
     user_tricks = grouped_stats('trick', {'user': int(user_id)})
     # TODO: remove this dirty hook!
     map(lambda a: a.update(a.pop('trick')), user_tricks)
@@ -104,27 +124,22 @@ def user_profile(user_id):
     return context
 
 
-#TODO: cached this!
 @render_to()
 def top_users():
-    tricks_scores = {}
-    for trick in app.db.trick.find():
-        tricks_scores[trick['_id']] = trick['score']
-
-    def _(user):
-        user['id'] = user.pop('_id')
-        return get_user(user_dict=user)
-
-    users = map(_, app.db.user.find({'banned': False}))
+    users = (u.patched.hide for u in app.connection.User.find({'banned': False}))
     return {'users': sorted(users, key=lambda user: user['rating'], reverse=True)}
 
-
+@render_to()
 @user_only
 def list_of_users():
-    is_admin = app.db.user.find_one({'_id': session['user_id']})['admin']
+    is_admin = g.user['admin']    
 
     def _(user):
-        user['id'] = user.pop('_id')
-        return user if is_admin else clean_fields(user)
+        user = app.connection.User(user).patched
+        return user if is_admin else user.hide
 
-    return json.dumps([_(dict(user)) for user in app.db.user.find().sort("_id", -1)])
+    return {
+        'users': [dict(_(user)) for user in app.db.user.find().sort("_id", -1)]
+    }
+
+    

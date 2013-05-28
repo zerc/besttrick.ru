@@ -17,17 +17,15 @@ from werkzeug.routing import BaseConverter, ValidationError
 
 from project import app, markdown, checkin_signal
 from apps.notify import send_notify, CHECKTRICK_WITH_VIDEO
-from apps.users import get_user
+from apps.users import get_user, User
 from apps.common import grouped_stats
-
-from .models import TrickUser
 
 
 class TrickConverter(BaseConverter):
     def to_python(self, trick_id):
         try:
             return get_trick(trick_id, False)
-        except BaseException, e:
+        except BaseException, e:            
             raise ValidationError(e)
 
     def to_url(self, trick):
@@ -61,16 +59,17 @@ def get_checkins(user_id, only_best=True):
             prev.video_url = obj.video_url;
         }
     }"""
-
+    # Avoid cross imports >_<
+    TU = app.connection.TrickUser
     if only_best:
-        return (TrickUser(x) for x in app.db.trick_user.group(['trick'], {'user': user_id}, {'cones': 0}, reduce_func))
+        return (TU(x) for x in app.db.trick_user.group(['trick'], {'user': user_id}, {'cones': 0}, reduce_func))
 
     result, tricks_user = {}, app.db.trick_user.find({'user': user_id})
     for t in tricks_user:
         try:
-            result[t['trick']].append(TrickUser(t))
+            result[t['trick']].append(TU(t))
         except KeyError:
-            result[t['trick']] = [TrickUser(t)]
+            result[t['trick']] = [TU(t)]
     return result
 
 
@@ -85,7 +84,7 @@ def get_tags(*args, **kwargs):
         tag[u'tricks'] = []
         tags[tag.pop(u'_id')] = tag
 
-    # Если передан список трюков, то к каждому тэги
+    # Если передан список трюков, то к каждому тэгу
     # прилепляем id его трюков, типа reverse lookup
     # TODO: в монге вероятно это как-то можно решить
     for trick in tricks:
@@ -105,7 +104,7 @@ def get_trick(trick_id, simple=True):
     rows = grouped_stats('user', {'trick': trick_id})
 
     for row in rows:
-        row['user'] = get_user(user_dict=row['user'])
+        row['user'] = User(row['user']).patched.hide
 
     trick['users'] = sorted(rows, key=lambda x: x['cones'], reverse=True)
 
@@ -127,7 +126,7 @@ def get_tricks(*args, **kwargs):
     Если передан аргумент simple - просто список трюков возвращает.
     """
     #TODO: нужно как-то срефакторить, функция слишком большая и непонятная
-    tricks = app.db.trick.find().sort("_id", 1)
+    tricks = app.connection.Trick.find().sort("_id", 1)
     user_id = g.user['id'] if g.user else False # по идее функция не должна знать про это!
 
     best_users, user_stats = {}, {}
@@ -191,7 +190,7 @@ def get_best_results(trick_id=None, user_id=False):
     for result in best_result:
         result.update({
             'users'        : len(set(result['users'])),
-            'best_user'    : get_user(result['best_user_id']),
+            'best_user'    : get_user(result['best_user_id']).hide,
         })
 
     return result if trick_id >= 0 else best_result

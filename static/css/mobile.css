@@ -72,3 +72,7 @@ ul.messages {margin:0 5px;}
 .form_holder {border:1px solid #aeaeae; margin:5px 0px 15px 0px; padding:5px;}
 .form_holder form {margin:0;}
 .form_holder form button {margin:0;}
+
+.trick__user_status {
+  height:10px; line-height:10px; margin-top:-10px; font-size:10px;
+}

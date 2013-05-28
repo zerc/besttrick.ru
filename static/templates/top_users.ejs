@@ -1,21 +1,39 @@
 <div class="trick__users top_users">
+    <table cellpadding="0" cellspacing="0" border="0"><tbody>
     <% if (users.length > 0) { %>
         <% users.forEach(function (user, i) { %>
-            <div class="trick__user<% if (i === 0) { %> trick__user_king<% } %>">
-                <span class="left_block" title="рейтинг пользователя"><%= user.get('rating') %></span>
-                <% if (user.get('city')) { %><span class="info_block" title="город"><%= user.get('city') %></span><% } %>
-                <% if (user.get('video_url')) { %>
-                    <a class="has_video" href="<%= user.get('video_url') %>" target="_blank" title="есть видео подтверждение"></a>
+            <tr class="trick__user<% if (i === 0) { %> trick__user_king<% } %>">
+            <td class="trick__user_cones"><%= user.get('rating') %></td>
+            <td class="trick__user_info">
+                <% if (user.get('city')) { %>
+                    <span class="user_info__city" title="город">
+                        <%= user.get('city') %>
+                    </span>
                 <% } %>
-                <img src="<%= user.get('photo') %>" class="trick__user__photo">
-                <a href="<%= user.get_profile_url() %>"><%= user.get('nick') %></a>
-                <% if (user.get('team')) { %><span class="info_block_team" title="команда"><%= user.get('team') %></span><% } %>
-            </div>
+                <a href="<%= user.get_profile_url() %>">
+                    <%= user.get('nick') %>
+                </a>
+                <% if (user.get('team')) { %>
+                    <span class="user_info__team" title="команда">
+                        <%= user.get('team') %>
+                    </span>
+                <% } %>
+                <% if (_.isObject(user.get('titul'))) { %>
+                    <div class="trick__user_status" title="Звание за получение достижения">
+                        <%= user.get('titul')['title'] %>
+                    </div>
+                <% } %>
+            </td>
+            <td class="trick__user_photo" style="background-image:url('<%= user.get('photo') %>');">&nbsp;</td>
+            </tr>
+            <tr>
+                <td colspan="3" class="trick__breaker">&nbsp;</td>
+            </tr>
         <%}) %>
     <% } else { %>
-        <div class="trick__user no_one">
-            Еще никто не делает этот трюк!
-        </div>
+        <tr class="trick__user no_one">
+            <td>Никого нет дома :(</td>
+        </tr>
     <% } %>
+</tbody></table>
 </div>
-<div class="clear"></div>

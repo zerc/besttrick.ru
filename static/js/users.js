@@ -8,6 +8,7 @@
 window.BTUsers = {};
 
 var UserModel, UserView, UserProfile,
+    TitulModel, TitulCollection,
     Login, FeedBack;
 
 Backbone.Form.editors.SpecialSelect = Backbone.Form.editors.Select.extend({
@@ -16,12 +17,13 @@ Backbone.Form.editors.SpecialSelect = Backbone.Form.editors.Select.extend({
     events: {'click li': 'select'},
 
     select: function (e) {
+        if (this.options.disable_select) return;
         var target = $(e.currentTarget);
         if (target.hasClass('disable') || target.hasClass('hint')) return;
 
         this.$el.find('li').removeClass('selected');
         this.setValue(
-            target.addClass('selected').attr('data-achive-id')
+            target.addClass('selected').attr('data-id')
         );
     },
 
@@ -42,32 +44,26 @@ Backbone.Form.editors.SpecialSelect = Backbone.Form.editors.Select.extend({
         this.$el.append($el.tooltip({trigger: 'hover'}));
     },
 
-    _arrayToHtml: function(array) {
+    _collectionToHtml: function(collection) {
         var html = [],
+            opts = {},
             self = this;
 
-        _.each(array, function(option) {
-            if (_.isObject(option)) {
-                _.extend(option, {
-                    cls: option.achive_id === self.model.get('badges') ? 'selected' : '',
-                    disable: option.level === 0 ? 'disable' : ''
-                });
+        collection.each(function(model) {
+            opts.id = model.get('id');
+            opts.title = model.get('title');
+            opts.short_title = model.get('short_title');
+            opts.disable = model.get('level') === 0 ? 'disable' : '';
+            opts.cls = model.get('id') === self.model.get('selected_titul') ? 'selected' : '';
+            opts.description = model.get('level') === 0 ? 'Чтобы открыть бадж нужно получить достижение ' : '';
+            opts.description += model.get('title');
 
-                if (option.level === 0) {
-                    option.description = 'Чтобы открыть бадж вам нужно получить достижение ' + option.title;
-                } else {
-                    option.description = option.title;
-                }
-
-                html.push(_.template('\
-                    <li title="<%= description %>" data-achive-id="<%= achive_id %>" class="<%= cls %> <%= disable %>">\
-                        <span><%= short_title %></span>\
-                    </li>')(option));
-            } else {
-                html.push('<li>'+option+'</li>');
-            }
+            html.push(_.template('\
+                <li title="<%= description %>" data-id="<%= id %>" class="<%= cls %> <%= disable %>">\
+                    <span><%= short_title %></span>\
+                </li>')(opts));
         });
-
+        
         return html.join('');
     }
 });
@@ -89,8 +85,27 @@ window.BTUsers.Loginza = {
     
 
 /*** Модельки ***/
+window.BTUsers.TitulModel = TitulModel = Backbone.Model.extend({
+    // url: '/users/tituls/',
+
+    defaults: {
+        'title': '',
+        'short_title': '',
+        'level': 0
+    }
+});
+
+window.BTUsers.TitulCollection = TitulCollection = Backbone.Collection.extend({
+    url: '/users/tituls/',
+    model: TitulModel,
+    parse: function (response) {
+        return response.tituls;
+    }
+});
+
+
 window.BTUsers.UserModel = UserModel = Backbone.Model.extend({
-    url: '/my/',
+    url: '/user/',
 
     defaults: {
         id       : 0,
@@ -109,8 +124,9 @@ window.BTUsers.UserModel = UserModel = Backbone.Model.extend({
         epxs     : '',
         rating   : 0.0,
         banned   : false,
-        badges   : 0,
-        badge    : {}
+
+        selected_titul   : 0,
+        titul: ''
     },
 
     schema: {
@@ -150,26 +166,26 @@ window.BTUsers.UserModel = UserModel = Backbone.Model.extend({
         bio: {
             type: 'TextArea',
             editorAttrs: {'placeholder': 'Информация', 'maxlength': '300'}
-        },
-        badges: {
-            type: 'SpecialSelect',
-            editorAttrs: {'class': 'badges_list'}
         }
     },
 
     initialize: function () {
         var self = this;
 
-        this.schema.badges.options = function (callback) {
-            $.ajax({
-                url: '/users/user'+self.get('id')+'/badges/',
-                dataType: 'json',
-                success: function (response) {
-                    callback(response.achives);
-                },
-                error: function () { alert('Произошла непредвиденная ошибка.'); }
-            });
+        this.schema.selected_titul = {
+            type: 'SpecialSelect',
+            editorAttrs: {'class': 'tituls_list'},
+            options: function (callback) {
+                var tituls = new TitulCollection().fetch({
+                    'data': 'user_id=' + self.get('id'),
+                    'success': function (response) {
+                        callback(response);
+                    }
+                });
+            }
         }
+
+        this.schema = _.clone(this.schema);
     },
 
     validate: function (attrs) {
@@ -327,7 +343,8 @@ UserView = Backbone.View.extend({
         this.context = {
             user    : this.model,
             form    : this.form,
-            tricks  : this.options.tricks
+            tricks  : this.options.tricks,
+            profile_page: false,
         }
 
         show_save_status = function(status, text) {
@@ -347,7 +364,6 @@ UserView = Backbone.View.extend({
         
     },
 
-
     render: function () {
         this.$el.html(this.template.render(this.context));
         
@@ -366,16 +382,22 @@ UserProfile = UserView.extend({
     render: function (user_id) {
         var self = this,
             form_el;
-        
+
+        _.extend(this.context, {'profile_page': true});
         self.$el.html(self.template.render(this.context));
         form_el = self.$el.find('form');
+        form_el.parent().addClass('user_pofile');
 
         _.each(self.form.fields, function (e) {
             if (!e.editor.value) return;
-
-            form_el.append(
-                '<p><strong>' + e.schema.title + ':</strong> ' + e.editor.value + '</p>'
-            );
+            if (e.key === 'selected_titul') {
+                e.editor.options['disable_select'] = true;
+                form_el.append(e.editor.render().el);
+            } else {   
+                form_el.append(
+                    '<p><strong>' + e.schema.editorAttrs.placeholder + ':</strong> ' + e.editor.value + '</p>'
+                );
+            }
         });
 
         form_el.children().unwrap();

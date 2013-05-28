@@ -160,7 +160,11 @@ window.BTAdmin.User = window.BTUsers.UserModel.extend({
 
 
 window.BTAdmin.UsersCollection = window.BTUsers.UsersCollection.extend({
-    model: window.BTAdmin.User
+    model: window.BTAdmin.User,
+
+    parse: function (response) {
+        return response.users;
+    }
 });
 
 

@@ -40,8 +40,8 @@ var App = Backbone.Router.extend({
         '!about'                     : 'about',
         '!users/rating'              : 'top_users',
         
-        '!u/achives'                 : 'achives',
-        '!users/user:user_id/achives': 'achives'
+        '!u/achives'                 : 'my_achives',
+        '!users/user:user_id/achives': 'user_achives'
     },
 
     initialize: function (args) {
@@ -52,7 +52,6 @@ var App = Backbone.Router.extend({
 
         this.user = args.user ? new UserModel(args.user) : false;
         this.tricks = window.BTTricks.tricks = new TricksList(args.tricks);
-
         this.default_page_title = window.document.title;
         this.active_route = 'route:index';
 
@@ -109,10 +108,10 @@ var App = Backbone.Router.extend({
         this.loader.hide();
     },
 
-    achives: function (user_id) {
-        var self = this;
-        this.achives.collection.user_id = user_id;
-        this.achives
+    _achives: function (user, self) {
+        self.achives.user = user;
+        self.achives.collection.user_id = user.get('id');
+        self.achives
             .reset_filter().base_render()
             .collection.fetch({
             success: function () {
@@ -120,6 +119,20 @@ var App = Backbone.Router.extend({
                 window.BTCommon.trigger('render_done');
             }
         });
+    },
+
+    my_achives: function () {
+        return this._achives(this.user, this);
+    },
+    
+    user_achives: function (user_id) {
+        var self = this,
+            user = new UserModel().fetch({
+                data: 'user_id=' + user_id,
+                success: function (user) {
+                    self._achives(user, self);
+                }
+            });
     },
 
     top_users: function () {
@@ -151,7 +164,6 @@ var App = Backbone.Router.extend({
 
     my: function () {
         if (!this.user) return this.navigate('', {trigger: true});
-
         var view = new UserView({
             model  : this.user, 
             tricks : new TricksList(this.tricks.filter(function (t) { return t.get('user_do_this'); })) 
@@ -168,7 +180,7 @@ var App = Backbone.Router.extend({
             success: function (response) {
                 var profile    = new UserProfile({
                         model  : new UserModel(response.user),
-                        tricks : new window.BTTricks.TricksList(response.tricks)
+                        tricks : new TricksList(response.tricks)
                     });
 
                 return profile.render();

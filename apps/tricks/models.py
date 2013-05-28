@@ -8,6 +8,8 @@ from mongokit.schema_document import ValidationError
 from project import app
 from apps.common import BaseModel
 
+from .base import get_best_results
+
 
 __all__ = ['Trick', 'TrickUser', 'Tag']
 

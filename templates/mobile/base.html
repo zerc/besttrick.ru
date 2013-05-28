@@ -7,6 +7,14 @@
     http://{{ request.host }}{{ '/tricks/trick%s/' % trick.id }}
 {% endmacro %}
 
+{% macro render_titul(user) %}
+    {% if user.get('titul') %}
+        <div class="trick__user_status">
+            {{ user.get('titul')['title'] }}
+        </div>
+    {% endif %}
+{% endmacro %}
+
 {% macro trick_preview(trick) %}
     <tr class="trick{{ ' user_do_this' if trick.user_do_this }}">
         <td class="trick__image">

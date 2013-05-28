@@ -30,20 +30,6 @@ def user_only(func):
     return wrapper
 
 
-def clean_fields(user_dict):
-    """
-    Убирает из словаря с данными пользователя некоторые "секьюрные" поля.
-    Просто чтобы не палить их на клиенте.
-    """
-    for field in (u'identity', u'provider', u'email', u'banned', u'uid'):
-        try:
-            user_dict.pop(field)
-        except KeyError:
-            continue
-
-    return user_dict
-
-
 def get_field(d, field_name):
     """ Использует точечную нотацию в имени поля, для работы со вложенными словарями """
     parts = field_name.split('.')
@@ -61,6 +47,9 @@ def get_field(d, field_name):
 
 
 def register(user_data):
+    """
+    Register user
+    """
     # HACK: если нет никнейма, конструируем его
     if not user_data.get(u'nickname'):
         user_data[u'nickname'] = u' '.join([user_data['name'].get('first_name', ''), user_data['name'].get('last_name')])
@@ -80,33 +69,6 @@ def register(user_data):
     return new_user
 
 
-def get_user(user_id=None, full=False, user_dict=None):
-    """
-    Хэлпер возвращает пропатченый объект юзера.
-    Если указан user_dict - то не делает выборку из монги,
-    а использует эти данные.
-    """
-    if user_dict is None:
-        user = app.db.user.find_one({'_id': user_id}) or False
-        if user is False: return False
-        user['id'] = int(user.pop('_id'))
-    else:
-        user = user_dict
-
-    user['rating'] = get_user_rating(user['id'])
-    
-    # TODO: refactor    
-    def make_badge(a):        
-        return {
-            'icon'         : a['icon'],
-            'title'        : a['title'],
-            'achive_id'    : a['_id'],
-            'short_title'  : ''.join('%s.' % x[0] for x in a['title'].split()[:2]).upper(),
-            'level'        : a.get_event_or_dummy(user_id)['level']
-        }
-
-    if user['badges'] > 0:
-        b = app.connection.Achive.fetch_one({"_id": user['badges']})
-        user['badge'] = make_badge(b)
-
-    return user if full else clean_fields(user)
+def get_user(user_id, **kwargs):
+    user = app.connection.User.find_one({"_id": user_id})
+    return user.patched  if user else None

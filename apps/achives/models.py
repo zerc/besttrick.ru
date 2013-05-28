@@ -50,7 +50,7 @@ class Achive(BaseModel):
         return self._event_cls.fetch(params)
 
     def get_event_or_dummy(self, user_id):
-        params  = {'user_id': user_id, 'achive_id': int(self.get("_id"))}
+        params  = {'user_id': int(user_id), 'achive_id': int(self.get("_id"))}
         event = self._event_cls.fetch_one(params.copy())
         
         if not event:
@@ -98,6 +98,22 @@ class Achive(BaseModel):
                 if _parents:
                     at(p, e, _parents)
         at(self, event, parents)
+
+    @property
+    def short_title(self):
+        return ''.join('%s.' % x[0] for x in self['title'].split()[:2]).upper();
+
+    def get_titul(self, user_id):
+        """
+        Возвращает звание, которое пользователь получает выполнив ачивку.
+        Если level == 0 - пользователь еще не получил это звание.
+        """
+        return {
+            'title'        : self['title'],
+            'id'           : self['_id'],
+            'short_title'  : self.short_title,
+            'level'        : self.get_event_or_dummy(user_id)['level']
+        }
 
 app.connection.register([Achive])
 app.db.seqs.insert({'_id': 'achives_seq',  'val': 0})
