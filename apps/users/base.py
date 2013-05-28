@@ -13,7 +13,7 @@ from flask import g, redirect
 from project import app
 from apps.common import get_user_rating
 
-from .models import User
+from .models import User, LOGINZA_FIELDS_MAP
 
 
 def user_only(func):
@@ -61,7 +61,7 @@ def register(user_data):
 
         try:
             new_user[k] = t(get_field(user_data, LOGINZA_FIELDS_MAP.get(k, k)))
-        except KeyError:
+        except (KeyError, ValueError):
             continue
 
     new_user['_id'] = app.db.seqs.find_and_modify({"_id": "user_seq"}, {"$inc": {"val": 1}})['val']

@@ -11,7 +11,7 @@ from urls import app
 from apps.tricks.tests import TricksTestCase
 from apps.tests import BtTestCase
 from apps.achives.tests import AchivesTestCase
-
+from apps.users.tests import UsersTestCase
 
 env.hosts = _app.config['FLASK_HOSTS']
 
@@ -19,6 +19,7 @@ TESTS_SET = {
     'bt'     : BtTestCase,
     'tricks' : TricksTestCase,
     'achives': AchivesTestCase,
+    'users'  : UsersTestCase,
 }
 
 def roll():
