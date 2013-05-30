@@ -57,7 +57,24 @@ def slow_runserver(*args, **kwargs):
             time.sleep(2)
 
     runserver()
-            
+
+
+@command_manager.command
+def migrate(*args, **kwargs):
+    # TODO: use auto load modules
+    from apps import users, tricks, achives
+    modules = (users, tricks, achives)
+    ready = {} # dirty, for avoid cross imported models
+
+    for m in modules:
+        for x in dir(m):
+            cls = getattr(m, x)
+            if getattr(cls, 'migration_handler', None) and not ready.get(cls):                
+                try:
+                    print cls.migrate()
+                    ready[cls] = True
+                except TypeError, e:
+                    pass
 
 if __name__ == "__main__":
     command_manager.run()

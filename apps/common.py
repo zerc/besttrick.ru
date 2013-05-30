@@ -152,3 +152,7 @@ class BaseModel(Document):
     @classproperty
     def __database__(self):
         return app.config['MONGODB_DB']
+
+    @classproperty
+    def migrate(cls):
+        return cls.migration_handler(cls).migrate_all(app.db[cls.__collection__])

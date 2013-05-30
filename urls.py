@@ -48,7 +48,7 @@ url('/banned/',                 'banned',           lambda: render_template('ban
 
 url('/user/',                   'my',               users.user, methods=['PUT', 'GET'])
 url('/user/',                   'mobile_my',        users.user, methods=['POST', 'GET'], subdomain="m")
-url('/my/tricks/',            'my_tricks',        users.my_tricks)
+url('/my/tricks/',              'my_tricks',        users.my_tricks)
 
 url('/users/',                          'users',            users.list_of_users)
 url('/users/user<int:user_id>/',        'profile',          users.user_profile)

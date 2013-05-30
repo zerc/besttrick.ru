@@ -27,7 +27,7 @@ class BtTestCase(BaseTestCase):
 
         self.client.get('/pown/0/', follow_redirects=True)
 
-        pages = ('/my/', '/my/tricks/', '/users/', '/users/user0/', '/users/rating/')
+        pages = ('/user/', '/my/tricks/', '/users/', '/users/user0/', '/users/rating/')
         for page in pages:
             self.assertEqual(self.client.get(page).status_code, 200, u'Page: %s BROKEN!' % page)
 
