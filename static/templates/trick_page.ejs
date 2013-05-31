@@ -38,10 +38,31 @@
 
 <div class="trick__info">
     <%= checktrick.render('full') %>
-    <div class="trick_video_preview">
-        <div class="trick_video_preview_button"></div>
-        <img src="<%= trick.large_img() %>" />
+    
+    <div class="trick__video_holder">
+        <div class="trick_video_preview">
+            <div class="trick_video_preview_button"></div>
+            <img src="<%= trick.large_img() %>" />
+        </div>
     </div>
+
+    <ul class="trick__users_videos">
+        <li class="user_video selected_video">
+            <%= render_video_thumb(trick.get('videos')[0], 'Видео трюка '+trick.get_title()) %>
+        </li>
+
+        <% _.map(users, function (user, i) { %>
+            <% if (user.video_url) { %>
+                <li class="user_video">
+                    <%= render_video_thumb(user.video_url, 'Видео трюка ' + trick.get_title() + ' от пользователя' + user.get('nick')) %>
+                </li>
+            <% } %>
+        <% }) %>
+
+        <li class="add_user_video" title="Вы делаете этот трюк?Добавляйте видео!">+</li>
+    </ul>
+
+    <div class="clear"></div>
 
     <div id="share" style="margin-left:-5px;"></div>
 

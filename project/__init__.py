@@ -59,26 +59,27 @@ markdown = Markdown(app)
 command_manager = Manager(app)
 
 assets = Environment(app)
-JS_FILES = (
-    'js/jquery.min.js',
-    'js/underscore.js',
-    'js/backbone.js',
-    'js/backbone-forms.js',
-    'js/ejs.js',
-    'js/jquery.form.js',
-    'js/bootstrap-tooltip.js',
-    'js/jquery.reject.js',
-    'js/jquery.cookie.js',
-    'js/date.format.js',
+static = {}
+static['js'] = (
+    'jquery.min.js',
+    'underscore.js',
+    'backbone.js',
+    'backbone-forms.js',
+    'ejs.js',
+    'jquery.form.js',
+    'bootstrap-tooltip.js',
+    'jquery.reject.js',
+    'jquery.cookie.js',
+    'date.format.js',
 
-    'js/common.js',
-    'js/tricks.js',
-    'js/users.js',
-    'js/achives.js',
-    'js/app.js',
+    'common.js',
+    'tricks.js',
+    'users.js',
+    'achives.js',
+    'app.js',
 )
 
-CSS_FILES = map(lambda x: 'css/%s' % x, (
+static['css'] = (
     'backbone-forms.css',
     'base.css',
     'skeleton.css',
@@ -86,12 +87,18 @@ CSS_FILES = map(lambda x: 'css/%s' % x, (
     'styles.css',
     'jquery.reject.css',
     #'reset.css',
-))
+)
 
-js = Bundle(*JS_FILES, filters='jsmin', output='js/main.min.js')
-css = Bundle(*CSS_FILES, filters='cssmin', output='css/styles.min.css')
-assets.register('js_all', js)
-assets.register('css_all', css)
+def make_bundles(bundle_type=''):
+    if bundle_type: bundle_type = '/%s' % bundle_type
+    for k in static.keys():
+        filenames = ['%s%s/%s' % (k, bundle_type, x) for x in static[k]]
+        filter_name = '%smin' % k
+        output = '%s/main.min.%s' % (k, k)
+        assets.register(k+bundle_type+'_all', Bundle(*filenames, filters=filter_name, output=output))
+
+make_bundles()
+#make_bundles('dev')
 
 
 def log_message(message, app):

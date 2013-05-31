@@ -399,7 +399,10 @@ TrickFullView = Backbone.View.extend({
     el: 'div.content',
 
     events: {
-        'click .trick_video_preview': 'load_video'
+        'click .trick_video_preview': 'load_video',
+        'click .trick__users_videos .user_video': 'select_video',
+        'click .has_video': 'select',
+        'click .add_user_video': 'open_checktrick_form'
     },
 
     template: new EJS({url: '/static/templates/trick_page.ejs'}),
@@ -407,6 +410,11 @@ TrickFullView = Backbone.View.extend({
     initialize: function (args) {
         _.bindAll(this, 'render', 'load_video');
         this.checktrick = new CheckTrickView({user: args.user, el: this.el});
+    },
+
+    open_checktrick_form: function () {
+        this.checktrick.toggle_dialog();
+        return false;
     },
 
     render: function (options) {
@@ -429,6 +437,7 @@ TrickFullView = Backbone.View.extend({
             dataType: 'json',
             success: function (response) {
                 var share_params = {};
+
                 self.$el.html(self.template.render({
                     'users': _.map(response.trick.users, function (row) { 
                         var user = new window.BTUsers.UserModel(row.user);
@@ -480,10 +489,38 @@ TrickFullView = Backbone.View.extend({
         return self;
     },
 
-    load_video: function () {
-        var html = '<iframe width="315" height="190" src="'+this.model.get('videos')[0]+'" frameborder="0" allowfullscreen></iframe>';
-        this.$el.find('.trick_video_preview').replaceWith(html);
+    _get_holder: function () {
+        return this.$el.find('div.trick__video_holder');
+    },
+
+    _load_video: function (video_url) {
+        var tmpl_str = '<iframe width="253" height="190" src="<%= video_url %>" frameborder="0" allowfullscreen></iframe>';
+        this._get_holder().html(_.template(tmpl_str, {'video_url': video_url}));
         return false;
+    },
+
+    load_video: function () {
+        return this._load_video(this.model.get('videos')[0]);
+    },
+
+    select: function (e) {
+        var $el = $(e.target),
+            video_id = BTCommon.get_youtube_video_id($el.attr('href'));
+        this.$el.find('.trick__users_videos img[src*="'+video_id+'"]').click();
+        return false;
+    },
+
+    select_video: function (e) {
+        var $el = $(e.target),
+            selected_cls = 'selected_video';
+            video_id = BTCommon.get_youtube_video_id($el.attr('src')),
+            video_url = 'http://www.youtube.com/embed/' + video_id;
+
+        if ($el.parent().hasClass(selected_cls)) return;
+
+        $el.closest('ul').find('li').removeClass(selected_cls);
+        $el.parent().addClass(selected_cls);
+        return this._load_video(video_url);
     }
 });
 

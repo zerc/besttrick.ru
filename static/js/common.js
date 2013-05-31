@@ -22,6 +22,13 @@ window.BTCommon = _.extend({
             return result;
         });
         return $.ajax(opts);
+    },
+
+    get_youtube_video_id: function (video_url) {
+        if (/embed|youtu\.be/.test(video_url)) return video_url.split('/').pop();
+        if (/\/watch\?v=/.test(video_url)) return /\?v=([^&]+)/.exec(video_url).pop();
+        if (/img.youtube.com/.test(video_url)) return /vi\/([^&]+)\//.exec(video_url).pop();
+        throw "Can't parse video_url string!";
     }
 }, Backbone.Events);
 
@@ -74,6 +81,11 @@ EJS.Helpers.prototype.browser_info = function () {
         Browser : $.browser
     }
     return _.escape(JSON.stringify(data));
+};
+
+EJS.Helpers.prototype.render_video_thumb = function (video_url, title) {
+    var thumb_url = window.BTCommon.get_youtube_video_id(video_url);
+    return '<img src="http://img.youtube.com/vi/'+thumb_url+'/1.jpg" alt="'+title+'" height="50" />';
 };
 
 // Переопределим кое-что в date.format плагине

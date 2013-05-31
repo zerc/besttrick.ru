@@ -116,8 +116,8 @@ window.BTAchives.AchiveList = Backbone.Collection.extend({
     model: window.BTAchives.Achive,
 
     url: function () {
-        return this.user_id ?
-            '/users/user' + this.user_id + '/achives/' : '/my/achives/';
+        return _.isUndefined(this.user_id) ?
+                '/my/achives/' : '/users/user' + this.user_id + '/achives/';
     },
 
     parse: function(resp, xhr) {

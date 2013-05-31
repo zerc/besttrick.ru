@@ -232,16 +232,39 @@ tr.no_one td {padding-left:10px;}
 .trick__info {position:relative; float:right; width:315px; background:white; padding:10px 10px 0 10px;}
 .trick__info p {margin-bottom:10px;}
 
-.trick_video_preview {position:relative;}
-.trick_video_preview img {width:315px; height:190px; cursor:pointer;}
+.trick__video_holder {
+    position:relative; float:left;
+    background:url('/static/i/global_loader.gif') 50% 50% no-repeat;
+}
+
+.trick_video_preview img {/*width:315px;*/ height:190px; cursor:pointer;}
 .trick_video_preview_button {
-    width:32px;height:32px;position:absolute;left:140px;top:75px;
+    width:32px; height:32px; position:absolute; left:45%;top:75px;
     background:#CCC url('/static/i/common.png?rev=1') -18px -28px no-repeat;
     border:1px solid #333; 
     border:1px solid rgba(0, 0, 0, 0.25)
     -webkit-border-radius:5px; -moz-border-radius:5px; border-radius:5px;
 }
 
+.trick__info .trick__users_videos {
+    display:block; overflow:hidden; float:right; height:190px; width:55px;
+}
+
+.trick__info .trick__users_videos .user_video,
+.trick__info .trick__users_videos .add_user_video
+ {
+    height:50px; margin-bottom:5px; overflow:hidden;
+    border:2px solid #fff; cursor:pointer;
+}
+
+.trick__info .trick__users_videos .add_user_video {
+    background-color:#aeaeae; color:#ffffff;
+    text-align:center; line-height:50px; font-size:36px;
+    font-weight:bolder;
+}
+.trick__info .trick__users_videos li.selected_video {
+  border-color:#B55A5A;
+}
 .full_trick__dialog_holder {
     margin:-10px -10px 10px -10px; padding:10px; padding-bottom:9px;
 }

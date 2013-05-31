@@ -85,7 +85,7 @@ def user():
     except (ValueError, TypeError):
         user_id = g.user['id']
 
-    return {'user': get_user(user_id)}
+    return {'user': get_user(user_id).hide}
     
 
 @render_to()

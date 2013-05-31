@@ -89,11 +89,7 @@ Backbone.Form.editors.YouTube = Backbone.Form.editors.Text.extend({
 
     getVideoId: function () {
         var raw_data = this.getValue();
-
-        if (/embed|youtu\.be/.test(raw_data)) return raw_data.split('/').pop();
-        if (/\/watch\?v=/.test(raw_data)) return /\?v=([^&]+)/.exec(raw_data).pop();
-
-        return false;
+        return window.BTCommon.get_youtube_video_id(raw_data);
     },
 
     getThumbNum: function () {

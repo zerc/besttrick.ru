@@ -108,7 +108,8 @@ var App = Backbone.Router.extend({
         this.loader.hide();
     },
 
-    _achives: function (user, self) {
+    _achives: function (user) {
+        var self = this;
         self.achives.user = user;
         self.achives.collection.user_id = user.get('id');
         self.achives
@@ -122,7 +123,7 @@ var App = Backbone.Router.extend({
     },
 
     my_achives: function () {
-        return this._achives(this.user, this);
+        return this._achives(this.user);
     },
     
     user_achives: function (user_id) {
@@ -130,7 +131,7 @@ var App = Backbone.Router.extend({
             user = new UserModel().fetch({
                 data: 'user_id=' + user_id,
                 success: function (user) {
-                    self._achives(user, self);
+                    self._achives(user);
                 }
             });
     },

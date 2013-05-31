@@ -3,7 +3,7 @@
     urls
     ~~~~~~~~~~~
 
-    All project urls rules must be there
+    All project urls rules must be here
 
     :copyright: (c) 2013 by zero13cool
 """
@@ -22,6 +22,7 @@ url = app.add_url_rule
 
 
 url('/',                        'index',            bt.index)
+url('/dev/',                    'dev_index',        bt.dev_index)
 url('/',                        'mobile_index',     bt.mobile_index,    subdomain='m')
 url('/pown/<int:user_id>/',     'pown',             bt.pown,            methods=['GET'])
 url('/pown/<int:user_id>/',     'pown',             bt.pown,            subdomain='m', methods=['GET'])

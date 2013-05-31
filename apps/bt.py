@@ -53,6 +53,11 @@ def index(*args, **context):
     return response
 
 
+def dev_index(*args, **kwargs):
+    kwargs['dev'] = True
+    return index(*args, **kwargs)
+
+
 @common.render_to(template="mobile/index.html")
 def mobile_index(*args, **kwargs):
     return {
