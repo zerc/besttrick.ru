@@ -101,7 +101,10 @@ class User(BaseModel):
 
     def _hide(self, data_dict=None):
         _ = data_dict or self
-        return {k:v for k,v in _.items() if k not in self.secure_fields}
+        try:
+            return {k:v for k,v in _.items() if k not in self.secure_fields}
+        except SyntaxError: # python 2.6 version backprort
+            return dict([(k, v) for k, v in _.items() if k not in self.secure_fields])
 
     @property
     def rating(self):
