@@ -1,0 +1,95 @@
+/*
+    All about tricks
+*/
+
+.tricks {
+    max-width:845px;
+}
+
+.tricks .tricks__title {
+    padding-left:15px;
+    font-weight:normal;
+    margin-bottom:0;
+}
+
+.tricks .trick {
+    position:relative;
+    padding:5px 10px 10px 10px;
+    background-color:#ffffff;
+    border:1px solid #E8E9EB;
+}
+
+.trick .trick__title {
+    color: #333;
+    text-decoration: underline;
+    outline: 0;
+    font-weight:bolder;
+}
+
+.trick .trick__thumb {
+    margin-top:5px;
+    margin-bottom:0;
+}
+
+.trick .trick__stats {}
+.trick .trick__check {
+    text-decoration: none;
+    background-color: red;
+    height: 20px;
+    width: 20px;
+    text-align: center;
+    font-size: 18px;    
+    color: white;
+    -webkit-border-radius: 2px;
+    -moz-border-radius: 2px;
+    border-radius: 2px;
+    cursor:pointer;
+}
+
+.trick .trick__check:hover {
+    color:#000000;
+}
+
+.trick .trick__best_user {
+    margin-top:15px;
+}
+
+.trick .trick__best_user a {
+    display: block;
+    height: 20px;
+    overflow: hidden;
+    text-indent: 0px;
+    padding-left: 15px;
+    background: url('/static/i/common.png?rev=1') -49px 6px no-repeat;
+}
+
+.dialog__overflow {
+    background-color: #CCC;
+    opacity: 0.96;
+}
+
+.trick .trick__dialog {
+    position:absolute;
+    width:228px;
+    height:95px;
+    top:26px;
+    left:10px;
+    font-size:90%;
+    padding:5px;
+}
+
+.trick__dialog .dialog__close {
+    position:absolute;
+    right:6px;
+    top:0;
+    text-decoration:none;
+    color:#fff;
+}
+
+.trick__dialog input {
+    width:55%;
+    margin-right:10px;
+}
+
+
+

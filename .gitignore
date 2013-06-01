@@ -13,3 +13,5 @@ sitemap.txt
 dump/
 build/
 logs/
+*main.min.css
+*main.min.js

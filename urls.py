@@ -22,7 +22,7 @@ url = app.add_url_rule
 
 
 url('/',                        'index',            bt.index)
-url('/dev/',                    'dev_index',        bt.dev_index)
+url('/dev/',                    'dev_index',        bt.index,           defaults={'template': 'dev_index.html'})
 url('/',                        'mobile_index',     bt.mobile_index,    subdomain='m')
 url('/pown/<int:user_id>/',     'pown',             bt.pown,            methods=['GET'])
 url('/pown/<int:user_id>/',     'pown',             bt.pown,            subdomain='m', methods=['GET'])

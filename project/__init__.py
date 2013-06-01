@@ -60,7 +60,7 @@ command_manager = Manager(app)
 
 assets = Environment(app)
 static = {}
-static['js'] = (
+static['js'] = map(lambda x: 'js/%s' % x, (
     'jquery.min.js',
     'underscore.js',
     'backbone.js',
@@ -77,9 +77,9 @@ static['js'] = (
     'users.js',
     'achives.js',
     'app.js',
-)
+))
 
-static['css'] = (
+static['css'] = map(lambda x: 'css/%s' % x, (
     'backbone-forms.css',
     'base.css',
     'skeleton.css',
@@ -87,18 +87,41 @@ static['css'] = (
     'styles.css',
     'jquery.reject.css',
     #'reset.css',
-)
+))
 
-def make_bundles(bundle_type=''):
-    if bundle_type: bundle_type = '/%s' % bundle_type
-    for k in static.keys():
-        filenames = ['%s%s/%s' % (k, bundle_type, x) for x in static[k]]
-        filter_name = '%smin' % k
-        output = '%s/main.min.%s' % (k, k)
-        assets.register(k+bundle_type+'_all', Bundle(*filenames, filters=filter_name, output=output))
+## temp
+static['js_dev'] =  map(lambda x: 'js/dev/%s.js' % x, (
+    'libs/json2',
+    'libs/underscore',
+    'libs/backbone',
+    'libs/backbone.babysitter',
+    'libs/backbone.wreqr',
+    'libs/backbone.marionette',
+    'libs/kickstart',
+))
+static['js_dev'].insert(0, 'js/jquery.min.js')
+static['js_dev'].insert(1, 'js/jquery.reject.js')
 
-make_bundles()
-#make_bundles('dev')
+static['css_dev'] = map(lambda x: 'css/dev/%s.css' % x, (
+    'kickstart/kickstart',
+    'kickstart/kickstart-forms',
+    'kickstart/kickstart-grid',
+    'kickstart/prettify',
+    'kickstart/jquery.fancybox-1.3.4',
+    'kickstart/kickstart-menus',
+    'kickstart/tiptip',
+    'kickstart/kickstart-buttons',
+    'kickstart/kickstart-slideshow',
+
+    'common',
+    'tricks',
+))
+
+assets.register('js_all', Bundle(*static['js'], filters='jsmin', output='js/main.min.js'))
+assets.register('js_dev', Bundle(*static['js_dev'], filters='jsmin', output='js/dev/main.min.js'))
+
+assets.register('css_all', Bundle(*static['css'], filters='cssmin', output='css/dev/main.min.css'))
+assets.register('css_dev', Bundle(*static['css_dev'], filters='cssmin', output='css/dev/main.min.css'))
 
 
 def log_message(message, app):

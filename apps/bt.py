@@ -28,9 +28,10 @@ def index(*args, **context):
     которые были сохранены в куки, пока пользователь 
     был неавторизован. (Например чекин неавторизованного пользователя)
     """
-    # проверим есть ли чекины от пользователя, когда он был неавторизован?
     user = g.user
+    template = context.pop('template', 'index.html')
 
+    # проверим есть ли чекины от пользователя, когда он был неавторизован?
     if user and request.cookies.get('trick'):
         try:
             tricks.update_checktrick_from_cookie(user['_id'])
@@ -46,16 +47,11 @@ def index(*args, **context):
         'tags'   : json.dumps(tags)
     })
 
-    r = render_template('index.html', **context)
+    r = render_template(template, **context)
     response = make_response(r)
     response.headers['X-Frame-Options'] = 'SAMEORIGIN'
     
     return response
-
-
-def dev_index(*args, **kwargs):
-    kwargs['dev'] = True
-    return index(*args, **kwargs)
 
 
 @common.render_to(template="mobile/index.html")
@@ -79,6 +75,7 @@ def feedback():
 def youtube_reciver():
     """
     Просто принимаем ответ от ютуба и переводим его в json
+    # TODO: вероятно добавить проверку по домену
     """
     return jsonify(request.args)
 
