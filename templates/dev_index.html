@@ -78,15 +78,16 @@
 {% block body %}
 <div class="container">
     <div class="header">
-        <a href="#!" class="logo" title="Видео трюков на роликах">BestTrick</a>
-        <div class="clear"></div>
-        <ul class="button-bar orange">
-            <li class="inset"><a href="#">сидячие</a></li>
-            <li><a href="#">вилинги</a></li>
-            <li><a href="#">прыжковые</a></li>
-            <li class="inset"><a href="#">вращательные</a></li>
-            <li><a href="#">другие</a></li>
-        </ul>
+        <div class="content">
+            <a href="#!" class="logo" title="Видео трюков на роликах">BestTrick</a>
+            <ul class="button-bar tricks_filter">
+                <li class="inset"><a href="#">сидячие</a></li>
+                <li><a href="#">вилинги</a></li>
+                <li><a href="#">прыжковые</a></li>
+                <li class="inset"><a href="#">вращательные</a></li>
+                <li><a href="#">другие</a></li>
+            </ul>
+        </div>
     </div>
     <div class="grid tricks">
         <h5 class="tricks__title"><a href="#">Freestyle Slalom</a></h5>
@@ -101,5 +102,10 @@
             {{ trick(1) }}
         {% endfor %}
     </div>
+    <div class="clear"></div>
+    <div class="footer">
+         © <a href="http://www.zerc.ru/" target="_blank">zerc</a>, 2012 - 2013 <span style="color:#aeaeae;">(бета)</span> - <a href="#!about" title="О проекте">О проекте</a>, <a href="#!users/rating" title="Топ пользователей">Топ пользователей</a>, <a href="http://m.bt.ru:8000" rel="nofollow">Мобильная версия</a>
+    </div>
+
 </div>
 {% endblock %}

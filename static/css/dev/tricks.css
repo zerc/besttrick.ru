@@ -4,6 +4,7 @@
 
 .tricks {
     max-width:845px;
+    margin-top:25px;
 }
 
 .tricks .tricks__title {
@@ -91,5 +92,9 @@
     margin-right:10px;
 }
 
+
+.header .tricks_filter {
+    top:24px;
+}
 
 

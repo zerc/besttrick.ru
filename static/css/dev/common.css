@@ -6,7 +6,7 @@ body {
     padding:0 0 0 0;
     color:#000;
     font:normal 0.9em/150% 'Arimo', arial, verdana, sans-serif;
-    text-shadow: 0px 0px 1px transparent; /* google font pixelation fix */
+    text-shadow: 0px 0px 1px transparent; /* google font pixelation fix */    
 }
 
 a, a:visited {
@@ -21,10 +21,19 @@ p a, p a:visited {
     line-height:inherit; 
 }
 
+.container {
+    background-color:rgb(245, 245, 245);
+}
+
 .header {
+    text-align:center;
+    border-bottom:1px solid #cccccc;
+    background-color:#ffffff;
+}
+
+.header .content {
     max-width:770px;
     margin:10px auto;
-    text-align:center;
 }
 
 .header .logo {
@@ -35,4 +44,13 @@ p a, p a:visited {
     margin-top:5px;
     background:url('/static/i/logo.png') 0 0 no-repeat;
     float:left;
+}
+
+.footer {
+    border-top:1px solid #E8E9EB;
+    margin-top:10px;
+    padding:5px;
+    text-align:center;
+    font-size:12px;
+    background-color:#ffffff;
 }
