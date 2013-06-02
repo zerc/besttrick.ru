@@ -33,6 +33,7 @@
 }
 
 .trick .trick__stats {}
+
 .trick .trick__check {
     text-decoration: none;
     background-color: red;
@@ -48,7 +49,7 @@
 }
 
 .trick .trick__check:hover {
-    color:#000000;
+    color:#cccccc;
 }
 
 .trick .trick__best_user {
@@ -60,8 +61,11 @@
     height: 20px;
     overflow: hidden;
     text-indent: 0px;
-    padding-left: 15px;
-    background: url('/static/i/common.png?rev=1') -49px 6px no-repeat;
+}
+
+.trick .trick__best_user a i {
+    color:red;
+    margin-right:5px;
 }
 
 .dialog__overflow {
@@ -81,8 +85,8 @@
 
 .trick__dialog .dialog__close {
     position:absolute;
-    right:6px;
-    top:0;
+    right:5px;
+    top:-1px;
     text-decoration:none;
     color:#fff;
 }

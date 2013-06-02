@@ -1,0 +1,26 @@
+/*
+    All about users styles here
+*/
+
+.user_container .user_rating {
+    background:#AEAEAE;
+    padding:2px 5px;
+    margin-right: 10px;
+    text-decoration: none;
+    color:#fff;
+    -webkit-border-radius: 3px;
+    -moz-border-radius: 3px;
+    border-radius: 3px;
+}
+
+.user_container .logout {
+    color:rgb(104, 104, 104);
+}
+
+.user_achives {
+    color:#aad42c;
+}
+
+.user_achives:hover {
+    color:#b8e925;
+}

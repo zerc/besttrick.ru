@@ -115,6 +115,7 @@ static['css_dev'] = map(lambda x: 'css/dev/%s.css' % x, (
 
     'common',
     'tricks',
+    'users',
 ))
 
 assets.register('js_all', Bundle(*static['js'], filters='jsmin', output='js/main.min.js'))

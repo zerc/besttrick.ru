@@ -40,7 +40,7 @@
              -->
             <div class="trick__dialog dialog__overflow"></div>    
             <div class="trick__dialog">
-                <a href="#" class="dialog__close pull-right">x</a>
+                <a href="#" class="dialog__close pull-right"><i class="icon-remove"></i></a>
 
                 <div class="col_12">
                 <input type="text" id="dialog__cones" class="text cones tooltip" title="На сколько конусов выполняете трюк?" placeholder="сколько банок?" value="" data-error-title="Только числа!"> <a href="#" class="dialog__save">сохранить</a>
@@ -54,13 +54,13 @@
         {% endif %}
 
         <div class="trick__stats">
-            <a class="trick__check pull-right" title="Я освоил этот трюк!">+</a>
+            <a class="trick__check pull-right" title="Я освоил этот трюк!"><i class="icon-plus"></i></a>
             делают: 2
         </div>
 
         <div class="trick__best_user">
             <a href="#!users/user10" class="view_profile" title="Portret-ist(ФОТОГРАФ) лучше всех делает этот трюк!">
-                Portret-ist(ФОТОГРАФ)
+                <i class="icon-star"></i>Portret-ist(ФОТОГРАФ)
             </a> 
             10 банок
         </div>
@@ -68,10 +68,19 @@
 {% endmacro %}
 
 
-{% macro more_tricks() %}
-    <div class="col_4 trick">
-        ЕЩЕ ...
+{% macro user_login() %}
+    <div class="user_container pull-right">
+        Войти с помощью: <a href="https://loginza.ru/api/widget?token_url=http://bt.ru:8000/login/&amp;providers_set=vkontakte,twitter,facebook" class="loginza"><img src="http://loginza.ru/img/providers/vkontakte.png" alt="Вконтакте" title="Вконтакте"><img src="http://loginza.ru/img/providers/twitter.png" alt="Twitter" title="Twitter"><img src="http://loginza.ru/img/providers/facebook.png" alt="Facebook" title="Facebook"></a>
     </div>
+{% endmacro %}
+
+{% macro user_logged() %}
+<div class="user_container pull-right">
+    <!-- <a href="#!u/achives" title="Ваши достижения" class="user_achives"></a> -->
+    <a href="#!u/achives" class="user_achives" title="Ваши достижения"><i class="icon-trophy icon-large"></i></a>
+    <a href="#!users/rating" title="Ваш персональный рейтинг" class="user_rating">16.25</a>
+    <a href="#!u" class="my">Куршакова Кристина Александровна</a> <a href="/logout/" class="logout" rel="nofollow"><i title="Выход" class="icon-signout icon-large"></i></a>
+</div>
 {% endmacro %}
 
 
@@ -80,6 +89,11 @@
     <div class="header">
         <div class="content">
             <a href="#!" class="logo" title="Видео трюков на роликах">BestTrick</a>
+            <i title="Обратная связь" id="feedback" class="icon-comment-alt pull-left feedback"></i>
+            
+            {# user_login() #}
+            {{ user_logged() }}
+
             <ul class="button-bar tricks_filter">
                 <li class="inset"><a href="#">сидячие</a></li>
                 <li><a href="#">вилинги</a></li>
@@ -87,6 +101,7 @@
                 <li class="inset"><a href="#">вращательные</a></li>
                 <li><a href="#">другие</a></li>
             </ul>
+        <div class="clear"></div>
         </div>
     </div>
     <div class="grid tricks">
