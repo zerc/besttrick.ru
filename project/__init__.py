@@ -89,6 +89,7 @@ static['css'] = map(lambda x: 'css/%s' % x, (
     #'reset.css',
 ))
 
+
 ## temp
 static['js_dev'] =  map(lambda x: 'js/dev/%s.js' % x, (
     'libs/json2',
@@ -97,10 +98,19 @@ static['js_dev'] =  map(lambda x: 'js/dev/%s.js' % x, (
     'libs/backbone.babysitter',
     'libs/backbone.wreqr',
     'libs/backbone.marionette',
+    #'libs/backbone-relational',
     'libs/kickstart',
+
+    'main',
+    'users/models',
+    'tricks/models',
+    'tricks/views',
+    'users/views',
 ))
 static['js_dev'].insert(0, 'js/jquery.min.js')
 static['js_dev'].insert(1, 'js/jquery.reject.js')
+static['js_dev'].insert(5, 'js/backbone-forms.js')
+static['js_dev'].insert(6, 'js/bootstrap-tooltip.js')
 
 static['css_dev'] = map(lambda x: 'css/dev/%s.css' % x, (
     'kickstart/kickstart',

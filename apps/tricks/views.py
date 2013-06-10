@@ -81,6 +81,23 @@ def check(trick_id, *args, **kwargs):
 
 
 @render_to()
+def checkins(*args, **kwargs):
+    """
+    Returns checkins list.
+    """
+    fields = ('user', 'trick')
+    try:
+        opts = {f:int(request.args.get(f)) for f in fields if request.args.get(f)}
+    except (ValueError, TypeError):
+        opts = {}
+    if not opts: 
+        return u'Invalid uri params', 401
+
+    checkins = app.connection.TrickUser.find(opts)
+    return [ch.to_json() for ch in checkins]
+
+
+@render_to()
 @user_only
 def checkin_page(*args, **context):
     """

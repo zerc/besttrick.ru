@@ -46,9 +46,9 @@ except socket.gaierror, e:
     yt_service = None
 
 
-def get_checkins(user_id, only_best=True):
+def get_checkins(user_id=None, only_best=True):
     """
-    Returns collection of TrickUser objects selected for selected by user_id grouped by trick
+    Returns collection of TrickUser objects grouped by trick
     * only_best - if False return all checkins for this trick & user.
     """
     reduce_func = u"""function(obj, prev) {
@@ -58,18 +58,17 @@ def get_checkins(user_id, only_best=True):
             prev.cones     = NumberInt(obj.cones);
             prev.video_url = obj.video_url;
         }
+        prev.users.push(NumberInt(obj.user));
     }"""
-    # Avoid cross imports >_<
     TU = app.connection.TrickUser
-    if only_best:
-        return (TU(x) for x in app.db.trick_user.group(['trick'], {'user': user_id}, {'cones': 0}, reduce_func))
+    opts = {'user': user_id} if user_id else {}
 
-    result, tricks_user = {}, app.db.trick_user.find({'user': user_id})
+    if only_best:
+        return (TU(x) for x in app.db.trick_user.group(['trick'], opts, {'cones': 0, 'users': []}, reduce_func))
+
+    result, tricks_user = {}, app.db.trick_user.find(opts)
     for t in tricks_user:
-        try:
-            result[t['trick']].append(TU(t))
-        except KeyError:
-            result[t['trick']] = [TU(t)]
+        result.get(t['trick'], []).append(TU(t))
     return result
 
 
@@ -128,35 +127,27 @@ def get_tricks(*args, **kwargs):
     #TODO: нужно как-то срефакторить, функция слишком большая и непонятная
     tricks = app.connection.Trick.find().sort("_id", 1)
     user_id = g.user['id'] if g.user else False # по идее функция не должна знать про это!
-
-    best_users, user_stats = {}, {}
-
+    best_checkins, user_checkins, users_count = {}, {}, {}
+    
     if not kwargs.get('simple'):
-        # собираем лучшие чекины для каждого трюяка
-        for r in get_best_results(None, user_id):
-            best_users[int(r.pop(u'trick'))] = r
-
+        for ch in get_checkins():
+            #!!!!!!!!!!
+            tid = int(ch.get(u'trick'))
+            ch['user'] = app.connection.User.find_one({'_id': ch['user']}).patched
+            users_count[tid] = len(set(ch.pop('users')))
+            best_checkins[tid] = ch
+        
         # результат пользователя
         if user_id is not False:
-            for x in get_checkins(user_id):
-                k = x.pop(u'trick')
-                user_stats[k] = x
+            for ch in get_checkins(user_id):
+                user_checkins[int(ch.get(u'trick'))] = ch
 
     def _patch(trick):
-        trick[u'id'] = trick.pop(u'_id')
-        
-        try:
-            trick.update(best_users[trick[u'id']])
-        except KeyError:
-            trick.update({'best_user_cones': None, 'best_user': None})
-
-        try:
-            trick.update(user_stats[trick[u'id']])
-        except KeyError:
-            trick.update({'cones': 0})
-
+        trick[u'id'] = tid = trick.pop(u'_id')
+        trick['best_checkin'] = best_checkins.get(tid, {})
+        trick['users_count'] = users_count.get(tid, 0)
+        trick['user_checkin'] = user_checkins.get(tid, {})
         trick['descr_html'] = markdown(trick['descr'])
-
         return trick
 
     return map(_patch, tricks)

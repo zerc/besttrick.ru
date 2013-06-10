@@ -1245,6 +1245,7 @@ Marionette.View = Backbone.View.extend({
   mixinTemplateHelpers: function(target){
     target = target || {};
     var templateHelpers = this.templateHelpers;
+
     if (_.isFunction(templateHelpers)){
       templateHelpers = templateHelpers.call(this);
     }
