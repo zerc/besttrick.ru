@@ -1,22 +1,102 @@
 /*
  * Views for tricks module
  */
- // Besttrick.module('Tricks.Views', function (Views, App, Backbone, Marionette, $, _) {
- //    // Views.Trick = Marionette.ItemView.extend({
- //    //     template: '#trick_item',
- //    //     initialize : function() {
- //    //         this.listenTo(this.model, 'change', this.render);
- //    //     }
- //    // });
+Besttrick.module('Users.Views', function (Views, App, Backbone, Marionette, $, _) {
+    var BaseBarView = Marionette.ItemView.extend({
+        template: '#user_login_bar',
+        className: 'user_container pull-right',
+        events: {
+            'click a.loginza': 'save_path',
+            'click a.logout' : 'save_path'
+        },
 
- //    // Views.Tricks = Backbone.Marionette.CollectionView.extend({
- //    //     tagName: 'div',
- //    //     className: 'tricks grid',
- //    //     itemView: Views.Trick,
+        save_path: function (e) {
+            var path = location.hash;
+            if (!path) return;
+            $.cookie(App.Common.Vars.next_url_cookie_name, encodeURIComponent(path));
+        }
+    });
+        
+    Views.LoginBar = BaseBarView.extend({
+        templateHelpers: {
+            Loginza: {
+                href: "https://loginza.ru/api/widget?token_url=http://"
+                    + location.host 
+                    + "/login/&providers_set=vkontakte,twitter,facebook",
 
- //    //     appendHtml: function (collectionView, itemView) {
- //    //         this.$el.append(itemView.el);
- //    //         // collectionView.$('.tricks').append(itemView.el);
- //    //     }
- //    // })
- // });
+                // Просто обертка метода библиотеки
+                show_login_form: function () {
+                    if (!LOGINZA || !LOGINZA.show) {
+                        return alert('Cant find LOGINZA widget :/');
+                    }
+
+                    LOGINZA.show.call(this);
+                }
+            }
+        }
+    });
+
+    Views.UserBar = BaseBarView.extend({
+        className: 'user_container pull-right',
+        template: '#user_bar',
+
+        initialize: function () {
+            this.listenTo(this.model, 'change', this.render);
+        }
+    });
+
+    Views.User = Marionette.ItemView.extend({
+        template : '#user_page',
+        className: 'grid user_page',
+        events   : {
+            'click button.save': 'save'
+        },
+
+        render_form: function () {
+            this.form = new Backbone.Form({model: this.model}).render();
+            this.$el.find('form').replaceWith(this.form.$el.append(
+                $('<button>', {'type': 'button', 'class': 'save', 'text': 'Сохранить'})
+            ));            
+        },
+
+        show_notice: function (text, type) {
+            var el = $('<div class="notice ' + type + '">\
+                '+ text +'<i class="icon-remove-sign icon-large"></i>\
+                <a href="#close" class="icon-remove"></a></div>');
+            this.$el.find('.notice').remove();
+            this.$el.find('form').prepend(el);
+        },
+
+        render_checkins: function () {
+            var container = this.$el.find('.trick__users');
+            container.html(
+                new Views.Checkins({
+                    collection: this.model.get('checkins')
+                }).render().el
+            );
+        },
+
+        initialize: function () {
+            var self = this;
+            this.listenTo(this, 'render', this.render_form)
+            this.listenTo(this.model, 'checkins:loaded', this.render_checkins);
+
+            this.listenTo(this, 'render', function () {
+                this.model.get_checkins();
+            });
+
+            this.listenTo(this.model, 'change', function () {
+                this.model.save(null, {
+                    success: function (model, response) { self.show_notice('Данные обновлены', 'success'); },
+                    error: function (model, response) { self.show_notice(response.text, 'error'); }
+                });
+            }, this);
+            
+        },
+
+        save: function () {
+            return this.form.commit();
+        }
+    });
+
+ });

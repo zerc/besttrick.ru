@@ -85,16 +85,30 @@ def checkins(*args, **kwargs):
     """
     Returns checkins list.
     """
-    fields = ('user', 'trick')
-    try:
-        opts = {f:int(request.args.get(f)) for f in fields if request.args.get(f)}
-    except (ValueError, TypeError):
-        opts = {}
-    if not opts: 
-        return u'Invalid uri params', 401
+    fname = request.args.get('fname') # string trick|user
+    _id   = int(request.args.get('id')) # int
+    show_all = request.args.has_key('all') # bool
 
-    checkins = app.connection.TrickUser.find(opts)
-    return [ch.to_json() for ch in checkins]
+    fmap  = {'user': 'trick', 'trick': 'user'}
+
+    checkins = app.connection.TrickUser.find({fname: _id}, sort=[('cones', -1)])
+    unique_cache = {}
+
+    relative_field = fmap[fname]
+    def _(ch):
+        if show_all is False:
+            try:
+               unique_cache[ch[fmap[fname]]]
+               return
+            except KeyError:
+                unique_cache[ch[fmap[fname]]] = True
+
+        ch.pop('_id')
+        #TODO !!!!!!!
+        ch[fmap[fname]] = getattr(app.connection, fmap[fname].title()).find_one({'_id': ch[fmap[fname]]}).patched
+        return ch
+
+    return {'checkins': [ch for ch in checkins if _(ch)]}
 
 
 @render_to()

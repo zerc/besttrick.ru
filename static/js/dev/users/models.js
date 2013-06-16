@@ -32,43 +32,54 @@ Besttrick.module('Users.Models', function (Models, App, Backbone, Marionette, $,
 
         schema: {
             nick: {
+                title       : 'Ник',
                 type        : 'Text', 
                 validators  : ['required'],
                 editorAttrs : {'placeholder': 'Ник', 'maxlength': '100'}
             },
             team: {
+                title: 'Команда',
                 type: 'Text', 
                 editorAttrs : {'placeholder': 'Команда', 'maxlength': '100'}
             },
             phone: {
+                title: 'Телефон',
                 type: 'Text',
                 editorAttrs : {'placeholder': 'Телефон'}
             },
             city: {
+                title: 'Город',
                 type: 'Text', 
                 editorAttrs : {'placeholder': 'Город', 'maxlength': '100'}
             },
             icq: {
+                title: 'ICQ',
                 type: 'Text', 
                 editorAttrs : {'placeholder': 'ICQ', 'maxlength': '10'}
             },
             skype: {
+                title: 'Skype',
                 type: 'Text', 
                 editorAttrs: {'placeholder': 'Skype', 'maxlength': '50'}
             },
             rolls: {
+                title: 'Ролики',
                 type: 'Text',
                 editorAttrs: {'placeholder': 'Ролики', 'maxlength': '50'}
             },
             epxs: {
+                title: 'Стаж',
                 type: 'Text',
                 editorAttrs: {'placeholder': 'Стаж', 'maxlength': '50'}
             },
             bio: {
+                title: 'Информация',
                 type: 'TextArea',
-                editorAttrs: {'placeholder': 'Информация', 'maxlength': '300'}
+                editorAttrs: {'placeholder': 'Информация'}
             }
         },
+
+        props: ['get_profile_url', 'get_formatted_nick'],
 
         // initialize: function () {
         //     var self = this;
@@ -89,15 +100,6 @@ Besttrick.module('Users.Models', function (Models, App, Backbone, Marionette, $,
         //     this.schema = _.clone(this.schema);
         // },
 
-        validate: function (attrs) {
-            if (!attrs.nick) {
-                return 'укажите свой ник';
-            }
-
-            if (attrs.nick.length >= 125) {
-                return 'у вас нереально большой ник';
-            }
-        },
 
         get_profile_url: function () {
             return '#!users/user' + this.id;
@@ -105,6 +107,25 @@ Besttrick.module('Users.Models', function (Models, App, Backbone, Marionette, $,
 
         parse: function(resp, xhr) {
           return resp.user;
+        },
+
+        // TODO: make this better
+        get_formatted_nick: function () {
+            if (this.get('nick').length < 10) return this.get('nick');
+            return this.get('nick').slice(0, 6) + '...';
+        },
+
+        get_checkins: function () {
+            var self = this,
+                ch = new App.Tricks.Models.Checkins();
+
+            ch.fetch({
+                data: 'fname=user&id=' + this.id,
+                success: function (checkins) {
+                    self.set('checkins', checkins, {silent: true});
+                    self.trigger('checkins:loaded');
+                }
+            });
         }
     });
 });

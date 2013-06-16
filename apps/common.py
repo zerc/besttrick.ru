@@ -4,10 +4,16 @@ from pytils.numeral import get_plural
 import simplejson as json
 from functools import wraps
 from mongokit import Document
+from datetime import datetime
 from project import app
 
 from flask import render_template, request, make_response, url_for
 from werkzeug.wrappers import BaseResponse
+
+def json_encode(obj):
+    if isinstance(obj, datetime):
+        return str(obj)
+    raise TypeError
 
 
 def render_to(template=None):
@@ -27,7 +33,7 @@ def render_to(template=None):
             subdomain_to_folder = {'m': 'mobile/'}
 
             if subdomain is None:
-                return json.dumps(ctx), status_code
+                return json.dumps(ctx, default=json_encode), status_code
 
             template_name = template
             if template_name is None:

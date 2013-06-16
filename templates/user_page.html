@@ -1,0 +1,27 @@
+<div class="trick__users col_6">
+    {#
+    <% if (tricks.length > 0) { %>
+        <% tricks.each(function (trick) {%>
+            <div class="user__trick">
+                <img src="<%= trick.img_src() %>" class="user__trick__thumb">
+                <a href="<%= trick.href() %>"><%= trick.get_title() %></a>
+                <span><%= trick.get('cones') %></span>
+                <% if (trick.get('video_url') && trick.get('approved') == 1) { %>
+                    <a class="has_video video_approved" href="<%= trick.get('video_url') %>" target="_blank" title="есть видео подтверждение"></a>
+                <% } %>
+            </div>
+        <%}) %>
+    <% } else { %>
+        <div class="no_user__tricks">Вам пока нечем похвастаться ...</div>
+    <% } %>
+    #}
+</div>
+
+<div class="user__data col_6">
+    <img class="user__photo pull-left" src="<%= photo %>" />
+    <strong>Рейтинг:</strong> <%= rating %>
+    <div class="clear"></div>
+
+    <form class="vertical"></form>
+</div>
+<br class="clear">

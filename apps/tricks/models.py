@@ -4,6 +4,7 @@ from datetime import datetime
 
 from mongokit import DocumentMigration
 from mongokit.schema_document import ValidationError
+import simplejson as json
 
 from project import app
 from apps.common import BaseModel
@@ -48,6 +49,29 @@ class Trick(BaseModel):
     default_values  = {'thumb': u'3', 'score': 1.0, 'wssa_score': 0.0}
     required_fields = ['title']
     indexes = [{'fields': ['tags']}]
+
+    @property
+    def _id(self):
+        """
+        Dirty trick
+        """
+        _id = self.get('id', self.get('_id'))
+        return None if _id is None else int(_id)
+
+    @property
+    def patched(self):
+        """
+        Patch and return (for chain) object.
+        """
+        if self._patched: return self
+        self.update({
+            'id': self._id
+        })
+        self.pop('_id', None)
+        self._patched = True
+        return self
+    _patched = False
+
 app.connection.register([Trick])
 app.db.seqs.insert({'_id': 'tricks_seq',  'val': 0})
 
@@ -72,6 +96,16 @@ class TrickUser(BaseModel):
         'cones'     : [positive_integer, cones_value_validator],
         'video_url' : is_youtube_link,
     }
+
+    def to_json(self):
+        """
+        Convert User model to json, exclude secure fields if needed
+        """
+        json_string = super(BaseModel, self).to_json()
+        j = json.loads(json_string)
+        del j['_id']
+        return unicode(json.dumps(j))
+
 app.connection.register([TrickUser])
 
 

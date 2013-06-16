@@ -2,65 +2,72 @@
  * Views for tricks module
  */
  Besttrick.module('Tricks.Views', function (Views, App, Backbone, Marionette, $, _) {
-    Views.CheckinForm = Backbone.Form.extend({
-        className: 'trick__dialog',
+    Views.TricksFilter = Marionette.ItemView.extend({
+        template: '#tricks_filter',
+        className: 'button-bar tricks_filter',
+        tagName: 'ul',
 
         events: {
-            'click a.dialog__close i': 'close',
-            'click a.dialog__save': 'save'
+            'click li': 'update_filter'
         },
 
-        render: function (args) {
-            Backbone.Form.prototype.render.call(this, args);
-            this.trigger('after:render');
-   
-            this.$el.find('input')
-                .tooltip({trigger: 'focus'})
-                .errortip({trigger: 'manual'});
 
-            return this;
+        initialize: function (options) {
+            this.templateHelpers = options.templateHelpers;
+            this.listenTo(this, 'render', this.set_filter);
         },
 
-        initialize: function (args) {
-            Backbone.Form.prototype.initialize.call(this, args);
+        set_filter: function () {
+            var tags_ids = location.hash.match(/^#filter=(.*)/);
+                selector = '';
+
+            if (!tags_ids) return;
+
+            selector = _.map(tags_ids.pop().split(','), function (ti) {
+                return 'a[href="#' + ti + '"]';
+            }).join(',');
+            this.$el.find(selector).addClass('inset');
+        },
+
+        update_filter: function (e) {
+            $(e.target).toggleClass('inset');
             
-            this.model.on('change', function () {
-                this.model.save();
-                this.render()
-            }, this);
-
-            this.on('after:render', function () {
-                console.log(this.$el);
-                var w = args.parent.width(),
-                    h = args.parent.height();
-                this.$el.width(w+2).height(h-21);
-            }, this);
-        },
-
-        save: function () {
-            var self = this,
-                errors = this.commit();
-
-            if (!errors) { return false; }
-
-            _.each(errors, function (k, v) {
-                self.fields[v].editor.$el.addClass('error')
-                    .tooltip('disable').errortip('enable').errortip('show')
-                    .one('blur, keydown', function () {
-                        $(this).errortip('hide').errortip('disable').tooltip('enable');
-                    });
+            var selected_tags = _.map(this.$el.find('.inset'), function (e) {
+                return $(e).attr('href').replace('#', '');
             });
 
-            return false;
-        },
+            App.router.navigate(selected_tags.length > 0 ?
+                'filter=' + selected_tags.join(',') : '', {trigger: true}
+            );
 
-        close: function () {
-            $('div.tooltip').remove();
-            this.remove();
             return false;
         }
-    });
+    });    
 
+
+    Views.TrickPage = Marionette.ItemView.extend({
+        template: '#trick_page',
+        className: 'grid trick_page',
+        templateHelpers: App.Common.Functions,
+
+        initialize : function () {
+            this.listenTo(this.model, 'change', this.render);
+            this.listenTo(this.model, 'checkins:loaded', this.render_checkins);
+
+            this.listenTo(this, 'item:rendered', function () {
+                this.model.get_checkins();
+            });
+        },
+
+        render_checkins: function () {
+            var container = this.$el.find('.trick__users');
+            container.html(
+                new Views.Checkins({
+                    collection: this.model.get('checkins')
+                }).render().el
+            );
+        }
+    });
 
     Views.Trick = Marionette.ItemView.extend({
         template: '#trick_item',
@@ -95,9 +102,24 @@
         tagName: 'div',
         className: 'tricks grid',
         itemView: Views.Trick,
+        filter_tricks_ids: [],
 
-        appendHtml: function (collectionView, itemView) {
-            this.$el.append(itemView.el);
+        initialize : function () {
+            this.listenTo(this, 'filterd', this.render, this);
+        },
+
+        set_filter: function (filter_tricks_ids, trigger) {
+            this.filter_tricks_ids = filter_tricks_ids || [];
+            if (trigger) this.trigger('filterd');
+        },
+
+         // TODO: mb rewrite table>tr>td to div?
+        appendHtml: function (collectionView, itemView, index) {
+            if (this.filter_tricks_ids.length > 0 && !_.contains(this.filter_tricks_ids, itemView.model.id)) {
+                return;
+            }
+            Backbone.Marionette.CollectionView.prototype.appendHtml.call(this, collectionView, itemView, index);
         }
+
     })
  });

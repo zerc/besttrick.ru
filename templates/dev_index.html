@@ -16,11 +16,11 @@
     {% assets "js_dev" %}
         <script type="text/javascript" src="{{ ASSET_URL }}"></script>
     {% endassets %}
-
+    {#
     {% if user and user.admin > 0 %}
         <script type="text/javascript" src="{{ url_for('static', filename='js/admin.js') }}"></script>
     {% endif %}
-
+    #}
     <script type="text/javascript" src="//yandex.st/share/share.js" charset="utf-8"></script>
 
     {% include 'counters.j2' %}
@@ -83,14 +83,22 @@
 {% endmacro %}
 
 
-{% block body %}
-<script type="text/html" id="trick_item">
-    {% include 'trick.html' %}
-</script>
+{% macro include_template(name) %}
+    <script type="text/html" id="{{ name }}">
+        {% include '%s.html' % name %}
+    </script>
+{% endmacro %}
 
-<script type="text/html" id="checkin_form">
-    {% include 'checkin_form.html' %}
-</script>
+{% block body %}
+{{ include_template('trick_item') }}
+{{ include_template('trick_page') }}
+{{ include_template('tricks_filter') }}
+{{ include_template('checkin_form') }}
+{{ include_template('checkin') }}
+{{ include_template('user_login_bar') }}
+{{ include_template('user_bar') }}
+{{ include_template('user_page') }}
+{{ include_template('user_page_checkin') }}
 
 
 <div class="container">
@@ -99,16 +107,11 @@
             <a href="#!" class="logo" title="Видео трюков на роликах">BestTrick</a>
             <i title="Обратная связь" id="feedback" class="icon-comment-alt pull-left feedback"></i>
             
-            {{ user_logged() }}
+            
+            <div id="user_container">{{ user_logged() }}</div>
+            <div id="menu_container"></div>
 
-            <ul class="button-bar tricks_filter">
-                <li class="inset"><a href="#">сидячие</a></li>
-                <li><a href="#">вилинги</a></li>
-                <li><a href="#">прыжковые</a></li>
-                <li class="inset"><a href="#">вращательные</a></li>
-                <li><a href="#">другие</a></li>
-            </ul>
-        <div class="clear"></div>
+            <div class="clear"></div>
         </div>
     </div>
     <div id="main">
@@ -132,9 +135,11 @@
          © <a href="http://www.zerc.ru/" target="_blank">zerc</a>, 2012 - 2013 <span style="color:#aeaeae;">(бета)</span> - <a href="#!about" title="О проекте">О проекте</a>, <a href="#!users/rating" title="Топ пользователей">Топ пользователей</a>, <a href="http://m.bt.ru:8000" rel="nofollow">Мобильная версия</a>
     </div>
     <script type="text/javascript">
-        $(function(){
+        $(function () {
             Besttrick.start({
-                tricks: {{ tricks|safe }}
+                tricks: {{ tricks|safe }},
+                tags: {{ tags|safe }},
+                user: {{ user_json|safe }},
             });
         });
     </script>

@@ -1,0 +1,18 @@
+    <a class="trick__title" href="<%= href %>"><%= title %></a>
+    <img class="align-left trick__thumb" src="<%= thumb %>" width="120" height="90" />
+
+    <div class="trick__stats">
+        <a class="trick__check pull-right" title="Я освоил этот трюк!"><i class="icon-plus"></i></a>
+        делают: <%= users_count %>
+    </div>
+
+    <div class="trick__best_user">
+    <% if (best_checkin) { %>
+        <a href="<%= best_checkin.get('user').get_profile_url() %>" class="view_profile" title="<%= best_checkin.get('user').get('nick') %> лучше всех делает этот трюк!">
+            <i class="icon-star"></i><%= best_checkin.get('user').get_formatted_nick() %>
+        </a> 
+        <%= plural(best_checkin.get('cones'), 'банка', 'банки', 'банок') %>
+    <% } else { %>
+        место короля свободно ...
+    <% } %>
+    </div>

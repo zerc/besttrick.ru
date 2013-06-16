@@ -27,7 +27,7 @@ def before_request():
 def add_user():
     return {
         'user'          : g.user,
-        'user_json'     : json.dumps(g.user)
+        'user_json'     : g.user.to_json() if g.user else 'false'
     }
 
 

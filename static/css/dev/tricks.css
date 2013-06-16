@@ -18,6 +18,7 @@
     padding:5px 10px 10px 10px;
     background-color:#ffffff;
     border:1px solid #E8E9EB;
+    overflow:hidden;
 }
 
 .trick .trick__title {
@@ -106,9 +107,132 @@
     float:left;
 }
 
-
 .header .tricks_filter {
     top:24px;
 }
+
+
+/* Trick page */
+.trick_page {
+    margin-top:10px;
+}
+
+.trick__users {}
+
+.trick__info {
+    background: white;
+    padding: 0px 10px;
+    border-left:2px solid #ccc;
+}
+
+.trick__video_holder {position:relative;}
+
+.trick__video_holder i {
+    position: absolute;
+    left: 40%;
+    top: 30%;
+    color:red;
+    z-index:10;
+    text-shadow:1px 1px 10px #000;
+    cursor:pointer;
+}
+
+.trick__video_holder i:hover {
+    color:rgb(189, 45, 45);
+}
+
+.trick__info__videos {
+    margin-top:0.4em;
+    list-style:none;
+}
+
+.trick__info__videos li {
+    text-align:center;
+    cursor:pointer;
+}
+
+.trick__info__videos .video_thumb {
+    padding:0;
+    margin-bottom:5px;
+    cursor:pointer;
+}
+
+.trick__info__videos .video_thumb img {
+    border:2px solid #fff;
+}
+
+.trick__info__videos .selected_video img {
+    border-color:#B55A5A;
+}
+
+.trick__info__videos .video_add {
+    text-align:center;
+    color:red;
+}
+
+.trick__users td {
+    line-height:40px; 
+    height:40px; 
+    padding:0;
+}
+
+.trick__users td.trick__breaker {
+    line-height:1; 
+    height:1px; 
+}
+
+.trick__user {background:white;}
+
+.trick__users td.trick__user_cones {
+    background:#AEAEAE; 
+    text-align:center;
+    width:40px; 
+    color:white;
+}
+
+.trick__users td.trick__user_video_url a {
+    padding-left: 5px;
+    color:green;
+    text-shadow:1px 1px 2px #242424;
+}
+
+.trick__users td.trick__user_info {
+    text-align:right; 
+    padding-right:10px; 
+    vertical-align:top;
+}
+
+.trick__users td.trick__user_info a {
+    display:inline-block;
+    height:40px;
+    overflow:hidden;
+}
+
+.trick__users td.trick__user_info .trick__user_status {
+    height:10px; 
+    line-height:10px; 
+    margin-top:-12px; 
+    font-size:10px;
+}
+
+.trick__users td.trick__user_photo {
+    width:40px;
+    /*border-right:2px solid #ccc;*/
+    background-repeat:no-repeat;
+    background-position:0 0;
+    -moz-background-size:cover;
+    -o-background-size:cover;
+    -webkit-background-size:cover;
+    background-size:cover;
+}
+
+.trick__user_king {background:#B55A5A;}
+
+.trick__user_king a, 
+.trick__user_king .trick__user_status {color:#fff;}
+
+.trick__user_king a:hover {color:#f4f4f4;}
+
+tr.no_one td {padding-left:10px;}
 
 

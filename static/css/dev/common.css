@@ -37,13 +37,10 @@ p a, p a:visited {
     cursor:pointer;
 }
 
-<<<<<<< Updated upstream
-=======
 .header .feedback:hover {
     color:red;
 }
 
->>>>>>> Stashed changes
 .header .content {
     max-width:770px;
     margin:10px auto;

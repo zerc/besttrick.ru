@@ -15,10 +15,6 @@ Besttrick.module('Tricks.Models', function (Models, App, Backbone, Marionette, $
             video_url: ''
         },
 
-         wrappers: {
-            'user': App.Users.Models.User
-        },
-
         schema: {
             cones: {
                 type        : 'Number', 
@@ -54,6 +50,7 @@ Besttrick.module('Tricks.Models', function (Models, App, Backbone, Marionette, $
             score       : 0,
             wssa_score  : 0,
             tags        : [],
+            checkins    : []
         },
 
         wrappers: {
@@ -61,7 +58,8 @@ Besttrick.module('Tricks.Models', function (Models, App, Backbone, Marionette, $
             'user_checkin': Models.Checkin
         },
 
-        methods: ['get_thumb', 'get_title', 'get_href'],
+        props: ['get_thumb', 'get_title', 'get_href'],
+        methods: ['large_img'],
 
         get_thumb: function () {
             return '/static/images/' + this.get('thumb');
@@ -79,11 +77,24 @@ Besttrick.module('Tricks.Models', function (Models, App, Backbone, Marionette, $
             return '/tricks/trick' + this.get('id')
         },
 
-        toJSON: function() {
-            var attrs = Backbone.Model.prototype.toJSON.call(this);
-            this.extend_methods(attrs)
-            console.log(attrs);
-            return attrs;
+        large_img: function (full) {
+            var relative_path = '/static/images/trick' + this.id + '-0.jpg';
+
+            return  full ? 'http://' + location.host + ':' + location.port + relative_path
+                         : relative_path;
+        },
+        
+        get_checkins: function () {
+            var self = this,
+                ch = new Models.Checkins();
+
+            ch.fetch({
+                data: 'fname=trick&id=' + this.id,
+                success: function (checkins) {
+                    self.set('checkins', checkins, {silent: true});
+                    self.trigger('checkins:loaded');
+                }
+            });
         }
     });
 
@@ -95,4 +106,15 @@ Besttrick.module('Tricks.Models', function (Models, App, Backbone, Marionette, $
           return resp.tricks_list;
         },
     });
+
+    Models.Checkins = Backbone.Collection.extend({
+        url: '/checkins/',
+        model: Models.Checkin,
+
+        parse: function(resp, xhr) {
+          return resp.checkins;
+        }
+    });
+
+
 });

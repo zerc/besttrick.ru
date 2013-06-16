@@ -102,15 +102,20 @@ static['js_dev'] =  map(lambda x: 'js/dev/%s.js' % x, (
     'libs/kickstart',
 
     'main',
+    'common',
     'users/models',
     'tricks/models',
+    'models',
     'tricks/views',
+    'tricks/views.checkins',
     'users/views',
+    'users/views.checkins',
 ))
 static['js_dev'].insert(0, 'js/jquery.min.js')
 static['js_dev'].insert(1, 'js/jquery.reject.js')
 static['js_dev'].insert(5, 'js/backbone-forms.js')
 static['js_dev'].insert(6, 'js/bootstrap-tooltip.js')
+static['js_dev'].insert(6, 'js/jquery.cookie.js')
 
 static['css_dev'] = map(lambda x: 'css/dev/%s.css' % x, (
     'kickstart/kickstart',
