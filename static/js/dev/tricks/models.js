@@ -7,7 +7,9 @@
 
 Besttrick.module('Tricks.Models', function (Models, App, Backbone, Marionette, $, _) {
     Models.Checkin = App.Common.Model.extend({
-        url: '/checkin/',
+        url: function () {
+            return '/tricks/trick' + this.trick_id + '/check/';
+        },
 
         defaults: {
             cones: 0,
@@ -115,6 +117,4 @@ Besttrick.module('Tricks.Models', function (Models, App, Backbone, Marionette, $
           return resp.checkins;
         }
     });
-
-
 });

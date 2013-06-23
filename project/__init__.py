@@ -110,6 +110,7 @@ static['js_dev'] =  map(lambda x: 'js/dev/%s.js' % x, (
     'tricks/views.checkins',
     'users/views',
     'users/views.checkins',
+    'users/views.rating',
 ))
 static['js_dev'].insert(0, 'js/jquery.min.js')
 static['js_dev'].insert(1, 'js/jquery.reject.js')

@@ -6,23 +6,27 @@
  */
 
 Besttrick.module('Tricks.Views', function (Views, App, Backbone, Marionette, $, _) {
-    Views.Checkin = Marionette.ItemView.extend({
-        className: 'trick__user',
-        tagName: 'tr',
-        template: '#checkin'
-    });
-
-    Views.Checkins = Marionette.CollectionView.extend({
-        tagName: 'table',
-        itemView: Views.Checkin,
-
-        // TODO: mb rewrite table>tr>td to div?
-        appendHtml: function (collectionView, itemView, index) {
-            if (index === 0) itemView.$el.addClass('trick__user_king');
-            this.$el.append(itemView.el);
-            if (index !== this.collection.length-1) {
-                this.$el.append('<tr><td colspan="4" class="trick__breaker">&nbsp;</td></tr>');
+    Views.Checkins = App.Common.ItemsView.extend({
+        get_left_side: function (model) {
+            return model.get('cones');
+        },
+        get_left_side_two: function (model) {
+            if (model.get('video_url') && model.get('approved') === 1) {
+                return '<a class="has_video video_approved" href="'+model.get('video_url')+'" target="_blank" title="есть видео подтверждение">\
+                            <i class="icon-facetime-video"></i>\
+                        </a>'
             }
+            return ''    
+        },
+        get_middle_side_content: function (model) {
+            return {
+                href: model.get('user').get_profile_url(),
+                title: model.get('user').get('nick')
+            }
+        },
+        get_middle_side_hint: function (model) {},
+        get_right_side: function (model) {
+            return '<img width="50" src="' + model.get('user').get("photo") + '" />';
         }
     });
 
@@ -47,15 +51,16 @@ Besttrick.module('Tricks.Views', function (Views, App, Backbone, Marionette, $, 
 
         initialize: function (args) {
             Backbone.Form.prototype.initialize.call(this, args);
-            
-            this.model.on('change', function () {
-                this.model.save();
-                this.render()
-            }, this);
+            this.parent_view = args.parent;
+
+            // this.model.on('change', function () {
+            //     this.model.save();
+            //     this.render()
+            // }, this);
 
             this.on('after:render', function () {
-                var w = args.parent.width(),
-                    h = args.parent.height();
+                var w = args.parent.$el.width(),
+                    h = args.parent.$el.height();
                 this.$el.width(w+2).height(h-21);
             }, this);
         },
@@ -64,17 +69,23 @@ Besttrick.module('Tricks.Views', function (Views, App, Backbone, Marionette, $, 
             var self = this,
                 errors = this.commit();
 
-            if (!errors) { return false; }
+            if (errors) {
+                _.each(errors, function (k, v) {
+                    self.fields[v].editor.$el.addClass('error')
+                        .tooltip('disable').errortip('enable').errortip('show')
+                        .one('blur, keydown', function () {
+                            $(this).errortip('hide').errortip('disable').tooltip('enable');
+                        });
+                });
+                return false;
+            }
 
-            _.each(errors, function (k, v) {
-                self.fields[v].editor.$el.addClass('error')
-                    .tooltip('disable').errortip('enable').errortip('show')
-                    .one('blur, keydown', function () {
-                        $(this).errortip('hide').errortip('disable').tooltip('enable');
-                    });
-            });
-
-            return false;
+            if (this.model.hasChanged()) {
+                this.model.save();
+                this.close();
+                this.parent_view.model.trigger('change');
+                return false;
+            }
         },
 
         close: function () {

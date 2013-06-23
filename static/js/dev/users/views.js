@@ -83,20 +83,26 @@ Besttrick.module('Users.Views', function (Views, App, Backbone, Marionette, $, _
 
             this.listenTo(this, 'render', function () {
                 this.model.get_checkins();
-            });
-
-            this.listenTo(this.model, 'change', function () {
-                this.model.save(null, {
-                    success: function (model, response) { self.show_notice('Данные обновлены', 'success'); },
-                    error: function (model, response) { self.show_notice(response.text, 'error'); }
-                });
-            }, this);
-            
+            });           
         },
 
         save: function () {
-            return this.form.commit();
+            var self = this,
+                errors = this.form.commit();
+
+            if (errors) return self.show_notice('Ошибка', 'error');
+
+            this.model.save(null, {
+                success: function (model, response) { self.show_notice('Данные обновлены', 'success'); },
+                error: function (model, response) { self.show_notice(response.statusText, 'error'); }
+            });
         }
     });
 
+    Views.UserProfile = Views.User.extend({
+        render_form: function () {
+            this.form = new Backbone.Form({model: this.model}).render();            
+            this.$el.find('form').replaceWith(this.form.$el);            
+        }
+    });
  });

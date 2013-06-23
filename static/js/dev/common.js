@@ -63,10 +63,41 @@ Besttrick.module('Common', function (Common, App, Backbone, Marionette, $, _) {
         },
 
         toJSON: function() {
-            var attrs = Backbone.Model.prototype.toJSON.call(this);
+            var attrs = Backbone.Model.prototype.toJSON.call(this);            
             this._self_extend(attrs)
             return attrs;
         }
+    });
+
+    Common.ItemsView = Marionette.ItemView.extend({
+        // TODO: add dom elements constructors: make_img({src:asda.jpg, title:adaa}), make_link
+        template: '#items',
+        tagName: 'table',
+        className: 'items',
+
+        serializeData: function(){
+            var data = {show_first: true};
+
+            data.items = this.collection.map(function (item) {
+                return {
+                    left_side: this.get_left_side(item),
+                    left_side_two: this.get_left_side_two(item),
+                    middle_side_content: this.get_middle_side_content(item),
+                    middle_side_hint: this.get_middle_side_hint(item),
+                    right_side: this.get_right_side(item)
+                }
+            }, this);
+
+            _.extend(data, this.options);
+
+            return data;
+        },
+
+        get_left_side: function (model) {},
+        get_left_side_two: function (model) {},
+        get_middle_side_content: function (model) {},
+        get_middle_side_hint: function (model) {},
+        get_right_side: function (model) {}
     });
 });
 

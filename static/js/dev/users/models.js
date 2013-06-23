@@ -7,7 +7,13 @@
 
 Besttrick.module('Users.Models', function (Models, App, Backbone, Marionette, $, _) {
     Models.User = App.Common.Model.extend({
-        url: '/user/',
+        url: function () {
+            return '/users/user' + this.id + '/';
+        },
+
+        parse: function (response) {
+            return response.user;
+        },
 
         defaults: {
             uid      : '',
@@ -105,9 +111,9 @@ Besttrick.module('Users.Models', function (Models, App, Backbone, Marionette, $,
             return '#!users/user' + this.id;
         },
 
-        parse: function(resp, xhr) {
-          return resp.user;
-        },
+        // parse: function(resp, xhr) {
+        //   return resp.user;
+        // },
 
         // TODO: make this better
         get_formatted_nick: function () {
@@ -121,11 +127,20 @@ Besttrick.module('Users.Models', function (Models, App, Backbone, Marionette, $,
 
             ch.fetch({
                 data: 'fname=user&id=' + this.id,
-                success: function (checkins) {
+                success: function (checkins, a, c) {
                     self.set('checkins', checkins, {silent: true});
                     self.trigger('checkins:loaded');
                 }
             });
+        }
+    });
+
+    Models.Users = Backbone.Collection.extend({
+        url: '/users/',
+        model: Models.User,
+
+        parse: function(resp, xhr) {
+          return resp.users;
         }
     });
 });

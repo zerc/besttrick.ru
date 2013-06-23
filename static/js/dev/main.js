@@ -34,6 +34,8 @@ Besttrick.module('Main', function (Main, App, Backbone, Marionette, $, _) {
             'filter=:tags_selected': 'filter',
             '!trick:trick': 'trick_page',
             '!u': 'user_page',
+            '!users/user:user_id': 'user_profile_page',
+            '!users/rating' : 'users_rating'
         }
     });
 
@@ -44,10 +46,33 @@ Besttrick.module('Main', function (Main, App, Backbone, Marionette, $, _) {
         user ? App.user_container.show(new App.Users.Views.UserBar({model: user}))
              : App.user_container.show(new App.Users.Views.LoginBar());
 
+        this.user_profile_page = function (user_id) {
+            var user = new App.Users.Models.User({id: user_id});
+            App.menu_container.reset();
+            user.fetch({
+                success: function (model) {
+                    App.main.show(new App.Users.Views.UserProfile({model: model}));
+                }
+            });
+        },
+
         this.user_page = function () {
             if (!user) App.router.navigate('!');
             App.menu_container.reset();
             App.main.show(new App.Users.Views.User({model: user}))
+        },
+
+        this.users_rating = function () {
+            var users = new App.Users.Models.Users();
+            App.menu_container.reset();
+            users.fetch({
+                data: 'sort=rating,1',
+                success: function (collection) {
+                    App.main.show(new App.Users.Views.UsersRating({
+                        collection: collection
+                    }));
+                }
+            })
         },
 
         this._render_index = function () {

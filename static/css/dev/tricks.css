@@ -170,49 +170,15 @@
     color:red;
 }
 
-.trick__users td {
-    line-height:40px; 
-    height:40px; 
-    padding:0;
-}
 
-.trick__users td.trick__breaker {
-    line-height:1; 
-    height:1px; 
-}
-
-.trick__user {background:white;}
-
-.trick__users td.trick__user_cones {
-    background:#AEAEAE; 
-    text-align:center;
-    width:40px; 
-    color:white;
-}
-
-.trick__users td.trick__user_video_url a {
+.item td.left_side_two a {
     padding-left: 5px;
     color:green;
     text-shadow:1px 1px 2px #242424;
 }
 
-.trick__users td.trick__user_info {
-    text-align:right; 
-    padding-right:10px; 
-    vertical-align:top;
-}
-
-.trick__users td.trick__user_info a {
-    display:inline-block;
-    height:40px;
-    overflow:hidden;
-}
-
-.trick__users td.trick__user_info .trick__user_status {
-    height:10px; 
-    line-height:10px; 
-    margin-top:-12px; 
-    font-size:10px;
+.trick__users .items {
+    margin-top:0;
 }
 
 .trick__users td.trick__user_photo {
@@ -225,14 +191,5 @@
     -webkit-background-size:cover;
     background-size:cover;
 }
-
-.trick__user_king {background:#B55A5A;}
-
-.trick__user_king a, 
-.trick__user_king .trick__user_status {color:#fff;}
-
-.trick__user_king a:hover {color:#f4f4f4;}
-
-tr.no_one td {padding-left:10px;}
 
 

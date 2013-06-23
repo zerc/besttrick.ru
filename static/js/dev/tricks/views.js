@@ -85,15 +85,16 @@
 
         render_form: function () {
             var model = this.model.get('user_checkin') || new App.Tricks.Models.Checkin()
+            model.trick_id = this.model.get('id');
+            // model.set('trick', this.model, {silent: true});
+
             var tmp = new Views.CheckinForm({
                 model: model, 
-                parent: this.$el,
+                parent: this,
                 template: _.template($('#checkin_form').html())
             }).render();
 
-            this.$el.append(
-                tmp.el
-            )
+            this.$el.append(tmp.el);
             return false;
         }
     });

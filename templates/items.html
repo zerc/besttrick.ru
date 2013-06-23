@@ -1,0 +1,18 @@
+<% _.each(items, function (item, i) { %>
+    <tr class="item<%= (i === 0 && show_first) ? ' first_item' : '' %>">
+    <td class="left_side"><%= item.left_side %></td>
+    <td class="left_side_two"><%= item.left_side_two %></td>
+    <td class="middle_side">
+        <div class="content">
+            <% if (_.isObject(item.middle_side_content)) { %>
+                <a href="<%= item.middle_side_content.href %>" title="<%= item.middle_side_content.title %>">
+                    <%= item.middle_side_content.text || item.middle_side_content.title %>
+                </a>
+            <% } %>
+        </div>
+        <div class="hint"><%= item.middle_side_hint %></div>
+    </td>
+    <td class="right_side"><%= item.right_side %></td>
+    </tr>
+    <tr><td colspan="4" class="breaker">&nbsp;</td></tr>
+<% }) %>

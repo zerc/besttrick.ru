@@ -167,4 +167,84 @@ p a, p a:visited {
     background-color: rgb(255, 0, 0);;
     background-image: -webkit-gradient(linear, 0% 0%, 0% 100%, from(transparent), to(#000));
 }
->>>>>>> Stashed changes
+
+
+.items {
+    width:auto;
+    max-width:845px;
+    margin-top:25px;
+    margin:15px auto 0 auto;
+}
+
+.items td {
+    line-height:40px; 
+    height:40px; 
+    padding:0;
+    border:0;
+}
+
+.items td.breaker {
+    line-height:1; 
+    height:1px; 
+}
+
+.item {
+    background:#ffffff;
+    height:40px;
+    margin-bottom:10px;
+}
+
+.items tr.first_item {
+    background:#B55A5A;
+}
+
+.items tr.first_item a, 
+.items tr.first_item {color:#fff;}
+
+.items tr.first_item a:hover {color:#f4f4f4;}
+
+.item .left_side {
+    float:left;
+    background:#cccccc;
+    color:#ffffff;
+    width:50px;
+    height:40px;
+}
+
+.item .right_side {
+    float:right;
+    width:50px;
+    height:40px;
+    background:red;
+    overflow:hidden;
+}
+
+.item .right_side img {
+    height:50px;
+    width:auto;
+}
+
+.item .left_side {
+    background:#ccc;
+    color:#fff;
+    text-align:center;
+}
+
+.item .left_side_two {}
+
+.items .middle_side {
+    width:100%;
+    text-align:right;
+}
+
+.item .content,
+.item .hint {
+    height:20px;
+    line-height:20px;
+    padding-right:5px;
+    overflow:hidden;
+}
+
+.item .hint {
+    font-size:10px;
+}
