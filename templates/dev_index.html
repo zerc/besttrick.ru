@@ -100,15 +100,15 @@
 {{ include_template('user_page') }}
 {{ include_template('user_page_checkin') }}
 {{ include_template('items') }}
+{{ include_template('feedback_form') }}
 
 
 <div class="container">
     <div class="header" id="header">
         <div class="content">
             <a href="#!" class="logo" title="Видео трюков на роликах">BestTrick</a>
-            <i title="Обратная связь" id="feedback" class="icon-comment-alt pull-left feedback"></i>
-            
-            
+            <i id="feedback" class="icon-comment-alt pull-left feedback"></i>
+
             <div id="user_container">{{ user_logged() }}</div>
             <div id="menu_container"></div>
 
@@ -137,10 +137,21 @@
     </div>
     <script type="text/javascript">
         $(function () {
+            var feedback_form = $('#feedback_form');
+
             Besttrick.start({
                 tricks: {{ tricks|safe }},
                 tags: {{ tags|safe }},
                 user: {{ user_json|safe }},
+
+                feedback_opts: {
+                    'trigger': 'click',
+                    'placement': 'bottom',
+                    'control': $('#feedback'),
+                    'form': feedback_form,
+                    'title':feedback_form.html(),
+                    'template': '<div class="tooltip" id="no_opacity"><div class="tooltip-arrow"></div><div class="tooltip-inner"></div></div>'
+                }
             });
         });
     </script>

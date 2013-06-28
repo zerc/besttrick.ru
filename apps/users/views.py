@@ -118,7 +118,7 @@ def list_of_users():
 def users():
     is_admin = g.user and g.user['admin']
     # add validation
-    sort, direction = request.args.get('sort', '_id,-1').split(',') 
+    sort, direction = request.args.get('sort', 'id,-1').split(',') 
 
     def _(u):
         u.patched

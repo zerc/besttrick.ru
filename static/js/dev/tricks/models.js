@@ -60,6 +60,13 @@ Besttrick.module('Tricks.Models', function (Models, App, Backbone, Marionette, $
             'user_checkin': Models.Checkin
         },
 
+        parse: function (obj) {
+            obj.best_checkin = new Models.Checkin(obj.best_checkin);
+            if (obj.user_checkin)
+                obj.user_checkin = new Models.Checkin(obj.user_checkin);
+            return App.Common.Model.prototype.parse.call(this, obj);
+        },
+
         props: ['get_thumb', 'get_title', 'get_href'],
         methods: ['large_img'],
 

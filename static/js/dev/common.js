@@ -74,9 +74,14 @@ Besttrick.module('Common', function (Common, App, Backbone, Marionette, $, _) {
         template: '#items',
         tagName: 'table',
         className: 'items',
+        empty_text: 'Нет элементов для отображения',
 
         serializeData: function(){
-            var data = {show_first: true};
+            var data = {
+                extra_class: '',
+                show_first: true,
+                empty_text: this.empty_text
+            };
 
             data.items = this.collection.map(function (item) {
                 return {
@@ -88,7 +93,7 @@ Besttrick.module('Common', function (Common, App, Backbone, Marionette, $, _) {
                 }
             }, this);
 
-            _.extend(data, this.options);
+            _.extend(data, this.options, this.extras);
 
             return data;
         },
@@ -97,8 +102,79 @@ Besttrick.module('Common', function (Common, App, Backbone, Marionette, $, _) {
         get_left_side_two: function (model) {},
         get_middle_side_content: function (model) {},
         get_middle_side_hint: function (model) {},
-        get_right_side: function (model) {}
+        get_right_side: function (model) {},
+
+        extras: {
+            right_side_class: ' icon-user icon-2x'
+        }
     });
+
+    Common.init_feedback = function (opts, user) {
+        var $control = opts.control;
+        $control.tooltip(opts);
+
+        // repair this bug. Dont work click event on control element!
+        $control.toggle(
+            function () { $(this).tooltip('show'); },
+            function () { $(this).tooltip('hide'); }
+        )
+
+        App.send_feedback = function (form) {
+            var success_html = '\
+                <div class="success clearfix">\
+                    <i class="icon-ok-circle icon-large pull-left"></i>\
+                    Ваш отзыв успешно отправлен.\
+                </div>',
+                error_html = '\
+                <div class="error clearfix">\
+                    <i class="icon-ban-circle icon-large pull-left"></i>\
+                    Произошла непредвиденная ошибка.\
+                </div>',
+                data = {},
+                errors = 0;
+
+            _.map(form.find('input, textarea'), function (el) {
+                var $el = $(el);
+                if (!$el.val()) {
+                    $el.addClass('error');
+                } else {
+                    data[$el.attr('id')] = $el.val();
+                    $el.removeClass('error');
+                }
+            });
+
+            if (form.find('.error').length) return false;
+            
+            data.more_info = _.escape(JSON.stringify({
+                Screen  : window.screen.width + 'x' + window.screen.height,
+                Window  : window.outerWidth   + 'x' + window.outerHeight,
+                Browser : $.browser
+            }));
+
+            if (user) {
+                data.user = user.get('nick') + ' (' + user.get('id') + ')';
+            }
+
+            $.ajax({
+                url: '/feedback/',
+                data: data,
+                context: this,
+                type: 'POST',
+                success: function () { 
+                    form.html(success_html);
+                    setTimeout(function () {
+                        $control.click();
+                    }, 2000);
+                },
+                error: function () {
+                    form.html(error_html);
+                    setTimeout(function () {
+                        $control.click();
+                    }, 2000);
+                }
+            });
+        }
+    }
 });
 
 Backbone.Form.validators.errMessages = {

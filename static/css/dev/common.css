@@ -66,6 +66,10 @@ p a, p a:visited {
     background-color:#ffffff;
 }
 
+.grid {
+    max-width:845px;
+}
+
 /* From Bootstrap: https://github.com/twitter/bootstrap */
 .tooltip {
     position: absolute;
@@ -76,7 +80,6 @@ p a, p a:visited {
     opacity: 0;
     filter: alpha(opacity=0);
     visibility: visible;
-
 }
 
 .tooltip.in {
@@ -170,7 +173,7 @@ p a, p a:visited {
 
 
 .items {
-    width:auto;
+    width:100%;
     max-width:845px;
     margin-top:25px;
     margin:15px auto 0 auto;
@@ -181,6 +184,10 @@ p a, p a:visited {
     height:40px; 
     padding:0;
     border:0;
+}
+
+.items .empty td {
+    text-align:center;
 }
 
 .items td.breaker {
@@ -215,11 +222,20 @@ p a, p a:visited {
     float:right;
     width:50px;
     height:40px;
-    background:red;
     overflow:hidden;
+    position:relative;
+}
+
+.item .icon-user {
+    color:#ccc;
+    text-align:center;
+    border-left:1px solid #cccccc;
 }
 
 .item .right_side img {
+    position:absolute; 
+    left:0;
+    top:0;
     height:50px;
     width:auto;
 }
@@ -247,4 +263,44 @@ p a, p a:visited {
 
 .item .hint {
     font-size:10px;
+}
+
+
+/* Feedback form */
+form.feedback_form {
+    text-align:left;
+}
+
+form.feedback_form textarea,
+form.feedback_form input {
+    width:100%;
+    margin-bottom:10px;
+}
+
+form.feedback_form button {
+    margin-bottom:10px;
+}
+
+form.feedback_form textarea {
+    height:100px;
+}
+
+form.feedback_form textarea.error {
+    border-color:red;
+}
+
+#no_opacity {
+    opacity:1;
+}
+
+#no_opacity .tooltip-inner {
+    background:#5A5A5A;
+}
+
+.success .icon-ok-circle {
+    color:#11D511;
+}
+
+.error .icon-ban-circle {
+    color:red;
 }

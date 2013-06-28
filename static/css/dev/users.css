@@ -2,6 +2,11 @@
     All about users styles here
 */
 
+.user_container {
+    width:70%;
+    text-align:right;
+}
+
 .user_container .user_rating {
     background:#AEAEAE;
     padding:2px 5px;
@@ -54,4 +59,8 @@
 
 .user__data .notice {
     margin:25px 0 -25px 0;
+}
+
+.users_rating {
+    width:auto;
 }

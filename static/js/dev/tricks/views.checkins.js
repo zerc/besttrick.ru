@@ -7,6 +7,8 @@
 
 Besttrick.module('Tricks.Views', function (Views, App, Backbone, Marionette, $, _) {
     Views.Checkins = App.Common.ItemsView.extend({
+        empty_text: 'Еще никто не делает этот трюк',
+
         get_left_side: function (model) {
             return model.get('cones');
         },
@@ -53,16 +55,24 @@ Besttrick.module('Tricks.Views', function (Views, App, Backbone, Marionette, $, 
             Backbone.Form.prototype.initialize.call(this, args);
             this.parent_view = args.parent;
 
-            // this.model.on('change', function () {
-            //     this.model.save();
-            //     this.render()
-            // }, this);
-
             this.on('after:render', function () {
                 var w = args.parent.$el.width(),
                     h = args.parent.$el.height();
                 this.$el.width(w+2).height(h-21);
             }, this);
+        },
+
+        show_error: function (field, error_text) {
+            var $el = this.fields[field].editor.$el;
+            $el.data('error-title', error_text)
+
+            $el.addClass('error')
+                .tooltip('disable').errortip('enable')
+                .errortip('show')
+                .one('blur, change', function () {
+                    $(this).errortip('hide').errortip('disable').tooltip('enable')
+                           .removeClass('error').data('error-title', null);
+                });
         },
 
         save: function () {
@@ -71,19 +81,23 @@ Besttrick.module('Tricks.Views', function (Views, App, Backbone, Marionette, $, 
 
             if (errors) {
                 _.each(errors, function (k, v) {
-                    self.fields[v].editor.$el.addClass('error')
-                        .tooltip('disable').errortip('enable').errortip('show')
-                        .one('blur, keydown', function () {
-                            $(this).errortip('hide').errortip('disable').tooltip('enable');
-                        });
+                    self.show_error(v);
                 });
                 return false;
             }
 
             if (this.model.hasChanged()) {
-                this.model.save();
-                this.close();
-                this.parent_view.model.trigger('change');
+                this.model.save(null, {
+                    success: function () {
+                        self.close();
+                        // self.parent_view.model.trigger('change');
+                        self.parent_view.model.fetch();
+                    },
+                    error: function (model, response) {
+                        var error = JSON.parse(response.responseText);
+                        self.show_error(error.field, error.text);
+                    }
+                });
                 return false;
             }
         },

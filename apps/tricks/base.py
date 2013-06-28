@@ -14,11 +14,12 @@ from gdata.youtube import service
 
 from flask import request, g
 from werkzeug.routing import BaseConverter, ValidationError
+from mongokit.schema_document import ValidationError
 
 from project import app, markdown, checkin_signal
 from apps.notify import send_notify, CHECKTRICK_WITH_VIDEO
 from apps.users import get_user, User
-from apps.common import grouped_stats
+from apps.common import grouped_stats, ConvertTypeError
 
 
 class TrickConverter(BaseConverter):
@@ -98,20 +99,7 @@ def get_tags(*args, **kwargs):
 
 def get_trick(trick_id, simple=True):
     trick_id = int(trick_id)
-    trick = app.db.trick.find_one({'_id': trick_id})
-
-    rows = grouped_stats('user', {'trick': trick_id})
-
-    for row in rows:
-        row['user'] = User(row['user']).patched.hide
-
-    trick['users'] = sorted(rows, key=lambda x: x['cones'], reverse=True)
-
-    # патчу трюк, как-то объеденить функции get_trick и get_tricks
-    trick['descr_html'] = markdown(trick['descr'])
-    trick['id'] = trick.pop('_id')
-
-    return trick
+    return app.connection.Trick.find_one({'_id': trick_id})
 
 
 def get_tricks(*args, **kwargs):
@@ -121,7 +109,6 @@ def get_tricks(*args, **kwargs):
         * к каждому трюку добавляется лучший чекин 
         * результат пользователя (если тот авторизован)
         * сколько пользователей делает этот трюк
-    Трюк в данном случае - это просто словарь с данными.
     Если передан аргумент simple - просто список трюков возвращает.
     """
     #TODO: нужно как-то срефакторить, функция слишком большая и непонятная
@@ -209,18 +196,14 @@ def checkin_user(trick_id, user_id, update_data):
     В случае успешного чекина возвращает словарь update_data
     (т.к. он мог быть модифицирован под нужды чекина).
 
-    Или же возвращает кортеж (u'Текст ошибки', http_код_ошибки)
+    Или же райзит ошибку.
     """
-    #TODO: внести валидацию непосредственно в модель (вадидаторы написать)
-    #      отлавливать ошибки все дела
     try:
-        trick_id = int(trick_id)
-    except (ValueError, TypeError):
-        return u'Incorrect trick_id = %s' % trick_id, 400
-
-    trick = app.db.trick.find_one({'_id': trick_id})
-    if not trick:
-        return u'Unknow trick with id = %s' % trick_id, 400
+        trick = app.db.trick.find({'_id': trick_id}).next()
+    except StopIteration:
+        raise ConvertTypeError(u'Unknow trick with id = %s' % trick_id)
+    except TypeError, e:
+        raise ConvertTypeError(u'Invalid trick_id = %s' % trick_id)
 
     def _checkin(update_data):
         update_data.update({'user': user_id, 'trick': trick_id})
@@ -228,11 +211,10 @@ def checkin_user(trick_id, user_id, update_data):
         trick_user.update(update_data)
 
         try:
-            trick_user.validate()
-        except BaseException, e:
-            return str(e), 400
+            trick_user.save(validate=True)
+        except ValidationError, e:
+            raise ConvertTypeError(str(e))
 
-        trick_user.save()
         send_notice_about_video(trick, user_id, update_data)
         checkin_signal.send(trick_user)
         return update_data
@@ -245,7 +227,7 @@ def checkin_user(trick_id, user_id, update_data):
 
     # поддерживаем только положительную динамику
     if prev_checkin['cones'] >= update_data['cones']:
-        return u'Ни шагу назад!', 400
+        raise ConvertTypeError(u'Ни шагу назад!', 'cones')
 
     # пользоавтель добавил видос - припишем его к старому чекину
     if prev_checkin['cones'] == update_data['cones']:
@@ -265,7 +247,7 @@ def checkin_user(trick_id, user_id, update_data):
 
         return _checkin(update_data)
 
-    return u'Неизвестная ошибка чекина', 500
+    raise ConvertTypeError(u'Неизвестная ошибка')
 
 
 def update_checktrick_from_cookie(user_id):

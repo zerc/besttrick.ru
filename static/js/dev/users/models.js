@@ -12,7 +12,9 @@ Besttrick.module('Users.Models', function (Models, App, Backbone, Marionette, $,
         },
 
         parse: function (response) {
-            return response.user;
+            return response.user ? 
+                        response.user : 
+                        App.Common.Model.prototype.parse.call(this, response);
         },
 
         defaults: {

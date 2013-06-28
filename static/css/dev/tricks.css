@@ -21,6 +21,14 @@
     overflow:hidden;
 }
 
+.tricks .user_do_this {
+    background:#FFE5E5;
+}
+
+.tricks .user_do_this .icon-ok-circle {
+    color:red;
+}
+
 .trick .trick__title {
     display:block;
     color: #333;
@@ -159,6 +167,8 @@
 
 .trick__info__videos .video_thumb img {
     border:2px solid #fff;
+    width:100%;
+    max-width:124px;
 }
 
 .trick__info__videos .selected_video img {

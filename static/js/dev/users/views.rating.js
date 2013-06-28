@@ -4,6 +4,8 @@
 
 Besttrick.module('Users.Views', function (Views, App, Backbone, Marionette, $, _) {
     Views.UsersRating = App.Common.ItemsView.extend({
+        className: 'items users_rating grid',
+
         get_left_side: function (model) {
             return model.get('rating');
         },

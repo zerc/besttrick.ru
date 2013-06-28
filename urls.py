@@ -33,7 +33,7 @@ url('/youtube_reciver/',        'youtube_reciver',  bt.youtube_reciver, methods=
 
 ### Trick urls
 url('/tricks/',                              'tricks',                   tricks.tricks_list)
-url('/tricks/trick<trick:trick>/',           'tricks_trick',             tricks.trick_page, methods=['GET'])
+url('/tricks/trick<trick:trick>/',           'tricks_trick',             tricks.get_trick_, methods=['GET'])
 url('/tricks/trick<trick:trick>/',           'mobile_tricks_trick',      tricks.trick_page, methods=['GET'], subdomain='m')
 url('/tricks/trick<int:trick_id>/check/',    'tricks_check',             tricks.check, methods=['PUT', 'POST'])
 url('/check/',                               'mobile_checkin_page',      tricks.checkin_page, methods=['GET', 'POST'], subdomain='m')

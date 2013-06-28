@@ -1,0 +1,10 @@
+<form class="feedback_form">
+	<label for="text">Текст сообщения</label>
+	<textarea id="text" placeholder="Замечания, пожелания, хвала или порицание"></textarea>
+
+	{% if not g.user %}
+		<input type="text" id="contact" placeholder="Как с вами связаться">
+	{% endif %}
+	
+	<button class="medium" onclick="Besttrick.send_feedback($('form.feedback_form'));return false;">Отправить отзыв</button>
+</form>

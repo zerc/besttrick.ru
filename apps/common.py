@@ -4,6 +4,7 @@ from pytils.numeral import get_plural
 import simplejson as json
 from functools import wraps
 from mongokit import Document
+from mongokit.schema_document import ValidationError
 from datetime import datetime
 from project import app
 
@@ -154,6 +155,16 @@ class classproperty(object):
         return self.getter(owner)
 
 
+class ConvertTypeError(BaseException):
+    def __init__(self, text, field=None, *args, **kwargs):
+        self.field = field
+        self.text = text
+        super(ConvertTypeError, self).__init__(*args, **kwargs)
+
+    def to_json(self):
+        return json.dumps({'field': self.field, 'text': self.text})
+
+
 class BaseModel(Document):
     @classproperty
     def __database__(self):
@@ -162,3 +173,26 @@ class BaseModel(Document):
     @classproperty
     def migrate(cls):
         return cls.migration_handler(cls).migrate_all(app.db[cls.__collection__])
+
+    def _convert_types(self, query):
+        for k, v in query.items():
+            if k == '_id' or v is None: continue
+            _type = self.structure[k]
+            if not isinstance(_type, type) or issubclass(_type, type(v)) or isinstance(v, dict): continue
+            try:
+                query[k] = _type(v)
+            except (TypeError, ValueError):
+                raise ConvertTypeError('Invalid type', k)
+        return query
+
+    def find(self, *args, **kwargs):
+        if args: self._convert_types(args[0]) # be ware side effect
+        return super(BaseModel, self).find(*args, **kwargs)
+
+    # def find_one(self, *args, **kwargs):
+    #     if args: self._convert_types(args[0]) # be ware side effect
+    #     return super(BaseModel, self).find_one(*args, **kwargs)
+
+    def save(self, *args, **kwargs):
+        self._convert_types(self)
+        return super(BaseModel, self).save(*args, **kwargs)

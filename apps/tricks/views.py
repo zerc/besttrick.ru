@@ -6,7 +6,7 @@ from flask import render_template, request, jsonify, session, redirect, url_for,
 from flask.views import View
 from project import app, markdown
 
-from apps.common import grouped_stats, allow_for_robot, is_robot, render_to
+from apps.common import grouped_stats, allow_for_robot, is_robot, render_to, ConvertTypeError
 from apps.users import user_only, get_user
 
 from .base import yt_service, checkin_user, checkin_user, get_tricks, get_trick, get_best_results
@@ -61,21 +61,16 @@ def check(trick_id, *args, **kwargs):
     
     trick_data = json.loads(unicode(request.data, 'utf-8'))
     
-    try:
-        trick_data['cones'] = int(trick_data['cones'])
-    except ValueError:
-        return 'Number of cones must be are integer', 400
-    
     update_data = {
-        'cones'     : int(trick_data['cones']), 
+        'cones'     : trick_data['cones'], 
         'video_url' : unicode(trick_data['video_url']) if trick_data.get('video_url') else None,
         'approved'  : 0,
     }
 
-    checkin_result = checkin_user(trick_id, g.user['id'], update_data)
-
-    if isinstance(checkin_result, tuple):
-        return checkin_result
+    try:
+        checkin_user(trick_id, g.user['id'], update_data)
+    except ConvertTypeError, e:
+        return e.to_json(), 400
 
     return json.dumps(get_best_results(trick_id))
 
@@ -118,10 +113,7 @@ def checkin_page(*args, **context):
     Мобильная страничка чекина.
     """
     if request.method == 'GET':
-        context.update({
-            'tricks': get_tricks(simple=True),
-        })
-
+        context.update({'tricks': get_tricks(simple=True)})
         return context
 
     #TODO объеденить в функцией checktrick
@@ -131,21 +123,31 @@ def checkin_page(*args, **context):
     default_redirect = redirect(ref or url_for('mobile_checkin_page'))
 
     try:
-        form_data['cones'] = int(form_data['cones'])
-    except ValueError:
-        flash(u'Неверное кол-во конусов', 'error')
-        return default_redirect
-    
-    checkin_result = checkin_user(trick_id, g.user['id'], form_data)
-
-    if isinstance(checkin_result, tuple):
-        flash(checkin_result[0], 'error')
-    else:
+        checkin_user(trick_id, g.user['id'], form_data)
         flash(u'Вы успешно зачекинились', 'success')
+    except ConvertTypeError, e:        
+        flash(e.text, 'error')
 
     return default_redirect
 
-  
+
+@render_to()
+# @allow_for_robot
+def get_trick_(trick):
+    """
+    Responser for trick model
+    """
+    ata = {
+        'best_checkin': trick.best_checkin.patched,
+        'users_count': trick.users_count,
+        # 'descr_html': markdown(trick['descr'])
+    }
+     # 'user_checkin': trick.user_checkin
+    ata.update(dict(trick.patched))
+    ata['best_checkin']['user'] = app.connection.User.find_one({'_id': ata['best_checkin']['user']}).patched
+    # del ata['_id']
+    return ata
+
 @render_to()
 @allow_for_robot
 def trick_page(trick):    

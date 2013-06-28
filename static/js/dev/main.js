@@ -31,7 +31,7 @@ Besttrick.module('Main', function (Main, App, Backbone, Marionette, $, _) {
         appRoutes : {
             '': 'index_page',
             '!': 'index_page',
-            'filter=:tags_selected': 'filter',
+            'filter=:tags_selected': 'index_page',
             '!trick:trick': 'trick_page',
             '!u': 'user_page',
             '!users/user:user_id': 'user_profile_page',
@@ -40,9 +40,6 @@ Besttrick.module('Main', function (Main, App, Backbone, Marionette, $, _) {
     });
 
     Main.Controller = function (tricks, tags, user) {
-        var view_tricks = new App.Tricks.Views.Tricks({collection: tricks}),
-            view_filter = new App.Tricks.Views.TricksFilter({templateHelpers: {'tags': tags}});
-
         user ? App.user_container.show(new App.Users.Views.UserBar({model: user}))
              : App.user_container.show(new App.Users.Views.LoginBar());
 
@@ -75,30 +72,27 @@ Besttrick.module('Main', function (Main, App, Backbone, Marionette, $, _) {
             })
         },
 
-        this._render_index = function () {
-            App.menu_container.show(view_filter);
-            App.main.show(view_tricks);
-        },
+        this._parse_filter_query = function (querystring) {
+            if (!querystring) return;
 
-        this.filter = function (tags_querystring) {
-            var tags_ids = tags_querystring.split(','),
+            var tags_ids = querystring.split(','),
                 filter_tricks_ids = [];
 
             _.each(tags_ids, function (ti) { 
                 filter_tricks_ids = _.union(tags[ti]['tricks'], filter_tricks_ids); 
             });
-            
-            if (App.main.currentView !== view_tricks) { 
-                view_tricks.set_filter(filter_tricks_ids, false);
-                this._render_index();
-            } else {
-                view_tricks.set_filter(filter_tricks_ids, true);
-            }
+
+            return filter_tricks_ids;
         },
 
-        this.index_page = function () {
-            view_tricks.set_filter();
-            this._render_index();
+        this.index_page = function (querystring) {
+            var view_tricks = new App.Tricks.Views.Tricks({collection: tricks}),
+                view_filter = new App.Tricks.Views.TricksFilter({templateHelpers: {'tags': tags}});
+
+            view_tricks.set_filter(this._parse_filter_query(querystring), true);               
+
+            App.menu_container.show(view_filter);
+            App.main.show(view_tricks);
         },
 
         this.trick_page = function (trick_id) {
@@ -125,6 +119,8 @@ Besttrick.module('Main', function (Main, App, Backbone, Marionette, $, _) {
 
         this.router = new Main.Router({
             controller: new Main.Controller(tricks, tags, user)
-        });       
+        });
+
+        App.Common.init_feedback(options.feedback_opts, user);
     });
 });
