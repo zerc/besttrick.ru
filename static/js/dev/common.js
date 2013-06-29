@@ -37,6 +37,10 @@ Besttrick.module('Common', function (Common, App, Backbone, Marionette, $, _) {
             if (/\/watch\?v=/.test(video_url)) return /\?v=([^&]+)/.exec(video_url).pop();
             if (/img.youtube.com/.test(video_url)) return /vi\/([^&]+)\//.exec(video_url).pop();
             throw "Can't parse video_url string!";
+        },
+
+        set_page_title: function (title) {
+            window.document.title = 'Besttrick :: ' + title;
         }
     };
 

@@ -111,12 +111,16 @@ static['js_dev'] =  map(lambda x: 'js/dev/%s.js' % x, (
     'users/views',
     'users/views.checkins',
     'users/views.rating',
+    'achives/init',
+    'achives/models',
+    'achives/views'
 ))
 static['js_dev'].insert(0, 'js/jquery.min.js')
 static['js_dev'].insert(1, 'js/jquery.reject.js')
 static['js_dev'].insert(5, 'js/backbone-forms.js')
 static['js_dev'].insert(6, 'js/bootstrap-tooltip.js')
 static['js_dev'].insert(6, 'js/jquery.cookie.js')
+static['js_dev'].insert(6, 'js/date.format.js')
 
 static['css_dev'] = map(lambda x: 'css/dev/%s.css' % x, (
     'kickstart/kickstart',
@@ -132,6 +136,7 @@ static['css_dev'] = map(lambda x: 'css/dev/%s.css' % x, (
     'common',
     'tricks',
     'users',
+    'achives',
 ))
 
 assets.register('js_all', Bundle(*static['js'], filters='jsmin', output='js/main.min.js'))

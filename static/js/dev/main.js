@@ -29,13 +29,19 @@ Besttrick.on('initialize:after', function(){
 Besttrick.module('Main', function (Main, App, Backbone, Marionette, $, _) {
     Main.Router = Marionette.AppRouter.extend({
         appRoutes : {
-            '': 'index_page',
-            '!': 'index_page',
-            'filter=:tags_selected': 'index_page',
-            '!trick:trick': 'trick_page',
-            '!u': 'user_page',
-            '!users/user:user_id': 'user_profile_page',
-            '!users/rating' : 'users_rating'
+            ''                              : 'index_page',
+            '!'                             : 'index_page',
+            'filter=:tags_selected'         : 'index_page',
+            '!trick:trick'                  : 'trick_page',
+            '!u'                            : 'user_page',
+            '!users/user:user_id'           : 'user_profile_page',
+            '!users/rating'                 : 'users_rating',
+
+            '!u/achives'                        : 'my_achives',
+            // '!u/achives/level=:level'  : 'my_achives',
+
+            '!users/user:user_id/achives'                           : 'user_achives',
+            // '!users/user:user_id/achives/level=:level'     : 'user_achives'
         }
     });
 
@@ -43,11 +49,45 @@ Besttrick.module('Main', function (Main, App, Backbone, Marionette, $, _) {
         user ? App.user_container.show(new App.Users.Views.UserBar({model: user}))
              : App.user_container.show(new App.Users.Views.LoginBar());
 
+        this.my_achives = function (level) {
+            var achives = new App.Achives.Models.AchiveList({tricks: tricks});
+            App.Common.Functions.set_page_title('Достижения');
+            achives.fetch({
+                success: function () {
+                    App.menu_container.show(new App.Achives.Views.Filter({
+                        collection: achives
+                    }));
+                    App.main.show(new App.Achives.Views.Achives({
+                        collection: achives
+                    }));
+                }
+            });
+        },
+
+        this.user_achives = function (user_id, level) {
+            var user = new App.Users.Models.User({id: user_id});
+            App.menu_container.reset();
+            user.fetch({
+                success: function (model) {
+                    var achives = new App.Achives.Models.AchiveList({tricks: tricks, user_id: user.get('id')});
+                    App.Common.Functions.set_page_title(user.get('nick') + ' :: ' + 'Достижения');
+                    achives.fetch({
+                        success: function () {
+                            App.main.show(new App.Achives.Views.Achives({
+                                collection: achives
+                            }));
+                        }
+                    });
+                }
+            });
+        },
+
         this.user_profile_page = function (user_id) {
             var user = new App.Users.Models.User({id: user_id});
             App.menu_container.reset();
             user.fetch({
                 success: function (model) {
+                    App.Common.Functions.set_page_title('Пользователь ' + user.get('nick'));
                     App.main.show(new App.Users.Views.UserProfile({model: model}));
                 }
             });
@@ -55,12 +95,14 @@ Besttrick.module('Main', function (Main, App, Backbone, Marionette, $, _) {
 
         this.user_page = function () {
             if (!user) App.router.navigate('!');
+            App.Common.Functions.set_page_title('Я');
             App.menu_container.reset();
             App.main.show(new App.Users.Views.User({model: user}))
         },
 
         this.users_rating = function () {
             var users = new App.Users.Models.Users();
+            App.Common.Functions.set_page_title('Рейтинг пользователей');
             App.menu_container.reset();
             users.fetch({
                 data: 'sort=rating,1',
@@ -99,6 +141,7 @@ Besttrick.module('Main', function (Main, App, Backbone, Marionette, $, _) {
             var model = tricks.get(trick_id),
                 trick_view = new App.Tricks.Views.TrickPage({model: model});
             if (!model) return false;
+            App.Common.Functions.set_page_title(model.get_title());
             App.main.show(trick_view);
             App.menu_container.reset();
         }

@@ -52,6 +52,11 @@ Besttrick.module('Users.Views', function (Views, App, Backbone, Marionette, $, _
             'click button.save': 'save'
         },
 
+        // Dirty, very
+        templateHelpers: {
+            achives_url: '#!u/achives'
+        },
+
         render_form: function () {
             this.form = new Backbone.Form({model: this.model}).render();
             this.$el.find('form').replaceWith(this.form.$el.append(
@@ -100,6 +105,12 @@ Besttrick.module('Users.Views', function (Views, App, Backbone, Marionette, $, _
     });
 
     Views.UserProfile = Views.User.extend({
+        templateHelpers: function () {
+            return {
+                achives_url: '#!users/user' + this.model.get('id') + '/achives'
+            }
+        },
+
         render_form: function () {
             this.form = new Backbone.Form({model: this.model}).render();            
             this.$el.find('form').replaceWith(this.form.$el);            

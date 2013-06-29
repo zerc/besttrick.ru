@@ -62,7 +62,7 @@ def get_checkins(user_id=None, only_best=True):
         prev.users.push(NumberInt(obj.user));
     }"""
     TU = app.connection.TrickUser
-    opts = {'user': user_id} if user_id else {}
+    opts = {} if user_id is None else {'user': user_id}
 
     if only_best:
         return (TU(x) for x in app.db.trick_user.group(['trick'], opts, {'cones': 0, 'users': []}, reduce_func))

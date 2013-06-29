@@ -1,0 +1,112 @@
+/* Achives module */
+.achives_page {
+    margin-top:15px;
+}
+
+.achives_filter {
+    /*position:relative;
+    padding:10px 0;
+    margin-bottom:10px;
+    border-bottom:1px solid #E8E9EB;
+    background-color:#fff;
+    text-align:center;*/
+}
+
+.achives_filter a {
+    padding:5 10px;
+    padding:5px 10px;
+    color:#555;
+    -webkit-border-radius: 5px;
+    -moz-border-radius: 5px; 
+    border-radius: 5px; 
+}
+
+.achives_filter a.active {
+    background:#B55A5A;
+    text-decoration:none;
+    color:#fff;
+}
+
+.achives_filter .toggle_all {
+    color:#b8e925;
+}
+
+.achives_filter .toggled {}
+
+.achives_list {
+    margin:-15px -5px 0 -15px;
+}
+
+.achive_list__cell {
+    float:left;
+    width:50%;
+}
+
+.achive {
+    overflow:hidden;
+    padding:10px;
+    border:1px solid #E8E9EB;
+    border-bottom-width:4px;
+    background-color:#fff;
+    margin-bottom:10px;
+}
+
+.achive_list__empty {
+    display:none;
+    text-align:center;
+    padding:20px 0; 
+    background:white;
+    margin:30px 0 0 15px;
+}
+
+.achive__header {
+    position:relative; 
+    cursor:pointer; 
+    margin:0 -10px; 
+    padding:0 10px;
+}
+
+.achive__lvl_0 .achive__header {background-color:#F0F0F0;}
+.achive__lvl_0 .achive__header:hover {background-color:#E8E9EB;}
+.achive__lvl_0 .achive__status {color:#E8E9EB;}
+.achive__lvl_0 .achive__header:hover .achive__status {color:#F0F0F0;}
+
+.achive__lvl_1 .achive__header {background-color:#D5E2AD;}
+.achive__lvl_1 .achive__header:hover {background-color:#BBD56A;}
+.achive__lvl_1 .achive__status {color:#BBD56A;}
+.achive__lvl_1 .achive__header:hover .achive__status {color:#D5E2AD;}
+
+.achive__lvl_2 .achive__header {background-color:#ECE69D;}
+.achive__lvl_2 .achive__header:hover {background-color:#DBD153;}
+.achive__lvl_2 .achive__status {color:#DBD153;}
+.achive__lvl_2 .achive__header:hover .achive__status {color:#ECE69D;}
+
+.achive__lvl_3 .achive__header {background-color:#F5DD7D;}
+.achive__lvl_3 .achive__header:hover {background-color:#F8D237;}
+.achive__lvl_3 .achive__status {color:#F8D237;}
+.achive__lvl_3 .achive__header:hover .achive__status {color:#F5DD7D;}
+
+.achive__status {
+    /*color:#1BE21B;*/
+    font-size:1.4em;
+}
+
+.achive__lvl_0 .achive__status {background-position:-26px -62px;}
+
+.achive__text {margin-bottom:5px;}
+
+.achive__progress {
+    display:none;
+    margin:0 -10px -10px;
+    background:#f1f1f1;
+    list-style-type:none;
+}
+
+.achive__progress li {
+    float:left;
+    margin-left:12px;
+    margin-bottom:0;
+}
+
+.achive__progress .achive_done {color:green;}
+.showing_progress .achive__progress {display:block;}

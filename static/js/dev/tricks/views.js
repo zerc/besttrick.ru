@@ -132,8 +132,6 @@
     Views.Trick = Marionette.ItemView.extend({
         template: '#trick_item',
         className: 'col_4 trick',
-        
-        // templateHelpers: App.Common.Functions,
 
         events: {
             'click a.trick__check i': 'render_form'
@@ -154,7 +152,7 @@
         render_form: function () {
             var model = this.model.get('user_checkin') || new App.Tricks.Models.Checkin()
             model.trick_id = this.model.get('id');
-            
+
             var tmp = new Views.CheckinForm({
                 model: model, 
                 parent: this,
@@ -166,7 +164,7 @@
         }
     });
 
-    Views.Tricks = Backbone.Marionette.CollectionView.extend({
+    Views.Tricks = Marionette.CollectionView.extend({
         tagName: 'div',
         className: 'tricks grid',
         itemView: Views.Trick,
@@ -188,6 +186,5 @@
             }
             Backbone.Marionette.CollectionView.prototype.appendHtml.call(this, collectionView, itemView, index);
         }
-
-    })
+    });
  });
