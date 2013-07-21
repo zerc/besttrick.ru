@@ -14,10 +14,10 @@ except ImportError: # Fix this
 from blinker import signal
 
 try:
-    from flaskext.mail import Mail, email_dispatched
+    from flask_mail import Mail, email_dispatched, Message
     from flask_errormail import mail_on_500
 except ImportError:
-    Mail, email_dispatched, mail_on_500 = None, None, None
+    Mail = email_dispatched = mail_on_500 = Message = None
 
 
 ## {{{ http://code.activestate.com/recipes/576563/ (r1)

@@ -8,14 +8,7 @@ import simplejson as json
 
 from flask import g, Flask, render_template, request, session, make_response, jsonify, url_for, redirect
 
-# window hack
-try:
-    from flaskext.mail import Message, email_dispatched
-    from project import mail
-except ImportError:
-    Message, email_dispatched = None, None
-
-from project import app, markdown
+from project import app, mail, Message
 import tricks, common
 
 

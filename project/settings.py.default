@@ -18,7 +18,7 @@ FLASK_HOSTS = ['test@host.com']
 
 SECRET_KEY   = 'set_unique_value'
 
-DEFAULT_MAIL_SENDER = 'root@besttrick.ru'
+MAIL_DEFAULT_SENDER = 'root@besttrick.ru'
 # MAIL_SERVER : default ‘localhost’
 # MAIL_PORT : default 25
 # MAIL_USE_TLS : default False
