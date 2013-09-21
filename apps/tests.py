@@ -13,7 +13,7 @@ import unittest
 class BaseTestCase(unittest.TestCase):
     @property
     def app(self, *args, **kwargs):
-        """ monkey path please """
+        """ monkey patch please """ 
         raise NotImplemented('Set up app instance')
 
     def setUp(self):
@@ -27,7 +27,7 @@ class BtTestCase(BaseTestCase):
 
         self.client.get('/pown/0/', follow_redirects=True)
 
-        pages = ('/user/', '/my/tricks/', '/users/', '/users/user0/', '/users/rating/')
+        pages = ('/my/tricks/', '/users/', '/users/user0/', '/users/rating/')
         for page in pages:
             self.assertEqual(self.client.get(page).status_code, 200, u'Page: %s BROKEN!' % page)
 

@@ -1245,7 +1245,6 @@ Marionette.View = Backbone.View.extend({
   mixinTemplateHelpers: function(target){
     target = target || {};
     var templateHelpers = this.templateHelpers;
-
     if (_.isFunction(templateHelpers)){
       templateHelpers = templateHelpers.call(this);
     }
@@ -1414,7 +1413,7 @@ Marionette.ItemView =  Marionette.View.extend({
     else if (this.collection) {
       data = { items: this.collection.toJSON() };
     }
-    
+
     return data;
   },
 

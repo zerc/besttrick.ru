@@ -1,0 +1,41 @@
+<div class="achive__header">
+    <h5>
+        <%= title %>
+        <i class="achive__status icon-ok-circle pull-right"></i>
+    </h5>
+</div>
+<div class="achive__text">
+    <%= descr %>
+</div>
+<ul class="achive__progress clearfix">
+    <!-- <li>
+        <a href="#">Spin Pretendent</a>
+        <span>(1)</span>
+    </li>
+    <li>
+        <a href="#">Backward OneWheel Spiner</a>
+        <span>(2)</span>
+    </li>
+    <li>
+        <a href="#">Forward OneWheel Spiner</a>
+        <span>(2)</span>
+    </li> -->
+
+    <% childrens.forEach(function (e) { %>
+        <li>
+            <% if (e.is_complex()) { %>
+                <span><%= e.get_title() %></span>
+                <span<% if (e.get('level') >= next_lvl) { %> class="achive_done"<% } %>>
+                    (lvl <%= next_lvl %>)
+                </span>
+            <% } else { %>
+                <a href="<%= e.get_trick().href %>"><%= e.get_title() %></a>
+                <span title="Прогресс: <%= e.show_progress(next_lvl) %>"
+                    <% if (e.get('level') >= next_lvl) { %> class="achive_done"<% } %>>
+                    (lvl <%=  next_lvl %>)
+                </span>
+            <% } %>
+        </li>
+    <% }); %>
+
+</ul>

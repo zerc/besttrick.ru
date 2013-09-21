@@ -4,8 +4,9 @@ from datetime import datetime
 
 from mongokit import DocumentMigration
 from mongokit.schema_document import ValidationError
+import simplejson as json
 
-from project import app
+from project import app, cached_property
 from apps.common import BaseModel
 
 from .base import get_best_results
@@ -15,8 +16,11 @@ __all__ = ['Trick', 'TrickUser', 'Tag']
 
 ### Validators
 def positive_integer(val):
-    if val <= 0:
-        raise ValidationError(u'%s cones must be > 0')
+    try:
+        if int(val) <= 0:
+            raise ValidationError(u'%s cones must be > 0')
+    except (ValueError, TypeError), e:
+        raise ValidationError(u'Value must be integer')
     return True
 
 youtube_re = re.compile(r'^(http|https):\/\/(www\.youtube\.com|youtu.be)\/[a-zA-Z0-9\?&\/=\-]+$', re.S|re.I)
@@ -27,7 +31,7 @@ def is_youtube_link(val):
 
 def cones_value_validator(val):
     if val > 300:
-        raise ValidationError(u'Cones value to big!')
+        raise ValidationError(u'%s value to big!')
     return True
 
 
@@ -48,6 +52,40 @@ class Trick(BaseModel):
     default_values  = {'thumb': u'3', 'score': 1.0, 'wssa_score': 0.0}
     required_fields = ['title']
     indexes = [{'fields': ['tags']}]
+
+    @cached_property
+    def checkins(self):
+        return app.connection.TrickUser.find({'trick': self._id})
+
+    @cached_property
+    def best_checkin(self):
+        return list(app.connection.TrickUser.find({'trick': self._id}).sort('cones', -1))[0]
+
+    @cached_property
+    def users_count(self):
+        return len(set([ch['user'] for ch in self.checkins]))
+
+    @property
+    def _id(self):
+        """
+        Dirty trick
+        """
+        _id = self.get('id', self.get('_id'))
+        return None if _id is None else int(_id)
+
+    @property
+    def patched(self):
+        """
+        Patch and return (for chain) object.
+        """
+        if self._patched: return self
+        self.update({
+            'id': self._id
+        })
+        self.pop('_id', None)
+        self._patched = True
+        return self
+    _patched = False
 app.connection.register([Trick])
 app.db.seqs.insert({'_id': 'tricks_seq',  'val': 0})
 
@@ -72,6 +110,25 @@ class TrickUser(BaseModel):
         'cones'     : [positive_integer, cones_value_validator],
         'video_url' : is_youtube_link,
     }
+
+    @property
+    def _id(self):
+        """
+        Dirty trick
+        """
+        _id = self.get('id', self.get('_id'))
+        return None if _id is None else int(_id)
+
+    @property
+    def patched(self):
+        """
+        Patch and return (for chain) object.
+        """
+        if self._patched: return self
+        self.pop('_id', None)
+        self._patched = True
+        return self
+    _patched = False
 app.connection.register([TrickUser])
 
 

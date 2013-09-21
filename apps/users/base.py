@@ -9,13 +9,35 @@
 """
 from functools import wraps
 
-from flask import g, redirect
+from flask import g, redirect, request
 from project import app
 from apps.common import get_user_rating
 
 from .models import User, LOGINZA_FIELDS_MAP
 
 
+def for_owner(methods=None):
+    """
+    Allow defined methods only for owner
+    """
+    def decorator(func):
+        @wraps(func)
+        def wrapper(*args, **kwargs):
+            if not g.user and (methods is None or request.method in methods):
+                return 'Allow only for owner', 403
+            elif g.user:
+                user_id = kwargs.get('user_id')
+                if user_id is None: return 'Missed user_id attribute', 403
+
+                if g.user.get('id') != user_id:
+                    if methods is None or request.method in methods:
+                        return 'Allow only for owner', 403
+
+            return func(*args, **kwargs)
+        return wrapper
+    return decorator
+
+      
 def user_only(func):
     """
     Декоратор - "только для пользователя"

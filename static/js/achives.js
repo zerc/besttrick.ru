@@ -31,7 +31,7 @@ window.BTAchives.Achive = Backbone.Model.extend({
         descr           : '',
         icon            : '',
         score           : 0.0,
-        trick_id        : null,                        
+        trick_id        : null,
         rule            : {},
         parents         : [],
 

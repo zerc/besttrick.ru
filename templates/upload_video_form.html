@@ -1,0 +1,17 @@
+<h4>Загрузить видео</h4>
+<form action="<%= post_url %>?nexturl=http://<%= location.host %>/youtube_reciver/" method="post" enctype="multipart/form-data">
+
+    <input name="file" type="file" />
+    <input name="token" type="hidden" value="<%= token %>" />
+
+    <p class="small">Загрузка видеофайла займет некоторое время, в зависимости от его размера и скорости вашего интернет-подключения.</p>
+    <p><input type="checkbox" id="id_agree"></input> Я согласен с <a href="#!about" target="_blank">правилами</a> загрузки видео.</p>
+
+    <div class="upload_form__controls">
+        <button type="submit" class="upload_form__upload disabled" disabled="disabled">Загрузить</button>
+        <div class="upload_form__loader"></div>
+        <button type="button" class="close">Отмена</button>
+    </div>
+
+    <div class="error_holder"></div>
+</form>

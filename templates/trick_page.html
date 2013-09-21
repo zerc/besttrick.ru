@@ -1,0 +1,38 @@
+<div class="col_7 trick__users"></div>
+
+<div class="col_5 trick__info">   
+	<h5><%= title %></h5>
+
+    <div class="col_9 trick__video_holder">
+        <div class="trick_video_preview">
+        	<i class="icon-play-circle icon-4x"></i>
+            <img src="<%= large_img() %>" />
+        </div>
+    </div>
+
+    <ul class="col_3 trick__info__videos">
+        <li class="video_thumb selected_video">
+            <%= render_video_thumb(videos[0], 'Видео трюка ' + title) %> 
+        </li>
+
+        {#
+        <% _.map(users, function (user, i) { %>
+            <% if (user.video_url) { %>
+                <li class="user_video">
+                    <%= render_video_thumb(user.video_url, 'Видео трюка ' + title + ' от пользователя' + user.get('nick')) %>
+                </li>
+            <% } %>
+        <% }) %>
+        #}
+        <li class="video_add" title="Вы делаете этот трюк?Добавляйте видео!">
+        	<i class="icon-plus-sign-alt icon-4x pull-center"></i>
+        </li>
+    </ul>
+
+    <div class="clear"></div>
+
+    <div id="share" style="margin-left:-5px;"></div>
+
+    <%= descr_html %>
+</div>
+<br class="clear">

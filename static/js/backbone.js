@@ -1019,7 +1019,7 @@
   _.extend(Backbone.View.prototype, Backbone.Events, {
 
     // The default `tagName` of a View's element is `"div"`.
-    tagName: 'div',
+    tagName: 'span',
 
     // jQuery delegate for element lookup, scoped to DOM elements within the
     // current view. This should be prefered to global lookups where possible.

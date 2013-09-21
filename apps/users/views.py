@@ -27,7 +27,7 @@ def before_request():
 def add_user():
     return {
         'user'          : g.user,
-        'user_json'     : json.dumps(g.user)
+        'user_json'     : g.user.to_json() if g.user else 'false'
     }
 
 
@@ -58,70 +58,41 @@ def logout():
     return redirect(request.referrer or url_for('index'))
 
 
+@for_owner(['POST', 'PUT'])
+@render_to()
+def user(user_id):
+    """
+    Responser for user model.
+    Request method
+        `POST` or `PUT` allowed only for owner
+        `GET' allow for all
+    """
+    user = app.connection.User.find_one({"_id": user_id})
+
+    if request.method == 'GET':
+        return {'user': user.patched.hide}
+
+    params = json.loads(unicode(request.data, 'utf-8'))
+    params.pop('id', None)
+    params.pop('_id', None)
+
+    # TODO: решить более адекватно, валидация перед апдейтом данных
+    for p in params.keys():
+        try:
+            User.structure[p]
+        except KeyError:
+            del params[p]
+
+    user.update(params)
+    user.save()
+
+    return {'user': user.patched.hide}
+
+
 @user_only
 def my_tricks():
     rows = grouped_stats('trick', {'user': g.user['id']})
     return json.dumps(sorted(rows, key=lambda x: x['cones'], reverse=True))
-
-
-@render_to()
-def user():
-    if request.method == 'PUT':
-        params = json.loads(unicode(request.data, 'utf-8'))
-        params.pop('id', None)
-        params.pop('_id', None)
-
-        # типа валидация перед апдейтом данных
-        for p in params.keys():
-            try:
-                User.structure[p]
-            except KeyError:
-                del params[p]
-        app.db.user.update({'_id': g.user['id']}, {'$set': params})
-        return {'success': 1}
-
-    try:
-        user_id = int(request.args.get('user_id'))
-    except (ValueError, TypeError):
-        user_id = g.user['id']
-
-    return {'user': get_user(user_id).hide}
-    
-
-@render_to()
-@user_only
-def my():
-    user = g.user
-
-    if request.method == 'PUT':
-        params = json.loads(unicode(request.data, 'utf-8'))
-        params.pop('id', None)
-        params.pop('_id', None)
-
-        # типа валидация перед апдейтом данных
-        for p in params.keys():
-            try:
-                User.structure[p]
-            except KeyError:
-                del params[p]
-
-        app.db.user.update({'_id': user['id']}, {'$set': params})
-        
-        return {'success': 1}
-    return {'user': get_user(user.get('id'))}
-
-
-@render_to()
-def user_profile(user_id):
-    context = {
-        'user': get_user(user_id).hide
-    }    
-    user_tricks = grouped_stats('trick', {'user': int(user_id)})
-    # TODO: remove this dirty hook!
-    map(lambda a: a.update(a.pop('trick')), user_tricks)
-    context['tricks'] = sorted(user_tricks, key=lambda x: x['cones'], reverse=True)
-
-    return context
 
 
 @render_to()
@@ -141,5 +112,27 @@ def list_of_users():
     return {
         'users': [dict(_(user)) for user in app.db.user.find().sort("_id", -1)]
     }
+
+
+@render_to()
+def users():
+    is_admin = g.user and g.user['admin']
+    # add validation
+    sort, direction = request.args.get('sort', 'id,-1').split(',') 
+
+    def _(u):
+        u.patched
+        return u if is_admin else u.hide
+
+    # TODO: refactor
+    if app.connection.User.structure.get(sort):
+        return {
+            'users': [_(u) for u in app.connection.User.find({'banned': False}).sort(sort, int(direction))]
+        }
+
+    return {
+        'users': sorted(app.connection.User.find({'banned': False}), key=lambda user: _(user)[sort], reverse=int(direction) > 0)
+    }
+
 
     

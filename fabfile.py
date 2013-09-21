@@ -1,26 +1,28 @@
 #!venv/bin/python
-# -*- coding: utf-8 -*-
-import unittest as ut
-from functools import wraps
+# coding: utf-8
+import unittest as _ut
+from functools import wraps as _wraps
 from fabric.api import *
 
-from os.path import join as path_join
+from os.path import join as _path_join
 
-from urls import app
+from urls import app as _app
 
-from apps.tricks.tests import TricksTestCase
-from apps.tests import BtTestCase
-from apps.achives.tests import AchivesTestCase
-from apps.users.tests import UsersTestCase
+from apps.tricks.tests import TricksTestCase as _TricksTestCase
+from apps.tests import BtTestCase as _BtTestCase
+from apps.achives.tests import AchivesTestCase as _AchivesTestCase
+from apps.users.tests import UsersTestCase as _UsersTestCase
 
 env.hosts = app.config['FLASK_HOSTS']
 
+
 TESTS_SET = {
-    'bt'     : BtTestCase,
-    'tricks' : TricksTestCase,
-    'achives': AchivesTestCase,
-    'users'  : UsersTestCase,
+    'bt'     : _BtTestCase,
+    'tricks' : _TricksTestCase,
+    'achives': _AchivesTestCase,
+    'users'  : _UsersTestCase,
 }
+
 
 def roll():
     local('git push origin master')
@@ -37,7 +39,7 @@ def update_tricks():
     run("""
         cd www/ &&
         . venv/bin/activate &&
-        ./admin.py import_tricks && 
+        ./admin.py import_tricks &&
         /etc/init.d/bt-uwsgi reload
     """)
 
@@ -59,11 +61,10 @@ def pulldb():
     """
     with cd('www/'):
         run("""
-            mongodump -d besttrick && 
+            mongodump -d besttrick &&
             zip -r dump.zip dump && 
             zip -r images.zip static/images/
         """)
-
 
         get('dump.zip', 'dump.zip')
         get('images.zip', 'images.zip')
@@ -82,36 +83,36 @@ def run_tests(test_name=None):
     """
     # set up test database
     test_database_name = 'test_besttrick'
-    app.connection.copy_database(app.config['MONGODB_DB'], test_database_name)
-    app.config['MONGODB_DB'] = test_database_name
+    _app.connection.copy_database(_app.config['MONGODB_DB'], test_database_name)
+    _app.config['MONGODB_DB'] = test_database_name
 
     # run tests
     def _(t):
-        t.app  = app
-        suite  = ut.TestLoader().loadTestsFromTestCase(t)
-        return ut.TextTestRunner(verbosity=1).run(suite)
-        
-    result = _(TESTS_SET[test_name]) if test_name else map(_, TESTS_SET.values())
+        t.app = _app
+        suite = _ut.TestLoader().loadTestsFromTestCase(t)
+        return _ut.TextTestRunner(verbosity=1).run(suite)
 
-    # clean up :)    
-    app.connection.drop_database(test_database_name)
+    result = _(TESTS_SET[test_name]) if test_name else map(_, TESTS_SET.values())
+    # clean up :)
+    _app.connection.drop_database(test_database_name)
 
     return result
 
 
-def testing(func):
+def _testing(func):
     """
     Декоратор для прогона тестов
     """
-    @wraps(func)
+    @_wraps(func)
     def wrapper(*args, **kwargs):
         result = run_tests()
         for r in result:
-            if not r.wasSuccessful(): return None
+            if not r.wasSuccessful():
+                return None
 
         return func(*args, **kwargs)
 
     return wrapper
 
-roll = testing(roll)
-push = testing(push)
+roll = _testing(roll)
+push = _testing(push)

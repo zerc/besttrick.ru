@@ -1,0 +1,15 @@
+<td class="trick__user_cones"><%= cones %></td>
+<td class="trick__user_video_url">
+    <% if (video_url && approved === 1) { %>
+        <a class="has_video video_approved" href="<%= video_url %>" target="_blank" title="есть видео подтверждение">
+            <i class="icon-facetime-video"></i>
+        </a>
+    <% } %>
+</td>
+<td class="trick__user_info">
+    <a href="<%= trick.get_href() %>">
+        <%= trick.get('title') %>
+    </a>
+    
+</td>
+<td class="trick__user_photo" style="background-image:url('<%= trick.get_thumb() %>');">&nbsp;</td>

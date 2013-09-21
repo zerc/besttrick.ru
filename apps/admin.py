@@ -138,7 +138,7 @@ def get_checkins_count():
 
 @app.route('/admin/checkin/<checkin_id>/', methods=['PUT'])
 @stuff_only
-def checkin(checkin_id):
+def admin_checkin(checkin_id):
     """
     Модификация чекина.
     """
@@ -150,7 +150,7 @@ def checkin(checkin_id):
 
 @app.route('/admin/checkins/', methods=['GET'])
 @stuff_only
-def checkins():
+def admin_checkins():
     """
     Список чекинов на модерацию.
     """

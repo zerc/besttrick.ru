@@ -21,12 +21,12 @@
                 </td>
             </tr>
 
-            {% if trick['users'] %}
+            {% if trick.users_count %}
             <tr>
                 <td colspan="2">
                     <h3>Этот трюк делают:</h3>
                     <div class="trick__users">
-                        {% for u in trick['users'] %}
+                        {% for u in trick.checkins %}
                             <div class="trick__user{{ ' trick__user_king' if loop.index0 == 0 else ''}}">
                                 <span class="left_block">{{ u['cones']|int }}</span>
                                 <img src="{{ u['user']['photo'] }}" class="trick__user__photo">
