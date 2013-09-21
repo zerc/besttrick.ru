@@ -13,7 +13,7 @@ from apps.tests import BtTestCase as _BtTestCase
 from apps.achives.tests import AchivesTestCase as _AchivesTestCase
 from apps.users.tests import UsersTestCase as _UsersTestCase
 
-env.hosts = app.config['FLASK_HOSTS']
+env.hosts = _app.config['FLASK_HOSTS']
 
 
 TESTS_SET = {
