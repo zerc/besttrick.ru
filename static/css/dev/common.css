@@ -1,306 +1,332 @@
 /*
-    Common css rules for besttrick project
+  Common css rules for besttrick project
 */
 body {
-    margin:0;
-    padding:0 0 0 0;
-    color:#000;
-    font:normal 0.9em/150% 'Arimo', arial, verdana, sans-serif;
-    text-shadow: 0px 0px 1px transparent; /* google font pixelation fix */
+  margin:0;
+  padding:0 0 0 0;
+  color:#000;
+  font:normal 0.9em/150% 'Arimo', arial, verdana, sans-serif;
+  text-shadow:0px 0px 1px transparent; /* google font pixelation fix */
 }
 
 a, a:visited {
-    color:#333; 
-    text-decoration:underline;
-    outline:0;
+  color:#333; 
+  text-decoration:underline;
+  outline:0;
 }
 
 a:hover, a:focus {color:#000;}
 
 p a, p a:visited {
-    line-height:inherit; 
+  line-height:inherit; 
 }
 
 .container {
-    background-color:rgb(245, 245, 245);
-    background: #efefef url(kickstart/img/gray_jean.png);
+  background-color:rgb(245, 245, 245);
+  background:#efefef url(kickstart/img/gray_jean.png);
 }
 
 .header {
-    text-align:center;
-    border-bottom:1px solid #cccccc;
-    background-color:#ffffff;
-    padding:0 1.5em;
+  text-align:center;
+  border-bottom:1px solid #cccccc;
+  background-color:#ffffff;
+  padding:0 1.5em;
 }
 
 .header .feedback {
-    cursor:pointer;
+  cursor:pointer;
 }
 
 .header .feedback:hover {
-    color:red;
+  color:red;
 }
 
 .header .content {
-    max-width:770px;
-    margin:10px auto;
+  max-width:770px;
+  margin:10px auto;
 }
 
 .header .logo {
-    display:block;
-    height:24px;
-    width:128px;
-    text-indent:-9999px;
-    margin-top:5px;
-    margin-bottom:20px;
-    background:url('/static/i/logo.png') 0 0 no-repeat;
-    float:left;
+  display:block;
+  height:24px;
+  width:128px;
+  text-indent:-9999px;
+  margin-top:5px;
+  margin-bottom:20px;
+  background:url('/static/i/logo.png') 0 0 no-repeat;
+  float:left;
 }
 
 .footer {
-    border-top:1px solid #E8E9EB;
-    margin-top:10px;
-    padding:5px;
-    text-align:center;
-    font-size:12px;
-    background-color:#ffffff;
+  border-top:1px solid #E8E9EB;
+  margin-top:10px;
+  padding:5px;
+  text-align:center;
+  font-size:12px;
+  background-color:#ffffff;
 }
 
 .grid {
-    max-width:845px;
+  max-width:845px;
 }
 
-/* From Bootstrap: https://github.com/twitter/bootstrap */
+/* From Bootstrap:https://github.com/twitter/bootstrap */
 .tooltip {
-    position: absolute;
-    z-index: 1020;
-    display: block;
-    padding: 5px;
-    font-size: 11px;
-    opacity: 0;
-    filter: alpha(opacity=0);
-    visibility: visible;
+  position:absolute;
+  z-index:1020;
+  display:block;
+  padding:5px;
+  font-size:11px;
+  opacity:0;
+  filter:alpha(opacity=0);
+  visibility:visible;
 }
 
 .tooltip.in {
-    opacity: 0.8;
-    filter: alpha(opacity=80);
+  opacity:0.8;
+  filter:alpha(opacity=80);
 }
 
 .tooltip.top {
-    margin-top: -2px;
+  margin-top:-2px;
 }
 
 .tooltip.right {
-    margin-left: 2px;
+  margin-left:2px;
 }
 
 .tooltip.bottom {
-    margin-top: 2px;
+  margin-top:2px;
 }
 
 .tooltip.left {
-    margin-left: -2px;
+  margin-left:-2px;
 }
 
 .tooltip.top .tooltip-arrow {
-    bottom: 0;
-    left: 50%;
-    margin-left: -5px;
-    border-top: 5px solid rgba(25,25,25,0.92);
-    border-right: 5px solid transparent;
-    border-left: 5px solid transparent;
+  bottom:0;
+  left:50%;
+  margin-left:-5px;
+  border-top:5px solid rgba(25,25,25,0.92);
+  border-right:5px solid transparent;
+  border-left:5px solid transparent;
 }
 
 .tooltip.left .tooltip-arrow {
-    top: 50%;
-    right: 0;
-    margin-top: -5px;
-    border-top: 5px solid transparent;
-    border-bottom: 5px solid transparent;
-    border-left: 5px solid rgba(25,25,25,0.92);
+  top:50%;
+  right:0;
+  margin-top:-5px;
+  border-top:5px solid transparent;
+  border-bottom:5px solid transparent;
+  border-left:5px solid rgba(25,25,25,0.92);
 }
 
 .tooltip.bottom .tooltip-arrow {
-    top: 0;
-    left: 50%;
-    margin-left: -5px;
-    border-right: 5px solid transparent;
-    border-bottom: 5px solid rgba(25,25,25,0.92);
-    border-left: 5px solid transparent;
+  top:0;
+  left:50%;
+  margin-left:-5px;
+  border-right:5px solid transparent;
+  border-bottom:5px solid rgba(25,25,25,0.92);
+  border-left:5px solid transparent;
 }
 
 .tooltip.right .tooltip-arrow {
-    top: 50%;
-    left: 0;
-    margin-top: -5px;
-    border-top: 5px solid transparent;
-    border-right: 5px solid rgba(25,25,25,0.92);
-    border-bottom: 5px solid transparent;
+  top:50%;
+  left:0;
+  margin-top:-5px;
+  border-top:5px solid transparent;
+  border-right:5px solid rgba(25,25,25,0.92);
+  border-bottom:5px solid transparent;
 }
 
 .tooltip-inner {
-    max-width: 200px;
-    padding: 3px 8px;
-    color: #ffffff;
-    line-height:1.5;
-    text-align: center;
-    text-decoration: none;
-    -webkit-border-radius: 4px;
-     -moz-border-radius: 4px;
-          border-radius: 4px;
-    background:#212121;
-    background-color: rgba(25,25,25,0.92);
-    background-image: -webkit-gradient(linear, 0% 0%, 0% 100%, from(transparent), to(#000));
+  max-width:200px;
+  padding:3px 8px;
+  color:#ffffff;
+  line-height:1.5;
+  text-align:center;
+  text-decoration:none;
+  -webkit-border-radius:4px;
+   -moz-border-radius:4px;
+      border-radius:4px;
+  background:#212121;
+  background-color:rgba(25,25,25,0.92);
+  background-image:-webkit-gradient(linear, 0% 0%, 0% 100%, from(transparent), to(#000));
 }
 
 .tooltip-arrow {
-    position: absolute;
-    width: 0;
-    height: 0;
+  position:absolute;
+  width:0;
+  height:0;
 }
 
 /* error tooltip styles */
-.tooltip.top.error .tooltip-arrow {border-top: 5px solid red;}
-.tooltip.left.error .tooltip-arrow {border-left: 5px solid red;}
-.tooltip.bottom.error .tooltip-arrow {border-bottom: 5px solid red;}
-.tooltip.right.error .tooltip-arrow {border-right: 5px solid red;}
-.tooltip.error .tooltip-inner {
-    background:red;
-    background-color: rgb(255, 0, 0);;
-    background-image: -webkit-gradient(linear, 0% 0%, 0% 100%, from(transparent), to(#000));
+.tooltip.top.error .tooltip-arrow {
+  border-top:5px solid red;
 }
 
+.tooltip.left.error .tooltip-arrow {
+  border-left:5px solid red;
+}
 
+.tooltip.bottom.error .tooltip-arrow {
+  border-bottom:5px solid red;
+}
+
+.tooltip.right.error .tooltip-arrow {
+  border-right:5px solid red;
+}
+
+.tooltip.error .tooltip-inner {
+  background:red;
+  background-color:rgb(255, 0, 0);;
+  background-image:-webkit-gradient(linear, 0% 0%, 0% 100%, from(transparent), to(#000));
+}
+
+/* Common lists (users, tricks etc) */
 .items {
-    width:100%;
-    max-width:845px;
-    margin-top:25px;
-    margin:15px auto 0 auto;
+  width:100%;
+  max-width:845px;
+  margin-top:25px;
+  margin:15px auto 0 auto;
 }
 
 .items td {
-    line-height:40px; 
-    height:40px; 
-    padding:0;
-    border:0;
+  line-height:40px; 
+  height:40px; 
+  padding:0;
+  border:0;
 }
 
 .items .empty td {
-    text-align:center;
+  text-align:center;
 }
 
 .items td.breaker {
-    line-height:1; 
-    height:1px; 
+  line-height:1; 
+  height:1px; 
 }
 
 .item {
-    background:#ffffff;
-    height:40px;
-    margin-bottom:10px;
+  background:#ffffff;
+  height:40px;
+  margin-bottom:10px;
 }
 
 .items tr.first_item {
-    background:#B55A5A;
+  background:#B55A5A;
 }
 
 .items tr.first_item a, 
-.items tr.first_item {color:#fff;}
+.items tr.first_item {
+  color:#fff;
+}
 
-.items tr.first_item a:hover {color:#f4f4f4;}
+.items tr.first_item a:hover {
+  color:#f4f4f4;
+}
 
 .item .left_side {
-    float:left;
-    background:#cccccc;
-    color:#ffffff;
-    width:50px;
-    height:40px;
+  float:left;
+  background:#cccccc;
+  color:#ffffff;
+  width:50px;
+  height:40px;
 }
 
 .item .right_side {
-    float:right;
-    width:50px;
-    height:40px;
-    overflow:hidden;
-    position:relative;
+  float:right;
+  width:50px;
+  height:40px;
+  overflow:hidden;
+  position:relative;
 }
 
 .item .icon-user {
-    color:#ccc;
-    text-align:center;
-    border-left:1px solid #cccccc;
+  color:#ccc;
+  text-align:center;
+  border-left:1px solid #cccccc;
 }
 
 .item .right_side img {
-    position:absolute; 
-    left:0;
-    top:0;
-    height:50px;
-    width:auto;
+  position:absolute; 
+  left:0;
+  top:0;
+  height:50px;
+  width:auto;
 }
 
 .item .left_side {
-    background:#ccc;
-    color:#fff;
-    text-align:center;
+  background:#ccc;
+  color:#fff;
+  text-align:center;
 }
 
 .item .left_side_two {}
 
 .items .middle_side {
-    width:100%;
-    text-align:right;
+  width:100%;
+  text-align:right;
 }
 
 .item .content,
 .item .hint {
-    height:20px;
-    line-height:20px;
-    padding-right:5px;
-    overflow:hidden;
+  height:20px;
+  line-height:20px;
+  padding-right:5px;
+  overflow:hidden;
 }
 
 .item .hint {
-    font-size:10px;
+  font-size:10px;
 }
 
 
 /* Feedback form */
 form.feedback_form {
-    text-align:left;
+  text-align:left;
 }
 
 form.feedback_form textarea,
 form.feedback_form input {
-    width:100%;
-    margin-bottom:10px;
+  width:100%;
+  margin-bottom:10px;
 }
 
 form.feedback_form button {
-    margin-bottom:10px;
+  margin-bottom:10px;
 }
 
 form.feedback_form textarea {
-    height:100px;
+  height:100px;
 }
 
 form.feedback_form textarea.error {
-    border-color:red;
+  border-color:red;
 }
 
 #no_opacity {
-    opacity:1;
+  opacity:1;
 }
 
 #no_opacity .tooltip-inner {
-    background:#5A5A5A;
+  background:#5A5A5A;
 }
 
 .success .icon-ok-circle {
-    color:#11D511;
+  color:#11D511;
 }
 
 .error .icon-ban-circle {
-    color:red;
+  color:red;
+}
+
+/* Modal styles */
+#modal {
+  display:block;
+  position:fixed;
+  background:white;
+  border:1px solid #AEAEAE;
+  padding:10px;
+  z-index:999;
 }

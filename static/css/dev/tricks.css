@@ -1,205 +1,242 @@
 /*
-    All about tricks
+  All about tricks
 */
 
 .tricks {
-    max-width:845px;
-    margin-top:25px;
+  max-width:845px;
+  margin-top:25px;
 }
 
 .tricks .tricks__title {
-    padding-left:15px;
-    font-weight:normal;
-    margin-bottom:0;
+  padding-left:15px;
+  font-weight:normal;
+  margin-bottom:0;
 }
 
 .tricks .trick {
-    position:relative;
-    padding:5px 10px 10px 10px;
-    background-color:#ffffff;
-    border:1px solid #E8E9EB;
-    overflow:hidden;
+  position:relative;
+  padding:5px 10px 10px 10px;
+  background-color:#ffffff;
+  border:1px solid #E8E9EB;
+  overflow:hidden;
 }
 
 .tricks .user_do_this {
-    background:#FFE5E5;
+  background:#FFE5E5;
 }
 
 .tricks .user_do_this .icon-ok-circle {
-    color:red;
+  color:red;
 }
 
 .trick .trick__title {
-    display:block;
-    color: #333;
-    text-decoration: underline;
-    outline: 0;
-    font-weight:bolder;
+  display:block;
+  color: #333;
+  text-decoration: underline;
+  outline: 0;
+  font-weight:bolder;
 }
 
 .trick .trick__thumb {
-    margin-top:5px;
-    margin-bottom:0;
+  margin-top:5px;
+  margin-bottom:0;
 }
 
 .trick .trick__stats {}
 
 .trick .trick__check {
-    text-decoration: none;
-    background-color: red;
-    height: 20px;
-    width: 20px;
-    text-align: center;
-    font-size: 18px;    
-    color: white;
-    -webkit-border-radius: 2px;
-    -moz-border-radius: 2px;
-    border-radius: 2px;
-    cursor:pointer;
+  text-decoration: none;
+  background-color: red;
+  height: 20px;
+  width: 20px;
+  text-align: center;
+  font-size: 18px;    
+  color: white;
+  -webkit-border-radius: 2px;
+  -moz-border-radius: 2px;
+  border-radius: 2px;
+  cursor:pointer;
 }
 
 .trick .trick__check:hover {
-    color:#cccccc;
+  color:#cccccc;
 }
 
 .trick .trick__best_user {
-    margin-top:15px;
+  margin-top:15px;
 }
 
 .trick .trick__best_user a {
-    display: block;
-    height: 20px;
-    overflow: hidden;
-    text-indent: 0px;
+  display: block;
+  height: 20px;
+  overflow: hidden;
+  text-indent: 0px;
 }
 
 .trick .trick__best_user a i {
-    color:red;
-    margin-right:5px;
+  color:red;
+  margin-right:5px;
 }
 
 .dialog__overflow {
-    position:absolute;
-    width:228px;
-    height:95px;
-    top:0;
-    left:0;
-    z-index:0;
+  position:absolute;
+  width:228px;
+  height:95px;
+  top:0;
+  left:0;
+  z-index:0;
 }
 
 .trick .trick__dialog {
-    position:absolute;
-    width:228px;
-    height:95px;
-    top:26px;
-    left:10px;
-    font-size:90%;
-    padding:5px;
-    background-color: #CCC;
-    opacity: 0.96;
+  position:absolute;
+  width:228px;
+  height:95px;
+  top:26px;
+  left:10px;
+  font-size:90%;
+  padding:5px;
+  background-color: #CCC;
+  opacity: 0.96;
 }
 
 .trick__dialog .dialog__close {
-    position:absolute;
-    right:5px;
-    top:-1px;
-    text-decoration:none;
-    color:#fff;
-    cursor:pointer;
+  position:absolute;
+  right:5px;
+  top:-1px;
+  text-decoration:none;
+  color:#fff;
+  cursor:pointer;
 }
 
 .trick__dialog input {
-    width:55%;
-    margin-right:10px;
-    text-align:center;
-    float:left;
+  width:55%;
+  margin-right:9px;
+  text-align:center;
+  float:left;
 }
 
 .header .tricks_filter {
-    top:24px;
+  top:24px;
 }
 
 
 /* Trick page */
 .trick_page {
-    margin-top:10px;
+  margin-top:10px;
 }
 
 .trick__users {}
 
 .trick__info {
-    background: white;
-    padding: 0px 10px;
-    border-left:2px solid #ccc;
+  background: white;
+  padding: 0px 10px;
+  border-left:2px solid #ccc;
 }
 
 .trick__video_holder {position:relative;}
 
 .trick__video_holder i {
-    position: absolute;
-    left: 40%;
-    top: 30%;
-    color:red;
-    z-index:10;
-    text-shadow:1px 1px 10px #000;
-    cursor:pointer;
+  position: absolute;
+  left: 40%;
+  top: 30%;
+  color:red;
+  z-index:10;
+  text-shadow:1px 1px 10px #000;
+  cursor:pointer;
 }
 
 .trick__video_holder i:hover {
-    color:rgb(189, 45, 45);
+  color:rgb(189, 45, 45);
 }
 
 .trick__info__videos {
-    margin-top:0.4em;
-    list-style:none;
+  margin-top:0.4em;
+  list-style:none;
 }
 
 .trick__info__videos li {
-    text-align:center;
-    cursor:pointer;
+  text-align:center;
+  cursor:pointer;
 }
 
 .trick__info__videos .video_thumb {
-    padding:0;
-    margin-bottom:5px;
-    cursor:pointer;
+  padding:0;
+  margin-bottom:5px;
+  cursor:pointer;
 }
 
 .trick__info__videos .video_thumb img {
-    border:2px solid #fff;
-    width:100%;
-    max-width:124px;
+  border:2px solid #fff;
+  width:100%;
+  max-width:124px;
 }
 
 .trick__info__videos .selected_video img {
-    border-color:#B55A5A;
+  border-color:#B55A5A;
 }
 
 .trick__info__videos .video_add {
-    text-align:center;
-    color:red;
+  text-align:center;
+  color:red;
 }
 
 
 .item td.left_side_two a {
-    padding-left: 5px;
-    color:green;
-    text-shadow:1px 1px 2px #242424;
+  padding-left: 5px;
+  color:green;
+  text-shadow:1px 1px 2px #242424;
 }
 
 .trick__users .items {
-    margin-top:0;
+  margin-top:0;
 }
 
 .trick__users td.trick__user_photo {
-    width:40px;
-    /*border-right:2px solid #ccc;*/
-    background-repeat:no-repeat;
-    background-position:0 0;
-    -moz-background-size:cover;
-    -o-background-size:cover;
-    -webkit-background-size:cover;
-    background-size:cover;
+  width:40px;
+  /*border-right:2px solid #ccc;*/
+  background-repeat:no-repeat;
+  background-position:0 0;
+  -moz-background-size:cover;
+  -o-background-size:cover;
+  -webkit-background-size:cover;
+  background-size:cover;
 }
 
+/* Upload video form */
+.upload_video_form_container {
+  top:100px; 
+  left:40%; 
+  width:300px;
+}
 
+.upload_form__loader {
+  display:none; 
+  float:left; 
+  width:60px;
+  height:20px;
+  background:url('/static/i/ajax-loader.gif') 0 0 no-repeat;
+  margin:6px 0 0 10px;
+}
+
+.upload_form__upload {
+  float:left;
+}
+
+.upload_video_form_container button.close {
+  float:right;
+}
+
+.error_holder {color:red; font-size:12px; clear:both;}
+/*
+button.disabled {
+  background:#EEE; 
+  border-color:#AAA; 
+  cursor:default;
+}
+
+button.disabled:hover {
+  color:#444; 
+  border-color:#AAA;
+  cursor:default;
+}
+*/

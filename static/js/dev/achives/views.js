@@ -8,7 +8,8 @@ Besttrick.module('Achives.Views', function (Views, App, Backbone, Marionette, $,
         tagName: 'div',
 
         events: {
-            'click a': 'update_filter'
+            'click a.filter_item': 'update_filter',
+            'click a.toggle_all': 'toggle_all'
         },
 
         update_filter: function (e) {
@@ -27,6 +28,17 @@ Besttrick.module('Achives.Views', function (Views, App, Backbone, Marionette, $,
             this.collection.trigger('change');
 
             return false;
+        },
+
+        toggle_all: function (e) {
+            var $el = $(e.target),
+                clss = ['icon-download', 'icon-upload'];
+            
+            $el.hasClass(clss[0]) ? '' : clss.reverse();
+            $el.removeClass(clss[0]).addClass(clss[1]);
+            this.collection.trigger('toggle');
+            
+            return false;
         }
     }); 
 
@@ -42,7 +54,7 @@ Besttrick.module('Achives.Views', function (Views, App, Backbone, Marionette, $,
 
         events: {
             'click div.achive__header' : 'toggle',
-            'click div.achive__text a.more_link' : 'toggle'
+            'click a.more_link' : 'toggle'
         },
 
         initialize: function () {
@@ -65,7 +77,7 @@ Besttrick.module('Achives.Views', function (Views, App, Backbone, Marionette, $,
             }
 
             this.$el.addClass(toggle_cls);
-            return this;
+            return false;
         },
     });
 
@@ -76,6 +88,12 @@ Besttrick.module('Achives.Views', function (Views, App, Backbone, Marionette, $,
         
         initialize: function () {
             this.listenTo(this.collection, 'change', this.render);
+            this.listenTo(this.collection, 'toggle', this.toggle);
+        },
+
+        toggle: function () {
+            this.children.invoke('toggle');
+            return false;
         },
 
         appendHtml: function(collectionView, itemView, index) {

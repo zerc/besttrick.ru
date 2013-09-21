@@ -265,6 +265,7 @@ var Form = Backbone.View.extend({
     //Collect errors from schema validation
     _.each(fields, function(field) {
       var error = field.validate();
+      console.log(error, field)
       if (error) {
         errors[field.key] = error;
       }

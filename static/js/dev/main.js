@@ -17,7 +17,8 @@ Besttrick.addRegions({
     main   : '#main',
     footer : '#footer',
     user_container : '#user_container',
-    menu_container : '#menu_container'
+    menu_container : '#menu_container',
+    modal : '#modal_container',
 });
 
 
@@ -131,7 +132,7 @@ Besttrick.module('Main', function (Main, App, Backbone, Marionette, $, _) {
             var view_tricks = new App.Tricks.Views.Tricks({collection: tricks}),
                 view_filter = new App.Tricks.Views.TricksFilter({templateHelpers: {'tags': tags}});
 
-            view_tricks.set_filter(this._parse_filter_query(querystring), true);               
+            view_tricks.set_filter(this._parse_filter_query(querystring), true);
 
             App.menu_container.show(view_filter);
             App.main.show(view_tricks);

@@ -100,6 +100,7 @@ static['js_dev'] =  map(lambda x: 'js/dev/%s.js' % x, (
     'libs/backbone.marionette',
     #'libs/backbone-relational',
     'libs/kickstart',
+    'libs/jquery.loader',
 
     'main',
     'common',
@@ -108,6 +109,7 @@ static['js_dev'] =  map(lambda x: 'js/dev/%s.js' % x, (
     'models',
     'tricks/views',
     'tricks/views.checkins',
+    'tricks/views.upload_video',
     'users/views',
     'users/views.checkins',
     'users/views.rating',
@@ -121,6 +123,7 @@ static['js_dev'].insert(5, 'js/backbone-forms.js')
 static['js_dev'].insert(6, 'js/bootstrap-tooltip.js')
 static['js_dev'].insert(6, 'js/jquery.cookie.js')
 static['js_dev'].insert(6, 'js/date.format.js')
+static['js_dev'].insert(6, 'js/jquery.form.js')
 
 static['css_dev'] = map(lambda x: 'css/dev/%s.css' % x, (
     'kickstart/kickstart',

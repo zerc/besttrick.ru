@@ -11,24 +11,16 @@ from project import app
 from apps import tricks, users, common, admin, bt, achives
 from flask import render_template
 
-# hook just remove this when army end
-try:
-    import upload
-except ImportError:
-    pass
-
 
 url = app.add_url_rule
 
 
 url('/',                        'index',            bt.index)
-url('/dev/',                    'dev_index',        bt.index,           defaults={'template': 'dev_index.html'})
 url('/',                        'mobile_index',     bt.mobile_index,    subdomain='m')
 url('/pown/<int:user_id>/',     'pown',             bt.pown,            methods=['GET'])
 url('/pown/<int:user_id>/',     'pown',             bt.pown,            subdomain='m', methods=['GET'])
 url('/feedback/',               'feedback',         bt.feedback,        methods=['POST'])
-url('/youtube_reciver/',        'youtube_reciver',  bt.youtube_reciver, methods=['POST'])
-
+url('/youtube_reciver/',        'youtube_reciver',  bt.youtube_reciver, methods=['GET'])
 
 
 ### Trick urls
@@ -54,11 +46,6 @@ url('/users/',                          'users',            users.users)
 url('/users/user<int:user_id>/',        'user',             users.user, methods=['PUT', 'GET', 'POST'])
 url('/users/rating/',                   'rating',           users.top_users)
 url('/users/rating/',                   'mobile_rating',    users.top_users,  subdomain="m")
-
-## depricated
-# url('/user/',                   'my',               users.user, methods=['PUT', 'GET'])
-# url('/user/',                   'mobile_my',        users.user, methods=['POST', 'GET'], subdomain="m")
-# url('/users/user<int:user_id>/',        'profile',          users.user_profile, subdomain="m")
 
 ### Achives urls
 url('/my/achives/',                       'my_achives',      achives.my_achives)

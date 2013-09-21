@@ -6,7 +6,7 @@ from mongokit import DocumentMigration
 from mongokit.schema_document import ValidationError
 import simplejson as json
 
-from project import app
+from project import app, cached_property
 from apps.common import BaseModel
 
 from .base import get_best_results
@@ -53,15 +53,15 @@ class Trick(BaseModel):
     required_fields = ['title']
     indexes = [{'fields': ['tags']}]
 
-    @property
+    @cached_property
     def checkins(self):
         return app.connection.TrickUser.find({'trick': self._id})
 
-    @property
+    @cached_property
     def best_checkin(self):
         return list(app.connection.TrickUser.find({'trick': self._id}).sort('cones', -1))[0]
 
-    @property
+    @cached_property
     def users_count(self):
         return len(set([ch['user'] for ch in self.checkins]))
 
